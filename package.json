@@ -1,0 +1,32 @@
+{
+  "name": "express_api",
+  "version": "1.0.0",
+  "description": "Teacher Hub API",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run build:live",
+    "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "typings install --save"
+  },
+  "author": "Fritz Jay",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "jsonwebtoken": "^8.3.0",
+    "mongoose": "^5.1.6"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^2.0.0",
+    "@types/express": "^4.16.0",
+    "@types/jsonwebtoken": "^7.2.7",
+    "@types/mongodb": "^3.0.21",
+    "@types/mongoose": "^5.0.18",
+    "nodemon": "^1.17.5",
+    "ts-node": "^7.0.0",
+    "typescript": "^2.9.2",
+    "typings": "latest"
+  }
+}
