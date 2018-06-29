@@ -1,17 +1,10 @@
 import { IUser } from "../interfaces/user";
 import { ITest, ITestResults, IQuestion } from "../interfaces/test";
+import { ITestParameters } from "../interfaces/testParameters";
 
 export interface IAvailableTests {
   operators: string[],
   numbers: number[],
-}
-
-export interface ITestParameters {
-  operator: string,
-  number: string,
-  questions: number,
-  randomQuestions: number,
-  duration: number,
 }
 
 export const getAvailableTests = (user: IUser): IAvailableTests => {
