@@ -1,6 +1,6 @@
 export interface ITestParameters {
   operator: string;
-  number: string;
+  number: number;
   questions: number;
   randomQuestions: number;
   duration: number;
