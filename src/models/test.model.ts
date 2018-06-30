@@ -9,7 +9,7 @@ const QuestionSchema: Schema = new Schema({
   correctAnswer: String,
   start: Date,
   end: Date,
-});
+}, { _id: false });
 
 export interface ITestModel extends ITest, Document { }
 const TestSchema: Schema = new Schema({
