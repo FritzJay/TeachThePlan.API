@@ -3,11 +3,11 @@ import { IUser } from '../interfaces/user';
 import { User, IUserModel } from '../models/user.model';
 import { Types } from 'mongoose';
 
-interface UsersCallback {
+interface IUsersCallback {
   (error?: Error, user?: IUserModel): any;
 }
       
-export const createUser = (user: IUser, callback: UsersCallback): void => {
+export const createUser = (user: IUser, callback: IUsersCallback): void => {
   hash(user.password, 10)
   .then((hash) => {
     new User({
@@ -20,7 +20,8 @@ export const createUser = (user: IUser, callback: UsersCallback): void => {
     .save()
     .then((newUser) => {
       callback(null, newUser);
-    }).catch(saveError => {
+    })
+    .catch(saveError => {
       callback(saveError, null);
     });
   })
@@ -29,7 +30,7 @@ export const createUser = (user: IUser, callback: UsersCallback): void => {
   });
 }
 
-export const getUser = (email: string, callback: UsersCallback): void => {
+export const getUser = (email: string, callback: IUsersCallback): void => {
   User.findOne({ email: email })
   .exec()
   .then((user: IUserModel) => {
