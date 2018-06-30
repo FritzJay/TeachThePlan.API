@@ -1,8 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { IUserModel } from '../models/user.model';
 import { IUser } from '../interfaces/user';
-import { createUser, getUser } from '../library/users';
-import { comparePasswords, createToken } from '../library/authentication';
+import { createUser, getUser } from '../library/users/users';
+import { comparePasswords, createToken } from '../library/authentication/authentication';
 
 export let userRouter = Router();
 

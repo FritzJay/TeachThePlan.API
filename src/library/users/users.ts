@@ -1,6 +1,6 @@
 import { hash } from 'bcrypt';
-import { IUser } from '../interfaces/user';
-import { User, IUserModel } from '../models/user.model';
+import { IUser } from '../../interfaces/user';
+import { User, IUserModel } from '../../models/user.model';
 import { Types } from 'mongoose';
 
 interface IUsersCallback {

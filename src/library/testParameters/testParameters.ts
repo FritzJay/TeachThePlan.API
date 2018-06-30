@@ -1,6 +1,6 @@
-import { ITestParameters } from "../interfaces/testParameters";
-import { TestParameters, ITestParametersModel } from "../models/testParameters.model";
-import { IUser } from "../interfaces/user";
+import { ITestParameters } from "../../interfaces/testParameters";
+import { TestParameters, ITestParametersModel } from "../../models/testParameters.model";
+import { IUser } from "../../interfaces/user";
 
 interface ITestParametersCallback {
   (error?: Error, user?: ITestParametersModel): any;

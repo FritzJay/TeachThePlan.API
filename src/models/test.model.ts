@@ -1,6 +1,6 @@
 import { Document, Schema, Model, model } from "mongoose";
 import { ITest, ITestResults, IQuestion } from "../interfaces/test";
-import { gradeTest } from "../library/tests";
+import { gradeTest } from "../library/tests/tests";
 
 export interface IQuestionModel extends IQuestion, Document { }
 const QuestionSchema: Schema = new Schema({

@@ -1,6 +1,6 @@
 import { compareSync } from 'bcrypt';
 import { sign } from 'jsonwebtoken'
-import { IUserModel } from '../models/user.model';
+import { IUserModel } from '../../models/user.model';
 
 export const createToken = (user: IUserModel) => {
   return sign({

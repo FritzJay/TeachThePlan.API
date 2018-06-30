@@ -1,6 +1,6 @@
-import { IUser } from "../interfaces/user";
-import { ITest, ITestResults, IQuestion } from "../interfaces/test";
-import { ITestParameters } from "../interfaces/testParameters";
+import { IUser } from "../../interfaces/user";
+import { ITest, ITestResults, IQuestion } from "../../interfaces/test";
+import { ITestParameters } from "../../interfaces/testParameters";
 
 export interface IAvailableTests {
   operators: string[],
