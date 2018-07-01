@@ -1,13 +1,26 @@
 import { IUser } from '../../interfaces/user';
-import { IAvailableTests, getAvailableTests, newTest, gradeTest } from "./tests";
+import { 
+  OPERATORS,
+  NUMBERS,
+  IAvailableTests,
+  getAvailableTests,
+  newTest,
+  gradeTest
+} from "./tests";
 
 describe('getAvailableTests', () => {
-  it('returns available tests', () => {
+  it('returns all available tests', (done) => {
     const user: IUser = {
       firstName: "test",
       lastName: "user"
     }
-    const availableTests = getAvailableTests(user);
-    expect(availableTests).not.toBeNull;
+    const callback = (error: Error, availableTests: IAvailableTests) => {
+      expect(availableTests).toEqual({
+        operators: OPERATORS,
+        numbers: NUMBERS,
+      });
+      done();
+    }
+    getAvailableTests(user, callback);
   });
 });
