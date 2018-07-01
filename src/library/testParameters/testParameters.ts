@@ -1,12 +1,9 @@
 import { ITestParameters } from "../../interfaces/testParameters";
+import { Callback } from "../../interfaces/callback";
 import { TestParameters, ITestParametersModel } from "../../models/testParameters.model";
 import { IUser } from "../../interfaces/user";
 
-interface ITestParametersCallback {
-  (error?: Error, user?: ITestParametersModel): any;
-}
-
-export const createTestParameters = (params: ITestParameters, callback: ITestParametersCallback): void => {
+export const createTestParameters = (params: ITestParameters, callback: Callback): void => {
   new TestParameters({
     ...params
   })
@@ -19,12 +16,13 @@ export const createTestParameters = (params: ITestParameters, callback: ITestPar
   });
 }
 
-export const getTestParameters = (user: IUser): ITestParameters => {
-  return {
+export const getTestParameters = (user: IUser, callback): void => {
+  const testParameters = {
     operator: "sample operator",
     number: 5,
     questions: 20,
     randomQuestions: 0,
     duration: 75,
   }
+  callback(null, testParameters);
 }
