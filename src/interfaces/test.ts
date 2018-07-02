@@ -17,6 +17,6 @@ export interface ITestResults {
   total: number;
   needed: number;
   correct: number;
-  incorrect: string;
-  quickest: string;
+  incorrect: IQuestion;
+  quickest: IQuestion;
 }

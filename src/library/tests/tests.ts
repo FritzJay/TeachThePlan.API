@@ -26,6 +26,7 @@ export const newTest = (params: ITestParameters, callback: Callback): void => {
   const argumentsErrors: Error[] = validateNewTestArguments(params, callback);
   if (argumentsErrors.length > 0) {
     callback(argumentsErrors, null);
+    return
   }
   
   const questions: IQuestion[] = createQuestions(params.operator, params.number, params.questions, params.randomQuestions);
@@ -40,12 +41,14 @@ export const newTest = (params: ITestParameters, callback: Callback): void => {
 
 export const gradeTest = (test: ITest, callback: Callback): void => {
   const numberOfCorrectAnswers: number = setCorrectAnswers(test);
+  const incorrectQuestion: IQuestion = getRandomIncorrectlyAnsweredQuestion(test);
+  const quickestQuestion: IQuestion = getQuickestAnsweredQuestion(test);
   const testResults: ITestResults = {
     total: test.questions.length,
     needed: Math.round(test.questions.length * 0.8),
     correct: numberOfCorrectAnswers,
-    incorrect: 'sample question',
-    quickest: 'sample question',
+    incorrect: incorrectQuestion,
+    quickest: quickestQuestion,
   }
   callback(null, testResults);
 }
@@ -95,6 +98,22 @@ const setCorrectAnswers = (test: ITest): number => {
   }
   return numberOfCorrectAnswers;
 };
+
+const getRandomIncorrectlyAnsweredQuestion = (test: ITest): IQuestion => {
+  let incorrectlyAnsweredQuestions: IQuestion[] = [];
+  for (let question of test.questions) {
+    question.correctAnswer !== question.studentAnswer && incorrectlyAnsweredQuestions.push(question); 
+  }
+  return incorrectlyAnsweredQuestions[Math.floor(Math.random() * incorrectlyAnsweredQuestions.length)];
+}
+
+const getQuickestAnsweredQuestion = (test: ITest): IQuestion => {
+  return test.questions.reduce((a, b) => {
+    const aDuration: number = a.end.getTime() - a.start.getTime();
+    const bDuration: number = b.end.getTime() - b.start.getTime();
+    return aDuration < bDuration ? a : b;
+  });
+}
 
 const createFormattedQuestion = (operator: string, firstNumber: Number, secondNumber: Number): IQuestion => {
   const [num1, num2] = shuffleArray([firstNumber, secondNumber]);

@@ -62,6 +62,7 @@ describe('newTest', () => {
 
 describe('gradeTest', () => {
   const now = new Date(Date.now());
+  const later = new Date(Date.now() + 10000);
   const questions: IQuestion[] = [
       {
         question: '1 + 1',
@@ -73,25 +74,25 @@ describe('gradeTest', () => {
         question: '1 + 2',
         studentAnswer: 3,
         start: now,
-        end: now,
+        end: later,
       },
       {
         question: '1 + 3',
         studentAnswer: 4,
         start: now,
-        end: now,
+        end: later,
       },
       {
         question: '1 + 4',
         studentAnswer: 4,
         start: now,
-        end: now,
+        end: later,
       },
       {
         question: '1 + 5',
         studentAnswer: 4,
         start: now,
-        end: now,
+        end: later,
       }
     ];
   const test: ITest = {
@@ -100,6 +101,11 @@ describe('gradeTest', () => {
     end: now,
     questions: questions,
   }
+  beforeEach(() => {
+    for (let question of test.questions) {
+      question.correctAnswer = null;
+    }
+  });
   it('returns the total number of questions', (done) => {
     const callback: Callback = (error, testResults: ITestResults) => {
       expect(error).toBeNull;
@@ -122,6 +128,37 @@ describe('gradeTest', () => {
     const callback: Callback = (error, testResults: ITestResults) => {
       expect(error).toBeNull;
       expect(testResults.correct).toEqual(3);
+      done();
+    }
+    Tests.gradeTest(test, callback);
+  });
+
+  it('returns one of the incorrectly answered questions as incorrect', (done) => {
+    const incorrectlyAnsweredQuestions = questions.slice(3);
+    const callback: Callback = (error, testResults: ITestResults) => {
+      expect(error).toBeNull;
+      expect(incorrectlyAnsweredQuestions.includes(testResults.incorrect)).toBe(true);
+      done();
+    }
+    Tests.gradeTest(test, callback);
+  });
+
+  it('returns the question with the minimum difference between start and stop as the quickest answered', (done) => {
+    const callback: Callback = (error, testResults: ITestResults) => {
+      expect(error).toBeNull;
+      expect(testResults.quickest).toEqual(questions[0]);
+      done();
+    }
+    Tests.gradeTest(test, callback);
+  });
+
+  it('sets the correct answer of each question', (done) => {
+    const callback: Callback = (error, testResults: ITestResults) => {
+      expect(error).toBeNull;
+      expect(testResults).not.toBeNull;
+      for (let question in test.questions) {
+        expect(question).not.toBeNull;
+      }
       done();
     }
     Tests.gradeTest(test, callback);
