@@ -8,7 +8,10 @@
     "sourceMap": true,
     "outDir": "dist",
     "allowJs": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "es2018"
+    ]
   },
   "exclude": [
     "node_modules",
