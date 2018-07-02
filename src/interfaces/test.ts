@@ -7,8 +7,8 @@ export interface ITest {
 
 export interface IQuestion {
   question: string;
-  studentAnswer?: string;
-  correctAnswer?: string;
+  studentAnswer?: number;
+  correctAnswer?: number;
   start?: Date;
   end?: Date;
 }
@@ -16,7 +16,7 @@ export interface IQuestion {
 export interface ITestResults {
   total: number;
   needed: number;
-  correct: string[];
+  correct: number;
   incorrect: string;
   quickest: string;
 }
