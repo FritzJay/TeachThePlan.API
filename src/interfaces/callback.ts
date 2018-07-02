@@ -1,3 +1,3 @@
 export interface Callback {
-  (error?: Error, result?: any): any;
+  (errors?: Error[], result?: any): any;
 }
