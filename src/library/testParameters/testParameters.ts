@@ -12,7 +12,7 @@ export const createTestParameters = (params: ITestParameters, callback: Callback
     callback(null, newTestParams);
   })
   .catch((saveError: Error) => {
-    callback(saveError, null);
+    callback([saveError], null);
   });
 }
 

@@ -8,10 +8,10 @@ export let userRouter = Router();
 
 userRouter.post('/signup', (postRequest: Request, postResponse: Response): void => {
   const newUser = userFromRequest(postRequest);
-  return createUser(newUser, (error: Error, _user: IUserModel) => {
-    if (error) {
+  return createUser(newUser, (errors: Error[], _user: IUserModel) => {
+    if (errors) {
       return postResponse.status(401).json({
-        error: error
+        error: errors
       });
     } else {
       return postResponse.status(200).json({
@@ -23,10 +23,10 @@ userRouter.post('/signup', (postRequest: Request, postResponse: Response): void 
 
 userRouter.post('/signin', function(postRequest: Request, postResponse: Response): void {
   const email: string = postRequest.body.email;
-  return getUser(email, (error: Error, user: IUserModel) => {
-    if (error) {
+  return getUser(email, (errors: Error[], user: IUserModel) => {
+    if (errors) {
       return postResponse.status(401).json({
-        error: error
+        error: errors
       });
     } else {
       const passwordMatch = comparePasswords(postRequest.body.password, user.password)

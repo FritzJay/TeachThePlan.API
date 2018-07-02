@@ -18,9 +18,6 @@ const TestSchema: Schema = new Schema({
   end: Date,
   questions: [QuestionSchema],
 });
-TestSchema.methods.results = function(): ITestResults {
-  return gradeTest(this);
-}
 
 export const Question: Model<IQuestionModel> = model<IQuestionModel>("Question", QuestionSchema);
 export const Test: Model<ITestModel> = model<ITestModel>("Test", TestSchema);

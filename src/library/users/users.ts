@@ -19,11 +19,11 @@ export const createUser = (user: IUser, callback: Callback): void => {
       callback(null, newUser);
     })
     .catch(saveError => {
-      callback(saveError, null);
+      callback([saveError], null);
     });
   })
   .catch((hashError: Error) => {
-    callback(hashError, null);
+    callback([hashError], null);
   });
 }
 
@@ -34,6 +34,6 @@ export const getUser = (email: string, callback: Callback): void => {
     callback(null, user);
   })
   .catch((error: Error) => {
-    callback(error, null)
+    callback([error], null)
   });
 }
