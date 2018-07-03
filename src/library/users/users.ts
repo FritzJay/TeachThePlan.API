@@ -3,6 +3,7 @@ import { Types } from 'mongoose';
 import { IUser } from '../../interfaces/user';
 import { Callback } from '../../interfaces/callback';
 import { User, IUserModel } from '../../models/user.model';
+import { decodeToken } from '../authentication/authentication';
       
 export const createUser = (user: IUser, callback: Callback): void => {
   hash(user.password, 10)
@@ -46,5 +47,20 @@ export const getUserByID = (id: Types.ObjectId, callback: Callback): void => {
   })
   .catch((error: Error) => {
     callback([error], null);
+  });
+}
+
+export const getUserFromToken = (token: string, callback: Callback): void => {
+  const decodedToken = decodeToken(token);
+  const email = decodedToken['email'];
+  getUserByEmail(email, (errors: Error[], user: IUserModel) => {
+    if (errors) {
+      callback(errors, null);
+    } else if (user === null) {
+      const error = new Error('Could not find user by email.');
+      callback([error], null);
+    } else {
+      callback(null, user);
+    }
   });
 }
