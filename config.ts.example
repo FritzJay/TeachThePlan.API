@@ -1,0 +1,1 @@
+export const mongodbPassword = 'password goes here';
