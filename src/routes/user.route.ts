@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { IUserModel } from '../models/user.model';
 import { IUser } from '../interfaces/user';
-import { createUser, getUser } from '../library/users/users';
+import { createUser, getUserByEmail } from '../library/users/users';
 import { comparePasswords, createToken } from '../library/authentication/authentication';
 
 export let userRouter = Router();
@@ -23,7 +23,7 @@ userRouter.post('/signup', (postRequest: Request, postResponse: Response): void 
 
 userRouter.post('/signin', function(postRequest: Request, postResponse: Response): void {
   const email: string = postRequest.body.email;
-  return getUser(email, (errors: Error[], user: IUserModel) => {
+  return getUserByEmail(email, (errors: Error[], user: IUserModel) => {
     if (errors) {
       return postResponse.status(401).json({
         error: errors

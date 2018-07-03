@@ -1,8 +1,8 @@
 import { hash } from 'bcrypt';
+import { Types } from 'mongoose';
 import { IUser } from '../../interfaces/user';
 import { Callback } from '../../interfaces/callback';
 import { User, IUserModel } from '../../models/user.model';
-import { Types } from 'mongoose';
       
 export const createUser = (user: IUser, callback: Callback): void => {
   hash(user.password, 10)
@@ -27,7 +27,7 @@ export const createUser = (user: IUser, callback: Callback): void => {
   });
 }
 
-export const getUser = (email: string, callback: Callback): void => {
+export const getUserByEmail = (email: string, callback: Callback): void => {
   User.findOne({ email: email })
   .exec()
   .then((user: IUserModel) => {
@@ -35,5 +35,16 @@ export const getUser = (email: string, callback: Callback): void => {
   })
   .catch((error: Error) => {
     callback([error], null)
+  });
+}
+
+export const getUserByID = (id: Types.ObjectId, callback: Callback): void => {
+  User.findOne({ _id: id })
+  .exec()
+  .then((user: IUserModel) => {
+    callback(null, user);
+  })
+  .catch((error: Error) => {
+    callback([error], null);
   });
 }
