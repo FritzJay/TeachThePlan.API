@@ -14,7 +14,8 @@ export interface IAvailableTests {
   numbers: number[],
 }
 
-export const getAvailableTests = (user: IUser, callback: Callback): void => {
+export const getAvailableTests = (_user: IUser, callback: Callback): void => {
+  // Temporarily return all tests
   const availableTests: IAvailableTests = {
     operators: OPERATORS,
     numbers: NUMBERS
@@ -28,7 +29,6 @@ export const newTest = (params: ITestParameters, callback: Callback): void => {
     callback(argumentsErrors, null);
     return
   }
-  
   const questions: IQuestion[] = createQuestions(params.operator, params.number, params.questions, params.randomQuestions);
   const test: ITest = {
     duration: params.duration,
@@ -94,7 +94,7 @@ const setCorrectAnswers = (test: ITest): number => {
   let numberOfCorrectAnswers = 0;
   for (let question of test.questions) {
     question.correctAnswer = mathjs.eval(question.question);
-    question.correctAnswer === question.studentAnswer && numberOfCorrectAnswers++; 
+    question.correctAnswer.toString() === question.studentAnswer.toString() && numberOfCorrectAnswers++; 
   }
   return numberOfCorrectAnswers;
 };
@@ -102,7 +102,7 @@ const setCorrectAnswers = (test: ITest): number => {
 const getRandomIncorrectlyAnsweredQuestion = (test: ITest): IQuestion => {
   let incorrectlyAnsweredQuestions: IQuestion[] = [];
   for (let question of test.questions) {
-    question.correctAnswer !== question.studentAnswer && incorrectlyAnsweredQuestions.push(question); 
+    question.correctAnswer.toString() !== question.studentAnswer.toString() && incorrectlyAnsweredQuestions.push(question); 
   }
   return incorrectlyAnsweredQuestions[Math.floor(Math.random() * incorrectlyAnsweredQuestions.length)];
 }
