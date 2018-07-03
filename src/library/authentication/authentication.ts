@@ -1,5 +1,5 @@
 import { compareSync } from 'bcrypt';
-import { sign } from 'jsonwebtoken'
+import { sign, decode } from 'jsonwebtoken'
 import { IUserModel } from '../../models/user.model';
 
 export const createToken = (user: IUserModel) => {
@@ -11,6 +11,10 @@ export const createToken = (user: IUserModel) => {
     {
       expiresIn: '2h'
     });
+}
+
+export const decodeToken = (token: string): string | { [key: string]: any } => {
+  return decode(token);
 }
 
 export const comparePasswords = (raw: string, hash: string): boolean => {
