@@ -1,26 +1,23 @@
 import { Router, Request, Response } from 'express';
-import { Types } from 'mongoose';
-import { ITestModel } from '../models/test.model';
-import { IUserModel } from '../models/user.model';
 import { getAvailableTests, newTest, gradeTest, IAvailableTests } from '../library/tests/tests';
-import { getUserByID } from '../library/users/users';
-import { decodeToken } from '../library/authentication/authentication';
+import { getUserFromToken } from '../library/users/users';
+import { ITestParameters } from '../interfaces/testParameters';
+import { ITest, IQuestion } from '../interfaces/test';
 
 export let testsRouter = Router();
 
 testsRouter.post('/available', (postRequest: Request, postResponse: Response): void => {
-  const authToken = decodeToken(postRequest.headers.authorization);
-  const userID = new Types.ObjectId(authToken['id']); // TODO: Get userID from header
-  getUserByID(userID, (errors: Error[], user: IUserModel) => {
+  getUserFromToken(postRequest.headers.authorization, (errors, user) => {
     if (errors) {
       return postResponse.status(401).json({
-        error: errors
+        error: errors.toString()
       });
-    } else {
+    }
+    else {
       return getAvailableTests(user, (errors: Error[], availableTests: IAvailableTests) => {
         if (errors) {
           return postResponse.status(401).json({
-            error: errors
+            error: errors.toString()
           });
         } else {
           return postResponse.status(200).json({
@@ -31,3 +28,72 @@ testsRouter.post('/available', (postRequest: Request, postResponse: Response): v
     }
   });
 });
+
+testsRouter.post('/new', (postRequest: Request, postResponse: Response): void => {
+  getUserFromToken(postRequest.headers.authorization, (errors, _user) => {
+    if (errors) {
+      return postResponse.status(401).json({
+        error: errors.toString()
+      });
+    } else {
+      const testParameters: ITestParameters = testParametersFromRequest(postRequest);
+      newTest(testParameters, (errors, test: ITest) => {
+        if (errors) {
+          return postResponse.status(401).json({
+            error: errors.toString()
+          });
+        } else {
+          return postResponse.status(200).json(test);
+        }
+      });
+    }
+  });
+});
+
+testsRouter.post('/grade', (postRequest: Request, postResponse: Response): void => {
+  getUserFromToken(postRequest.headers.authorization, (errors, _user) => {
+    if (errors) {
+      return postResponse.status(401).json({
+        error: errors.toString()
+      });
+    } else {
+      const test: ITest = testFromRequest(postRequest);
+      gradeTest(test, (errors, test: ITest) => {
+        if (errors) {
+          return postResponse.status(401).json({
+            error: errors.toString()
+          });
+        } else {
+          return postResponse.status(200).json(test);
+        }
+      });
+    }
+  });
+});
+
+const testFromRequest = (request: Request): ITest => {
+  const questions: IQuestion[] = request.body.questions.map((q): IQuestion => {
+    return {
+      question: q.question,
+      studentAnswer: q.studentAnswer,
+      start: new Date(q.start),
+      end: new Date(q.end)
+    }
+  });
+  return {
+    duration: request.body.duration,
+    start: new Date(request.body.start),
+    end: new Date(request.body.start),
+    questions: questions,
+  }
+}
+
+const testParametersFromRequest = (request: Request): ITestParameters => {
+  return {
+    operator: request.body.operator,
+    number: request.body.number,
+    questions: request.body.questions,
+    randomQuestions: request.body.randomQuestions,
+    duration: request.body.duration,
+  }
+}
