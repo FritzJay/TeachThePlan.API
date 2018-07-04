@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { getAvailableTests, newTest, gradeTest, IAvailableTests } from '../library/tests/tests';
+import { getAvailableTests, newTest, gradeTest, IAvailableTests, submitTest } from '../library/tests/tests';
 import { getUserFromToken } from '../library/users/users';
 import { ITestParameters } from '../interfaces/testParameters';
 import { ITest, IQuestion } from '../interfaces/test';
@@ -60,11 +60,19 @@ testsRouter.post('/grade', (postRequest: Request, postResponse: Response): void 
       const test: ITest = testFromRequest(postRequest);
       gradeTest(test, (errors, test: ITest) => {
         if (errors) {
-          return postResponse.status(401).json({
+          return postResponse.status(500).json({
             error: errors.toString()
           });
         } else {
-          return postResponse.status(200).json(test);
+          submitTest(test, (errors, submittedTest: ITest) => {
+            if (errors) {
+              return postResponse.status(500).json({
+                error: errors.toString()
+              });
+            } else {
+              return postResponse.status(200).json(submittedTest);
+            }
+          });
         }
       });
     }

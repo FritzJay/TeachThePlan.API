@@ -4,6 +4,7 @@ import { ITest, ITestResults, IQuestion } from "../../interfaces/test";
 import { ITestParameters } from "../../interfaces/testParameters";
 import { TestArgumentError } from "../../library/errors";
 import * as mathjs from "mathjs";
+import { Test, ITestModel } from "../../models/test.model";
 
 export const OPERATORS: string[] = ['+', '-', '*', '/'];
 export const NUMBERS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -51,6 +52,16 @@ export const gradeTest = (test: ITest, callback: Callback): void => {
     quickest: quickestQuestion,
   }
   callback(null, testResults);
+}
+
+export const submitTest = (test: ITest, callback: Callback): void => {
+  new Test({...test})
+  .save((newTest: ITestModel) => {
+    callback(null, newTest);
+  })
+  .catch((saveError: Error) => {
+    callback([saveError], null);
+  });
 }
 
 export const createQuestions = (operator: string, number: number, questions: number, randomQuestions: number): IQuestion[] => {
