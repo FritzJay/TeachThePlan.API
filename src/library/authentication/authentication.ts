@@ -1,13 +1,14 @@
 import { compareSync } from 'bcrypt';
 import { sign, decode } from 'jsonwebtoken'
 import { IUserModel } from '../../models/user.model';
+import * as config from '../../../config';
 
 export const createToken = (user: IUserModel) => {
   return sign({
       email: user.email,
       _id: user._id
     },
-    'secret',
+    config.secret,
     {
       expiresIn: '2h'
     });
