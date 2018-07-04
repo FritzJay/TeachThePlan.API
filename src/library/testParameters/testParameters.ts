@@ -4,9 +4,7 @@ import { TestParameters, ITestParametersModel } from "../../models/testParameter
 import { IUser } from "../../interfaces/user";
 
 export const createTestParameters = (params: ITestParameters, callback: Callback): void => {
-  new TestParameters({
-    ...params
-  })
+  new TestParameters({...params})
   .save()
   .then((newTestParams: ITestParametersModel) => {
     callback(null, newTestParams);
