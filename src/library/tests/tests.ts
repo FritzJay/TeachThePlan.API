@@ -1,10 +1,8 @@
-import { IUser } from "../../interfaces/user";
-import { Callback } from "../../interfaces/callback";
-import { ITest, ITestResults, IQuestion } from "../../interfaces/test";
-import { ITestParameters } from "../../interfaces/testParameters";
-import { TestArgumentError } from "../../library/errors";
-import * as mathjs from "mathjs";
+import { Callback, TestArgumentError } from "../common";
+import { IUser } from "../users/users";
+import { ITestParameters } from "../testParameters/testParameters";
 import { Test, ITestModel } from "../../models/test.model";
+import * as mathjs from "mathjs";
 
 export const OPERATORS: string[] = ['+', '-', '*', '/'];
 export const NUMBERS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -13,6 +11,29 @@ export const MAX_NUMBER = 12;
 export interface IAvailableTests {
   operators: string[],
   numbers: number[],
+}
+
+export interface ITest {
+  duration?: number;
+  start?: Date;
+  end?: Date;
+  questions: IQuestion[];
+}
+
+export interface IQuestion {
+  question: string;
+  studentAnswer?: number;
+  correctAnswer?: number;
+  start?: Date;
+  end?: Date;
+}
+
+export interface ITestResults {
+  total: number;
+  needed: number;
+  correct: number;
+  incorrect: IQuestion;
+  quickest: IQuestion;
 }
 
 export const getAvailableTests = (_user: IUser, callback: Callback): void => {

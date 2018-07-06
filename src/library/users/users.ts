@@ -1,9 +1,15 @@
 import { hash } from 'bcrypt';
 import { Types } from 'mongoose';
-import { IUser } from '../../interfaces/user';
 import { Callback } from '../../interfaces/callback';
 import { User, IUserModel } from '../../models/user.model';
 import { decodeToken } from '../authentication/authentication';
+
+export interface IUser {
+  email?: string;
+  password?: string;
+  firstName?: string;
+  lastName?: string;
+}
       
 export const createUser = (user: IUser, callback: Callback): void => {
   hash(user.password, 10)
@@ -48,6 +54,10 @@ export const getUserByID = (id: Types.ObjectId, callback: Callback): void => {
   .catch((error: Error) => {
     callback([error], null);
   });
+}
+
+export const getUserByNameAndClassCode = (name: string, classCode: string, callback: Callback): void => {
+  User.findOne({  })
 }
 
 export const getUserFromToken = (token: string, callback: Callback): void => {

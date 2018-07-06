@@ -1,7 +1,15 @@
-import { ITestParameters } from "../../interfaces/testParameters";
+import { ITestParameters } from "../testParameters/testParameters";
+import { IUser } from "../users/users";
 import { Callback } from "../../interfaces/callback";
 import { TestParameters, ITestParametersModel } from "../../models/testParameters.model";
-import { IUser } from "../../interfaces/user";
+
+export interface ITestParameters {
+  operator: string;
+  number: number;
+  questions: number;
+  randomQuestions: number;
+  duration: number;
+}
 
 export const createTestParameters = (params: ITestParameters, callback: Callback): void => {
   new TestParameters({...params})

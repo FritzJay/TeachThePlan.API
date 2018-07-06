@@ -7,3 +7,7 @@ export class TestArgumentError extends Error {
     }
   }
 }
+
+export interface Callback {
+  (errors?: Error[], result?: any): any;
+}
