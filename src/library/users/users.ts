@@ -1,6 +1,6 @@
 import { hash } from 'bcrypt';
 import { Types } from 'mongoose';
-import { Callback } from '../../interfaces/callback';
+import { Callback } from '../common';
 import { User, IUserModel } from '../../models/user.model';
 import { decodeToken } from '../authentication/authentication';
 

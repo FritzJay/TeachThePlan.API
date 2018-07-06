@@ -1,14 +1,13 @@
 import { Document, Schema, Model, Types, model } from 'mongoose';
-
-export interface IClass {
-  classCode: string,
-  students: Types.ObjectId[]
-}
+import { IClass } from '../library/classes/classes';
+import { TestParametersSchema } from './testParameters.model';
+import { StudentSchema } from './student.model';
 
 export interface IClassModel extends IClass, Document { }
-const ClassSchema: Schema = new Schema({
+export const ClassSchema: Schema = new Schema({
   classCode: String,
-  students: [Types.ObjectId]
+  testParameters: [TestParametersSchema],
+  students: [StudentSchema]
 }); 
 
 export const Class: Model<IClassModel> = model<IClassModel>("Class", ClassSchema);

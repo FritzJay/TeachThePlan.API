@@ -1,7 +1,7 @@
-import { ITestParameters } from "../testParameters/testParameters";
-import { IUser } from "../users/users";
-import { Callback } from "../../interfaces/callback";
-import { TestParameters, ITestParametersModel } from "../../models/testParameters.model";
+import { ITestParameters } from '../testParameters/testParameters';
+import { IUser } from '../users/users';
+import { Callback } from '../common';
+import { TestParameters, ITestParametersModel } from '../../models/testParameters.model';
 
 export interface ITestParameters {
   operator: string;
@@ -24,7 +24,7 @@ export const createTestParameters = (params: ITestParameters, callback: Callback
 
 export const getTestParameters = (user: IUser, callback): void => {
   const testParameters = {
-    operator: "sample operator",
+    operator: 'sample operator',
     number: 5,
     questions: 20,
     randomQuestions: 0,

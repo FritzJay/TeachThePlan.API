@@ -1,9 +1,10 @@
+import { IUser } from '../users/users';
 import { IClass } from '../classes/classes';
-import { IStudent } from '../students/students';
 import { ITestParameters } from '../testParameters/testParameters';
 
-export interface IClass {
-  classCode: string,
-  students: IStudent[],
+export interface ITeacher {
+  user: IUser,
+  displayName: string,
   testParameters: ITestParameters,
+  classes: IClass[],
 }
