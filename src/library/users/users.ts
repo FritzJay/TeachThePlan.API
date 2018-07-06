@@ -56,10 +56,6 @@ export const getUserByID = (id: Types.ObjectId, callback: Callback): void => {
   });
 }
 
-export const getUserByNameAndClassCode = (name: string, classCode: string, callback: Callback): void => {
-  User.findOne({  })
-}
-
 export const getUserFromToken = (token: string, callback: Callback): void => {
   const decodedToken = decodeToken(token);
   const email = decodedToken['email'];

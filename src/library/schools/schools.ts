@@ -3,6 +3,7 @@ import { ITestParameters } from '../testParameters/testParameters';
 
 export interface ISchool {
   name: string,
-  testParameters: ITestParameters,
-  teachers: ITeacher[],
+  testParameters?: ITestParameters,
+  teachers?: ITeacher[],
 }
+

@@ -5,6 +5,6 @@ import { ITestParameters } from '../testParameters/testParameters';
 export interface ITeacher {
   user: IUser,
   displayName: string,
-  testParameters: ITestParameters,
-  classes: IClass[],
+  testParameters?: ITestParameters,
+  classes?: IClass[],
 }

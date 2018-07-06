@@ -4,6 +4,6 @@ import { ITestParameters } from '../testParameters/testParameters';
 
 export interface IClass {
   classCode: string,
-  students: IStudent[],
-  testParameters: ITestParameters,
+  testParameters?: ITestParameters,
+  students?: IStudent[],
 }

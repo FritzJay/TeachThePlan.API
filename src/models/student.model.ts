@@ -11,4 +11,4 @@ export const StudentSchema: Schema = new Schema({
   tests: [TestSchema]
 }); 
 
-export const Class: Model<IStudentModel> = model<IStudentModel>("Student", StudentSchema);
+export const Student: Model<IStudentModel> = model<IStudentModel>("Student", StudentSchema);
