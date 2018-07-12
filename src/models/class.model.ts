@@ -6,7 +6,7 @@ export interface IClassModel extends IClass, Document { }
 export const ClassSchema: Schema = new Schema({
   classCode: String,
   testParameters: [TestParametersSchema],
-  students: [SchemaTypes.ObjectId]
+  studentIDs: [SchemaTypes.ObjectId]
 }); 
 
 export const Class: Model<IClassModel> = model<IClassModel>("Class", ClassSchema);

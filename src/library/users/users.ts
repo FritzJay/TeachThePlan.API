@@ -11,15 +11,20 @@ export interface IUser {
   lastName?: string;
 }
       
-export const createUser = (user: IUser, callback: Callback): void => {
-  hash(user.password, 10)
+export const createUser = (userParams: IUser, callback: Callback): void => {
+  const argumentErrors: Error[] = validateCreateUserParams(userParams);
+  if (argumentErrors.length > 0) {
+    callback(argumentErrors, null);
+    return;
+  }
+  hash(userParams.password, 10)
   .then((hash) => {
     new User({
       _id: new Types.ObjectId(),
-      email: user.email,
+      email: userParams.email,
       password: hash,
-      firstName: user.firstName,
-      lastName: user.lastName
+      firstName: userParams.firstName,
+      lastName: userParams.lastName
     })
     .save()
     .then((newUser) => {
@@ -69,4 +74,8 @@ export const getUserFromToken = (token: string, callback: Callback): void => {
       callback(null, user);
     }
   });
+}
+
+const validateCreateUserParams = (userParams: IUser): Error[] => {
+  return [];
 }

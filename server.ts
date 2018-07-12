@@ -5,6 +5,9 @@ import { urlencoded, json } from 'body-parser';
 import { connect } from 'mongoose';
 import { userRouter } from './src/routes/user.route';
 import { testsRouter } from './src/routes/tests.route';
+import { schoolsRouter } from './src/routes/schools.route';
+import { teachersRouter } from './src/routes/teachers.route';
+import { classesRouter } from './src/routes/classes.route';
 
 const PORT: number = 3000;
 
@@ -13,7 +16,10 @@ connect(`mongodb://factfluency:${config.mongodbPassword}@factfluency-shard-00-00
 app.use(urlencoded({ extended: false }));
 app.use(json());
 app.use('/user', userRouter);
-app.use('/tests', testsRouter)
+app.use('/tests', testsRouter);
+app.use('/schools', schoolsRouter);
+app.use('/teachers', teachersRouter);
+app.use('/classes', classesRouter)
 
 app.listen(PORT, (): void => {
   console.log('Server is running on port', PORT);

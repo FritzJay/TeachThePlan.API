@@ -1,8 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { getAvailableTests, newTest, gradeTest, IAvailableTests, submitTest } from '../library/tests/tests';
 import { getUserFromToken } from '../library/users/users';
-import { ITestParameters } from '../interfaces/testParameters';
-import { ITest, IQuestion } from '../interfaces/test';
+import { ITestParameters } from '../library/testParameters/testParameters';
+import { ITest, IQuestion } from '../library/tests/tests';
 
 export let testsRouter = Router();
 
@@ -22,7 +22,7 @@ testsRouter.post('/available', (postRequest: Request, postResponse: Response): v
         } else {
           return postResponse.status(200).json({
             availableTests: availableTests
-          }); 
+          });
         }
       });
     }

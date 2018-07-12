@@ -1,7 +1,7 @@
-import { ITest, IQuestion, ITestResults } from '../../interfaces/test';
-import { IUser } from '../../interfaces/user';
-import { ITestParameters } from '../../interfaces/testParameters';
-import { Callback } from '../../interfaces/callback';
+import { ITest, IQuestion, ITestResults } from '../../library/tests/tests';
+import { IUser } from '../../library/users/users';
+import { ITestParameters } from '../../library/testParameters/testParameters';
+import { Callback } from '../../library/common';
 import * as Tests from "./tests";
 
 const VALID_TEST_PARAMETERS: ITestParameters = {

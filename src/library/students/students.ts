@@ -2,8 +2,9 @@ import { ITest } from '../tests/tests';
 import { IUser } from '../users/users';
 import { ITestParameters } from '../testParameters/testParameters';
 import { Student, IStudentModel } from '../../models/student.model';
-import { Class, IClassModel } from '../../models/class.model';
+import { IClassModel } from '../../models/class.model';
 import { Callback } from '../common';
+import { addStudentToClass } from '../classes/classes';
 
 export interface IStudent {
   user: IUser,
@@ -24,36 +25,22 @@ export const createStudent = (studentParams: IStudent, classCode: string, callba
     testParameters: studentParams.testParameters,
     tests: studentParams.tests,
   });
-  Class.findOne({classCode: classCode})
-  .exec()
-  .then((cls: IClassModel) => {
-    cls.students.push(newStudent);
-    cls.save((error: Error, _cls: IClassModel) => {
-      if (error) {
-        callback([error], null);
-      } else {
-        callback(null, newStudent);
-      }
-    });
-  })
-  .catch((error: Error) => {
-    callback([error], null);
+  newStudent.save((error: Error, student: IStudentModel) => {
+    if (error) {
+      callback([error], null);
+    } else {
+      addStudentToClass(student._id, classCode, (errors: Error[], cls: IClassModel) => {
+        if (errors) {
+          callback(errors, null);
+        } else {
+          callback(null, cls);
+        }
+      });
+    }
   });
 }
 
 export const getStudentByDisplayNameAndClassCode = (displayName: string, classCode: string, callback: Callback): void => {
-  Class.findOne({classCode: classCode}, {students: 1})
-  .exec()
-  .then((cls: IClassModel) => {
-    const student: IStudent = cls.students.find(s => s.displayName === displayName);
-    if (student) {
-      callback(null, student);
-    } else {
-      callback([new Error('Unable to find Student')], null);
-    }
-  }).catch((error: Error) => {
-    callback([error], null);
-  });
 }
 
 const validateCreateStudentParams = (studentParams: IStudent): Error[] => {

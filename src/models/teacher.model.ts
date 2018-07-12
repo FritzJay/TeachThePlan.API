@@ -7,7 +7,7 @@ export const TeacherSchema: Schema = new Schema({
   user: SchemaTypes.ObjectId,
   displayName: String,
   testParameters: TestParametersSchema,
-  classes: [SchemaTypes.ObjectId],
+  classIDs: [SchemaTypes.ObjectId],
 });
 
 export const Teacher: Model<ITeacherModel> = model<ITeacherModel>("Teacher", TeacherSchema);

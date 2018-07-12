@@ -1,13 +1,13 @@
 import { Router, Request, Response } from 'express';
 import { IUserModel } from '../models/user.model';
-import { IUser } from '../interfaces/user';
+import { IUser } from '../library/users/users';
 import { createUser, getUserByEmail } from '../library/users/users';
 import { comparePasswords, createToken } from '../library/authentication/authentication';
 
 export let userRouter = Router();
 
 userRouter.post('/signup', (postRequest: Request, postResponse: Response): void => {
-  const newUser = userFromRequest(postRequest);
+  const newUser: IUser = userFromRequest(postRequest);
   return createUser(newUser, (errors: Error[], _user: IUserModel) => {
     if (errors) {
       return postResponse.status(401).json({
