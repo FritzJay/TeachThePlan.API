@@ -28,6 +28,7 @@ export const createClass = (classParams: IClass, userID: string, callback: Callb
     } else {
       addClassToTeacher(cls._id, userID, (error, _teacher: ITeacherModel) => {
         if (error) {
+          cls.remove();
           callback(error, null);
         } else {
           callback(null, cls)

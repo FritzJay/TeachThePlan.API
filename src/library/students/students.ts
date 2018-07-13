@@ -31,6 +31,7 @@ export const createStudent = (studentParams: IStudent, classCode: string, callba
     } else {
       addStudentToClass(student._id, classCode, (errors: Error[], cls: IClassModel) => {
         if (errors) {
+          student.remove();
           callback(errors, null);
         } else {
           callback(null, cls);

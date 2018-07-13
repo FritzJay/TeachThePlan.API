@@ -29,6 +29,7 @@ export const createTeacher = (teacherParams: ITeacher, schoolName: string, callb
     } else {
       addTeacherToSchool(teacher, schoolName, (errors: Error[], _school: ISchoolModel) =>{
         if (errors) {
+          teacher.remove();
           callback(errors, null);
         } else {
           callback(null, teacher);
