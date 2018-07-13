@@ -79,7 +79,7 @@ export const gradeTest = (test: ITest, callback: Callback): void => {
 export const submitTest = (test: ITest, callback: Callback): void => {
   if (test.userID) {
     new Test({
-      studentID: test.userID,
+      userID: test.userID,
       duration: test.duration,
       start: test.start,
       end: test.end,
@@ -92,6 +92,8 @@ export const submitTest = (test: ITest, callback: Callback): void => {
     .catch((saveError: Error) => {
       callback([saveError], null);
     });
+  } else {
+    callback([new Error('Unable to save test to database because there was no user assigned')], null);
   }
 }
 
