@@ -77,30 +77,22 @@ export const gradeTest = (test: ITest, callback: Callback): void => {
 }
 
 export const submitTest = (test: ITest, callback: Callback): void => {
-  new Test({...test})
-  .save((newTest: ITestModel) => {
-    callback(null, newTest);
-  })
-  .catch((saveError: Error) => {
-    callback([saveError], null);
-  });
-}
-
-export const createQuestions = (operator: string, number: number, questions: number, randomQuestions: number): IQuestion[] => {
-  let formattedQuestions: IQuestion[] = [];
-  let questionsIndex;
-  let secondNumberIndex = 0;
-  for (questionsIndex = 0; questionsIndex < questions; questionsIndex++) {
-    formattedQuestions.push(createFormattedQuestion(operator, number, secondNumberIndex));
-    secondNumberIndex = incrementOrResetAt(secondNumberIndex, MAX_NUMBER);
+  if (test.studentID) {
+    new Test({
+      studentID: test.studentID,
+      duration: test.duration,
+      start: test.start,
+      end: test.end,
+      questions: test.questions,
+    })
+    .save()
+    .then((newTest: ITestModel) => {
+      callback(null, newTest);
+    })
+    .catch((saveError: Error) => {
+      callback([saveError], null);
+    });
   }
-  let randomIndex;
-  for (randomIndex = 0; randomIndex < randomQuestions; randomIndex++) {
-    const randomNumberBetweenZeroAndNumber = (Math.random() * (number + 1) | 0);
-    const randomNumberBetweenZeroAndTwenty = (Math.random() * (MAX_NUMBER + 1) | 0);
-    formattedQuestions.push(createFormattedQuestion(operator, randomNumberBetweenZeroAndNumber, randomNumberBetweenZeroAndTwenty));
-  }
-  return formattedQuestions
 }
 
 const validateNewTestArguments = (params: ITestParameters, callback: Callback): Error[] => {
@@ -121,6 +113,23 @@ const validateNewTestArguments = (params: ITestParameters, callback: Callback): 
     errors.push(new TestArgumentError('duration', params.duration, 'Must be greater than 0'));
   }
   return errors;
+}
+
+const createQuestions = (operator: string, number: number, questions: number, randomQuestions: number): IQuestion[] => {
+  let formattedQuestions: IQuestion[] = [];
+  let questionsIndex;
+  let secondNumberIndex = 0;
+  for (questionsIndex = 0; questionsIndex < questions; questionsIndex++) {
+    formattedQuestions.push(createFormattedQuestion(operator, number, secondNumberIndex));
+    secondNumberIndex = incrementOrResetAt(secondNumberIndex, MAX_NUMBER);
+  }
+  let randomIndex;
+  for (randomIndex = 0; randomIndex < randomQuestions; randomIndex++) {
+    const randomNumberBetweenZeroAndNumber = (Math.random() * (number + 1) | 0);
+    const randomNumberBetweenZeroAndMax = (Math.random() * (MAX_NUMBER + 1) | 0);
+    formattedQuestions.push(createFormattedQuestion(operator, randomNumberBetweenZeroAndNumber, randomNumberBetweenZeroAndMax));
+  }
+  return formattedQuestions
 }
 
 const setCorrectAnswers = (test: ITest): number => {
