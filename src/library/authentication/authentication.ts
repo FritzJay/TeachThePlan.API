@@ -2,6 +2,8 @@ import { compareSync } from 'bcrypt';
 import { sign, decode } from 'jsonwebtoken'
 import { IUserModel } from '../../models/user.model';
 import * as config from '../../../config';
+import { Callback } from '../common';
+import { getUserFromToken } from '../users/users';
 
 export const createToken = (user: IUserModel) => {
   return sign({
@@ -20,4 +22,15 @@ export const decodeToken = (token: string): string | { [key: string]: any } => {
 
 export const comparePasswords = (raw: string, hash: string): boolean => {
   return compareSync(raw, hash);
+}
+
+export const authorizeUser = (token: string, _auth_type: string, callback: Callback) => {
+  getUserFromToken(token, (errors: Error[], user) => {
+    if (errors) {
+      callback(errors, null);
+    } else {
+      // TODO: Authorize stuff
+      callback(null, user);
+    }
+  });
 }
