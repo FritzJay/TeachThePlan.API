@@ -1,4 +1,4 @@
-import { Document, Schema, Model, model } from 'mongoose';
+import { Document, Schema, SchemaTypes, Model, model } from 'mongoose';
 import { ITest, IQuestion } from '../library/tests/tests';
 
 export interface IQuestionModel extends IQuestion, Document { }
@@ -12,6 +12,7 @@ const QuestionSchema: Schema = new Schema({
 
 export interface ITestModel extends ITest, Document { }
 export const TestSchema: Schema = new Schema({
+  studentID: SchemaTypes.ObjectId,
   duration: Number,
   start: Date,
   end: Date,

@@ -14,6 +14,7 @@ export interface IAvailableTests {
 }
 
 export interface ITest {
+  studentID?: string;
   duration?: number;
   start?: Date;
   end?: Date;
