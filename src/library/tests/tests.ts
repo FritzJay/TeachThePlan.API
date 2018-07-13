@@ -14,7 +14,7 @@ export interface IAvailableTests {
 }
 
 export interface ITest {
-  studentID?: string;
+  userID?: string;
   duration?: number;
   start?: Date;
   end?: Date;
@@ -77,9 +77,9 @@ export const gradeTest = (test: ITest, callback: Callback): void => {
 }
 
 export const submitTest = (test: ITest, callback: Callback): void => {
-  if (test.studentID) {
+  if (test.userID) {
     new Test({
-      studentID: test.studentID,
+      studentID: test.userID,
       duration: test.duration,
       start: test.start,
       end: test.end,

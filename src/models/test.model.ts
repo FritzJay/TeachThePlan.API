@@ -12,7 +12,7 @@ const QuestionSchema: Schema = new Schema({
 
 export interface ITestModel extends ITest, Document { }
 export const TestSchema: Schema = new Schema({
-  studentID: SchemaTypes.ObjectId,
+  userID: SchemaTypes.ObjectId,
   duration: Number,
   start: Date,
   end: Date,

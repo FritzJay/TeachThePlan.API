@@ -51,13 +51,14 @@ testsRouter.post('/new', (postRequest: Request, postResponse: Response): void =>
 });
 
 testsRouter.post('/grade', (postRequest: Request, postResponse: Response): void => {
-  getUserFromToken(postRequest.headers.authorization, (errors, _user) => {
+  getUserFromToken(postRequest.headers.authorization, (errors, user) => {
     if (errors) {
       return postResponse.status(401).json({
         error: errors.toString()
       });
     } else {
       const test: ITest = testFromRequest(postRequest);
+      test.userID = user._id
       gradeTest(test, (errors, test: ITest) => {
         if (errors) {
           return postResponse.status(500).json({
