@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { IClass, createClass } from '../library/classes/classes';
-import { getUserFromToken } from '../library/users/users';
+import { authorizeUser } from '../library/authentication/authentication';
 
 export let classesRouter = Router();
 
@@ -15,21 +15,21 @@ export let classesRouter = Router();
     studentIDs?
   }
 */
-classesRouter.post('/create', (postRequest: Request, postResponse: Response) => {
-  getUserFromToken(postRequest.headers.authorization, (errors, user) => {
+classesRouter.post('/create', (request: Request, response: Response) => {
+  authorizeUser(request.headers.authorization, 'TODO', (errors, user) => {
     if (errors) {
-      return postResponse.status(401).json({
+      return response.status(401).json({
         error: errors.toString()
       });
     } else {
-      const newClass: IClass = classFromRequest(postRequest);
+      const newClass: IClass = classFromRequest(request);
       createClass(newClass, user._id, (errors: Error[], cls: IClass) => {
         if (errors) {
-          return postResponse.status(401).json({
+          return response.status(401).json({
             error: errors.toString()
           });
         } else {
-          return postResponse.status(200).json({
+          return response.status(200).json({
             success: 'Class was successfully created!',
             class: cls,
           });

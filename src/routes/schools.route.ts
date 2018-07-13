@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { ISchool, createSchool, getSchoolByName } from '../library/schools/schools';
-import { getUserFromToken } from '../library/users/users';
+import { authorizeUser } from '../library/authentication/authentication';
 
 export let schoolsRouter = Router();
 
@@ -15,21 +15,21 @@ export let schoolsRouter = Router();
     teachersIDs?
   }
 */
-schoolsRouter.post('/create', (postRequest: Request, postResponse: Response): void => {
-  getUserFromToken(postRequest.headers.authorization, (errors, _user) => {
+schoolsRouter.post('/create', (request: Request, response: Response): void => {
+  authorizeUser(request.headers.authorization, 'Type', (errors, _user) => {
     if (errors) {
-      return postResponse.status(401).json({
+      return response.status(401).json({
         error: errors.toString()
       });
     } else {
-      const newSchool: ISchool = schoolFromRequest(postRequest);
+      const newSchool: ISchool = schoolFromRequest(request);
       createSchool(newSchool, (errors, school: ISchool) => {
         if (errors) {
-          return postResponse.status(401).json({
+          return response.status(401).json({
             error: errors.toString()
           });
         } else {
-          return postResponse.status(200).json({
+          return response.status(200).json({
             success: 'School was successfully created!',
             school: school
           });
@@ -48,20 +48,20 @@ schoolsRouter.post('/create', (postRequest: Request, postResponse: Response): vo
     name
   }
 */
-schoolsRouter.get('/getByName', (postRequest: Request, postResponse: Response) => {
-  getUserFromToken(postRequest.headers.authorization, (errors, _user) => {
+schoolsRouter.get('/getByName', (request: Request, response: Response) => {
+  authorizeUser(request.headers.authorization, 'Type', (errors, _user) => {
     if (errors) {
-      return postResponse.status(401).json({
+      return response.status(401).json({
         error: errors.toString()
       });
     } else {
-      getSchoolByName(postRequest.body.name, (errors, school: ISchool) => {
+      getSchoolByName(request.body.name, (errors, school: ISchool) => {
         if (errors) {
-          return postResponse.status(401).json({
+          return response.status(401).json({
             error: errors.toString()
           });
         } else {
-          return postResponse.status(401).json({
+          return response.status(401).json({
             success: 'School was found!',
             school: school,
           });

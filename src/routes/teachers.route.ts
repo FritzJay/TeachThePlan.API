@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { ITeacher, createTeacher } from '../library/teachers/teachers';
-import { getUserFromToken } from '../library/users/users';
+import { authorizeUser } from '../library/authentication/authentication';
 
 export let teachersRouter = Router();
 
@@ -17,21 +17,21 @@ export let teachersRouter = Router();
     classIDs?
   }
 */
-teachersRouter.post('/create', (postRequest: Request, postResponse: Response) => {
-  getUserFromToken(postRequest.headers.authorization, (errors, user) => {
+teachersRouter.post('/create', (request: Request, response: Response) => {
+  authorizeUser(request.headers.authorization, 'Type', (errors, user) => {
     if (errors) {
-      return postResponse.status(401).json({
+      return response.status(401).json({
         error: errors.toString()
       });
     } else {
-      const newTeacher: ITeacher = teacherFromRequest(postRequest, user._id);
-      createTeacher(newTeacher, postRequest.body.schoolName, (errors, teacher: ITeacher) => {
+      const newTeacher: ITeacher = teacherFromRequest(request, user._id);
+      createTeacher(newTeacher, request.body.schoolName, (errors, teacher: ITeacher) => {
         if (errors) {
-          return postResponse.status(401).json({
+          return response.status(401).json({
             error: errors.toString()
           });
         } else {
-          return postResponse.status(200).json({
+          return response.status(200).json({
             success: 'Teacher was successfully created!',
             teacher: teacher
           });
