@@ -2,7 +2,7 @@ import { hashSync } from 'bcrypt';
 import { Types } from 'mongoose';
 import { Callback } from '../common';
 import { User, IUserModel } from '../../models/user.model';
-import { decodeToken } from '../authentication/authentication';
+import { verifyToken } from '../authentication/authentication';
 
 export interface IUser {
   email?: string;
@@ -26,7 +26,7 @@ export const createUser = (userParams: IUser, callback: Callback): void => {
 }
 
 export const getUserFromToken = (token: string, callback: Callback): void => {
-  const decodedToken = decodeToken(token);
+  const decodedToken = verifyToken(token);
   const email = decodedToken['email'];
   getUserByEmail(email, (user: IUserModel) => {
     callback(user);
