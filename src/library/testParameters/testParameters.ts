@@ -15,14 +15,11 @@ export const createTestParameters = (params: ITestParameters, callback: Callback
   new TestParameters({...params})
   .save()
   .then((newTestParams: ITestParametersModel) => {
-    callback(null, newTestParams);
-  })
-  .catch((saveError: Error) => {
-    callback([saveError], null);
+    callback(newTestParams);
   });
 }
 
-export const getTestParameters = (user: IUser, callback): void => {
+export const getTestParameters = (_userID: string, callback): void => {
   const testParameters = {
     operator: 'sample operator',
     number: 5,
