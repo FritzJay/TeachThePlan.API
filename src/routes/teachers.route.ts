@@ -18,27 +18,21 @@ export let teachersRouter = Router();
   }
 */
 teachersRouter.post('/create', (request: Request, response: Response) => {
-  authorizeUser(request.headers.authorization, 'Type', (errors, user) => {
-    if (errors) {
-      return response.status(401).json({
-        error: errors.toString()
-      });
-    } else {
+  try {
+    authorizeUser(request.headers.authorization, 'Type', (user) => {
       const newTeacher: ITeacher = teacherFromRequest(request, user._id);
-      createTeacher(newTeacher, request.body.schoolName, (errors, teacher: ITeacher) => {
-        if (errors) {
-          return response.status(401).json({
-            error: errors.toString()
-          });
-        } else {
-          return response.status(200).json({
-            success: 'Teacher was successfully created!',
-            teacher: teacher
-          });
-        }
+      createTeacher(newTeacher, request.body.schoolName, (teacher: ITeacher) => {
+        response.status(200).json({
+          success: 'Teacher was successfully created!',
+          teacher: teacher
+        });
       });
-    }
-  });
+    });
+  } catch (error) {
+    response.status(401).json({
+      error: error
+    });
+  }
 });
 
 const teacherFromRequest = (request: Request, userID: string): ITeacher => {

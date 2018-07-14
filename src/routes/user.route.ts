@@ -25,18 +25,18 @@ userRouter.post('/create', (request: Request, response: Response): void => {
     firstName: request.body.firstName,
     lastName: request.body.lastName
   });
-  return createUser(newUser, (errors: Error[], user: IUserModel) => {
-    if (errors) {
-      return response.status(401).json({
-        error: errors
-      });
-    } else {
-      return response.status(200).json({
+  try {
+    createUser(newUser, (user: IUserModel) => {
+      response.status(200).json({
         success: 'User successfully created!',
         user: user
       }); 
-    }
-  });
+    });
+  } catch (error) {
+    response.status(401).json({
+      error: error
+    });
+  }
 });
 
 /*
@@ -54,16 +54,12 @@ userRouter.post('/signin', function(request: Request, response: Response): void 
     email: request.body.email,
     password: request.body.password,
   }
-  return getUserByEmail(newSession.email, (errors: Error[], user: IUserModel) => {
-    if (errors) {
-      return response.status(401).json({
-        error: errors
-      });
-    } else {
+  try {
+    getUserByEmail(newSession.email, (user: IUserModel) => {
       const passwordMatch = comparePasswords(newSession.password, user.password)
       if (passwordMatch) {
         const token = createToken(user);
-        return response.status(200).json({
+        response.status(200).json({
           success: "Authenticated",
           token: token
         });
@@ -72,6 +68,10 @@ userRouter.post('/signin', function(request: Request, response: Response): void 
           error: "Invalid credentials provided."
         });
       }
-    }
-  });
+    });
+  } catch (error) {
+    response.status(401).json({
+      error: error
+    });
+  }
 });

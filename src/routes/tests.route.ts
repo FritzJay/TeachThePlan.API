@@ -12,26 +12,19 @@ export let testsRouter = Router();
   Authorization: TODO
 */
 testsRouter.get('/available', (request: Request, response: Response): void => {
-  authorizeUser(request.headers.authorization, 'Type', (errors, user) => {
-    if (errors) {
-      return response.status(401).json({
-        error: errors.toString()
+  try {
+    authorizeUser(request.headers.authorization, 'Type', (user) => {
+      getAvailableTests(user, (availableTests: IAvailableTests) => {
+        response.status(200).json({
+          availableTests: availableTests
+        });
       });
-    }
-    else {
-      return getAvailableTests(user, (errors: Error[], availableTests: IAvailableTests) => {
-        if (errors) {
-          return response.status(401).json({
-            error: errors.toString()
-          });
-        } else {
-          return response.status(200).json({
-            availableTests: availableTests
-          });
-        }
-      });
-    }
-  });
+    });
+  } catch (error) {
+    response.status(401).json({
+      error: error
+    });
+  }
 });
 
 /*
@@ -48,12 +41,8 @@ testsRouter.get('/available', (request: Request, response: Response): void => {
   }
 */
 testsRouter.post('/new', (request: Request, response: Response): void => {
-  authorizeUser(request.headers.authorization, 'Type', (errors, _user) => {
-    if (errors) {
-      return response.status(401).json({
-        error: errors.toString()
-      });
-    } else {
+  try {
+    authorizeUser(request.headers.authorization, 'Type', (user) => {
       const testParameters: ITestParameters = {
         operator: request.body.operator,
         number: request.body.number,
@@ -61,17 +50,15 @@ testsRouter.post('/new', (request: Request, response: Response): void => {
         randomQuestions: request.body.randomQuestions,
         duration: request.body.duration,
       };
-      newTest(testParameters, (errors, test: ITest) => {
-        if (errors) {
-          return response.status(401).json({
-            error: errors.toString()
-          });
-        } else {
-          return response.status(200).json(test);
-        }
+      newTest(testParameters, user._id, (test: ITest) => {
+        response.status(200).json(test);
       });
-    }
-  });
+    });
+  } catch (error) {
+    response.status(401).json({
+      error: error
+    });
+  }
 });
 
 /*
@@ -87,12 +74,8 @@ testsRouter.post('/new', (request: Request, response: Response): void => {
   }
 */
 testsRouter.post('/grade', (request: Request, response: Response): void => {
-  authorizeUser(request.headers.authorization, 'Type', (errors, user) => {
-    if (errors) {
-      return response.status(401).json({
-        error: errors.toString()
-      });
-    } else {
+  try {
+    authorizeUser(request.headers.authorization, 'Type', (user) => {
       const test: ITest = {
         userID: user.id,
         duration: request.body.duration,
@@ -100,25 +83,23 @@ testsRouter.post('/grade', (request: Request, response: Response): void => {
         end: new Date(request.body.start),
         questions: getQuestionsFromRequest(request),
       }
-      gradeTest(test, (errors, testResults: ITest) => {
-        if (errors) {
-          return response.status(500).json({
-            error: errors.toString()
+      try {
+        gradeTest(test, (testResults: ITest) => {
+          submitTest(test, (_submit: ITest) => {
+            return response.status(200).json(testResults);
           });
-        } else {
-          submitTest(test, (errors, _submit: ITest) => {
-            if (errors) {
-              return response.status(500).json({
-                error: errors.toString()
-              });
-            } else {
-              return response.status(200).json(testResults);
-            }
-          });
-        }
-      });
-    }
-  });
+        });
+      } catch (error) {
+        response.status(500).json({
+          error: error
+        });
+      }
+    });
+  } catch (error) {
+    response.status(401).json({
+      error: error
+    });
+  }
 });
 
 const getQuestionsFromRequest = (request: Request): IQuestion[] => {
