@@ -18,12 +18,11 @@ describe('getAvailableTests', () => {
       firstName: "test",
       lastName: "user"
     };
-    const callback: Callback = (error, availableTests: ITestParameters) => {
+    const callback: Callback = (availableTests: ITestParameters) => {
       expect(availableTests).toEqual({
         operators: Tests.OPERATORS,
         numbers: Tests.NUMBERS,
       });
-      expect(error).not.toBeNull;
       done();
     };
     Tests.getAvailableTests(user, callback);
@@ -37,26 +36,21 @@ describe('newTest', () => {
   });
 
   it('returns a test when given valid arguments', (done) => {
-    const callback: Callback = (error, test: ITest) => {
-      expect(error).toBeNull;
+    const callback: Callback = (test: ITest) => {
       expect(test).not.toBeNull;
       done();
     };
     Tests.newTest(testParameters, callback);
   });
 
-  it('returns an error for each invalid argument', (done) => {
+  it('throws an error for each invalid argument', () => {
     testParameters.operator = '%';
     testParameters.number = -5;
     testParameters.questions = 0;
     testParameters.randomQuestions = -1;
     testParameters.duration = -75;
-    const callback: Callback = (error, test) => {
-      expect(error.length).toBe(5);
-      expect(test).toBeNull;
-      done();
-    }
-    Tests.newTest(testParameters, callback);
+
+    expect(() => { Tests.newTest(testParameters, () => {}) }).toThrow();
   });
 });
 
@@ -107,8 +101,7 @@ describe('gradeTest', () => {
     }
   });
   it('returns the total number of questions', (done) => {
-    const callback: Callback = (error, testResults: ITestResults) => {
-      expect(error).toBeNull;
+    const callback: Callback = (testResults: ITestResults) => {
       expect(testResults.total).toEqual(questions.length);
       done();
     }
@@ -116,8 +109,7 @@ describe('gradeTest', () => {
   });
 
   it('returns needed as 80% of the total number of questions', (done) => {
-    const callback: Callback = (error, testResults: ITestResults) => {
-      expect(error).toBeNull;
+    const callback: Callback = (testResults: ITestResults) => {
       expect(testResults.needed).toEqual(Math.round(questions.length * 0.8));
       done();
     }
@@ -125,8 +117,7 @@ describe('gradeTest', () => {
   });
 
   it('returns a count of the correctly answered questions', (done) => {
-    const callback: Callback = (error, testResults: ITestResults) => {
-      expect(error).toBeNull;
+    const callback: Callback = (testResults: ITestResults) => {
       expect(testResults.correct).toEqual(3);
       done();
     }
@@ -135,8 +126,7 @@ describe('gradeTest', () => {
 
   it('returns one of the incorrectly answered questions as incorrect', (done) => {
     const incorrectlyAnsweredQuestions = questions.slice(3);
-    const callback: Callback = (error, testResults: ITestResults) => {
-      expect(error).toBeNull;
+    const callback: Callback = (testResults: ITestResults) => {
       expect(incorrectlyAnsweredQuestions.includes(testResults.incorrect)).toBe(true);
       done();
     }
@@ -144,8 +134,7 @@ describe('gradeTest', () => {
   });
 
   it('returns the question with the minimum difference between start and stop as the quickest answered', (done) => {
-    const callback: Callback = (error, testResults: ITestResults) => {
-      expect(error).toBeNull;
+    const callback: Callback = (testResults: ITestResults) => {
       expect(testResults.quickest).toEqual(questions[0]);
       done();
     }
@@ -153,8 +142,7 @@ describe('gradeTest', () => {
   });
 
   it('sets the correct answer of each question', (done) => {
-    const callback: Callback = (error, testResults: ITestResults) => {
-      expect(error).toBeNull;
+    const callback: Callback = (testResults: ITestResults) => {
       expect(testResults).not.toBeNull;
       for (let question in test.questions) {
         expect(question).not.toBeNull;

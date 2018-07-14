@@ -3,7 +3,7 @@ import { ITestParameters } from '../testParameters/testParameters';
 import { Callback } from '../common';
 import { Class, IClassModel } from '../../models/class.model';
 import { ITeacherModel } from '../../models/teacher.model';
-import { addClassToTeacher, ITeacher } from '../teachers/teachers';
+import { addClassToTeacher } from '../teachers/teachers';
 
 export interface IClass {
   classCode: string,
@@ -12,11 +12,6 @@ export interface IClass {
 }
 
 export const createClass = (classParams: IClass, userID: string, callback: Callback): void => {
-  const argumentErrors: Error[] = validateCreateClassParams(classParams);
-  if (argumentErrors.length > 0) {
-    callback(argumentErrors, null);
-    return;
-  }
   const newClass = new Class({
     classCode: classParams.classCode,
     testParameters: classParams.testParameters,
@@ -24,16 +19,15 @@ export const createClass = (classParams: IClass, userID: string, callback: Callb
   });
   newClass.save((error: Error, cls: IClassModel) => {
     if (error) {
-      callback([error], null);
-    } else {
-      addClassToTeacher(cls._id, userID, (error, _teacher: ITeacherModel) => {
-        if (error) {
-          cls.remove();
-          callback(error, null);
-        } else {
-          callback(null, cls)
-        }
+      throw error;
+    }
+    try {
+      addClassToTeacher(cls._id, userID, (_teacher: ITeacherModel) => {
+        callback(cls)
       });
+    } catch (error) {
+      cls.remove();
+      throw error;
     }
   });
 }
@@ -42,38 +36,21 @@ export const getClassByClassCode = (classCode: string, callback: Callback): void
   Class.findOne({classCode: classCode})
   .exec()
   .then((cls: IClass) => {
-    if (cls) {
-      callback(null, cls);
-    } else {
-      callback([new Error('Unable to find class')], null);
+    if (!cls) {
+      throw 'Unable to find class';
     }
-  })
-  .catch((error: Error) => {
-    callback([error], null);
+    callback(cls);
   });
 }
 
 export const addStudentToClass = (studentID: string, classCode: string, callback: Callback): void => {
-  getClassByClassCode(classCode, (errors: Error[], cls: IClassModel) => {
-    if (errors) {
-      callback(errors, null);
-    } else {
-      if (cls) {
-        callback([new Error('Unable to find class.')], null);
-      } else {
-        cls.studentIDs.push(studentID);
-        cls.save((error: Error, cls: IClassModel) => {
-          if (error) {
-            callback([error], null);
-          } else {
-            callback(null, cls);
-          }
-        });
+  getClassByClassCode(classCode, (cls: IClassModel) => {
+    cls.studentIDs.push(studentID);
+    cls.save((error: Error, cls: IClassModel) => {
+      if (error) {
+        throw error;
       }
-    }
+      callback(cls);
+    });
   });
-}
-
-const validateCreateClassParams = (classParams: IClass): Error[] => {
-  return [];
 }

@@ -4,7 +4,13 @@ import { TestParametersSchema } from './testParameters.model';
 
 export interface ISchoolModel extends ISchool, Document { }
 const SchoolSchema: Schema = new Schema({
-  name: String,
+  name: { 
+    type: String,
+    unique: true,
+    required: true,
+    trim: true,
+    maxLength: 50
+   },
   testParameters: TestParametersSchema,
   teacherIDs: [SchemaTypes.ObjectId]
 });

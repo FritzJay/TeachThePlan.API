@@ -1,4 +1,4 @@
-import { Callback, TestArgumentError } from "../common";
+import { Callback, ArgumentError } from "../common";
 import { IUser } from "../users/users";
 import { ITestParameters } from "../testParameters/testParameters";
 import { Test, ITestModel } from "../../models/test.model";
@@ -43,15 +43,11 @@ export const getAvailableTests = (_user: IUser, callback: Callback): void => {
     operators: OPERATORS,
     numbers: NUMBERS
   }
-  callback(null, availableTests);
+  callback(availableTests);
 }
 
 export const newTest = (params: ITestParameters, callback: Callback): void => {
-  const argumentsErrors: Error[] = validateNewTestArguments(params, callback);
-  if (argumentsErrors.length > 0) {
-    callback(argumentsErrors, null);
-    return
-  }
+  validateNewTestArguments(params);
   const questions: IQuestion[] = createQuestions(params.operator, params.number, params.questions, params.randomQuestions);
   const test: ITest = {
     duration: params.duration,
@@ -59,7 +55,7 @@ export const newTest = (params: ITestParameters, callback: Callback): void => {
     end: null,
     questions: questions,
   }
-  callback(null, test);
+  callback(test);
 }
 
 export const gradeTest = (test: ITest, callback: Callback): void => {
@@ -73,51 +69,49 @@ export const gradeTest = (test: ITest, callback: Callback): void => {
     incorrect: incorrectQuestion,
     quickest: quickestQuestion,
   }
-  callback(null, testResults);
+  callback(testResults);
 }
 
 export const submitTest = (test: ITest, callback: Callback): void => {
-  if (test.userID) {
-    new Test({
-      userID: test.userID,
-      duration: test.duration,
-      start: test.start,
-      end: test.end,
-      questions: test.questions,
-    })
-    .save()
-    .then((newTest: ITestModel) => {
-      callback(null, newTest);
-    })
-    .catch((saveError: Error) => {
-      callback([saveError], null);
-    });
-  } else {
-    callback([new Error('Unable to save test to database because there was no user assigned')], null);
+  if (!test.userID) {
+    throw 'Unable to save test to database because there was no user assigned';
   }
+  new Test({
+    userID: test.userID,
+    duration: test.duration,
+    start: test.start,
+    end: test.end,
+    questions: test.questions,
+  })
+  .save()
+  .then((newTest: ITestModel) => {
+    callback(newTest);
+  });
 }
 
-const validateNewTestArguments = (params: ITestParameters, callback: Callback): Error[] => {
-  let errors: TestArgumentError[] = [];
+const validateNewTestArguments = (params: ITestParameters): void => {
+  let errors: ArgumentError[] = [];
   if (!OPERATORS.includes(params.operator)) {
-    errors.push(new TestArgumentError('operator', params.operator, `Must be one of ${OPERATORS}.`));
+    errors.push(new ArgumentError('operator', params.operator, `Must be one of ${OPERATORS}.`));
   }
   if (params.number < 0 || params.number > 20) {
-    errors.push(new TestArgumentError('number', params.number, 'Must be in range 0-20'));
+    errors.push(new ArgumentError('number', params.number, 'Must be in range 0-20'));
   }
   if (params.questions < 1) {
-    errors.push(new TestArgumentError('questions', params.questions, 'Must be greater than 1'));
+    errors.push(new ArgumentError('questions', params.questions, 'Must be greater than 1'));
   }
   if (params.randomQuestions < 0) {
-    errors.push(new TestArgumentError('randomQuestions', params.randomQuestions, 'Must be greater than 0'));
+    errors.push(new ArgumentError('randomQuestions', params.randomQuestions, 'Must be greater than 0'));
   }
   if (params.duration < 0) {
-    errors.push(new TestArgumentError('duration', params.duration, 'Must be greater than 0'));
+    errors.push(new ArgumentError('duration', params.duration, 'Must be greater than 0'));
   }
-  return errors;
+  if (errors.length > 0) {
+    throw errors;
+  }
 }
 
-const createQuestions = (operator: string, number: number, questions: number, randomQuestions: number): IQuestion[] => {
+export const createQuestions = (operator: string, number: number, questions: number, randomQuestions: number): IQuestion[] => {
   let formattedQuestions: IQuestion[] = [];
   let questionsIndex;
   let secondNumberIndex = 0;
@@ -134,7 +128,7 @@ const createQuestions = (operator: string, number: number, questions: number, ra
   return formattedQuestions
 }
 
-const setCorrectAnswers = (test: ITest): number => {
+export const setCorrectAnswers = (test: ITest): number => {
   let numberOfCorrectAnswers = 0;
   for (let question of test.questions) {
     question.correctAnswer = mathjs.eval(question.question);

@@ -1,4 +1,4 @@
-export class TestArgumentError extends Error {
+export class ArgumentError extends Error {
   constructor(name: string, value: any, additionalMessage?: string) {
     super();
     this.message = `Invalid value for argument \`${name}\`: "${value}"`;
@@ -9,5 +9,5 @@ export class TestArgumentError extends Error {
 }
 
 export interface Callback {
-  (errors?: Error[], result?: any): any;
+  (result?: any): any;
 }

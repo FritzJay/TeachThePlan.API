@@ -14,11 +14,6 @@ export interface IStudent {
 }
 
 export const createStudent = (studentParams: IStudent, classCode: string, callback: Callback): void => {
-  const argumentErrors: Error[] = validateCreateStudentParams(studentParams);
-  if (argumentErrors.length > 0) {
-    callback(argumentErrors, null);
-    return;
-  }
   const newStudent = new Student({
     user: studentParams.user,
     displayName: studentParams.displayName,
@@ -27,23 +22,15 @@ export const createStudent = (studentParams: IStudent, classCode: string, callba
   });
   newStudent.save((error: Error, student: IStudentModel) => {
     if (error) {
-      callback([error], null);
-    } else {
-      addStudentToClass(student._id, classCode, (errors: Error[], cls: IClassModel) => {
-        if (errors) {
-          student.remove();
-          callback(errors, null);
-        } else {
-          callback(null, cls);
-        }
+      throw error;
+    }
+    try {
+      addStudentToClass(student._id, classCode, (cls: IClassModel) => {
+        callback(cls);
       });
+    } catch (error) {
+      student.remove();
+      throw error;
     }
   });
-}
-
-export const getStudentByDisplayNameAndClassCode = (displayName: string, classCode: string, callback: Callback): void => {
-}
-
-const validateCreateStudentParams = (studentParams: IStudent): Error[] => {
-  return [];
 }

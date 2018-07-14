@@ -12,11 +12,6 @@ export interface ITeacher {
 }
 
 export const createTeacher = (teacherParams: ITeacher, schoolName: string, callback: Callback): void => {
-  const argumentErrors = validateTeacherParams(teacherParams);
-  if (argumentErrors.length > 0) {
-    callback(argumentErrors, null);
-    return;
-  }
   const newTeacher = new Teacher({
     user: teacherParams.user,
     displayName: teacherParams.displayName,
@@ -25,16 +20,15 @@ export const createTeacher = (teacherParams: ITeacher, schoolName: string, callb
   });
   newTeacher.save((error: Error, teacher: ITeacherModel) => {
     if (error) {
-      callback([error], null);
-    } else {
-      addTeacherToSchool(teacher, schoolName, (errors: Error[], _school: ISchoolModel) =>{
-        if (errors) {
-          teacher.remove();
-          callback(errors, null);
-        } else {
-          callback(null, teacher);
-        }
+      throw error;
+    }
+    try {
+      addTeacherToSchool(teacher, schoolName, (_school: ISchoolModel) =>{
+        callback(teacher);
       });
+    } catch (error) {
+      teacher.remove();
+      throw error;
     }
   });
 }
@@ -43,14 +37,10 @@ export const getTeacherByID = (teacherID: string, callback: Callback): void => {
   Teacher.findById(teacherID)
   .exec()
   .then((teacher: ITeacherModel) => {
-    if (teacher) {
-      callback(null, teacher);
-    } else {
-      callback([new Error('Unable to find teacher')], null);
+    if (!teacher) {
+      throw 'Unable to find teacher';
     }
-  })
-  .catch((error: Error) => {
-    callback([error], null);
+    callback(teacher);
   });
 }
 
@@ -58,34 +48,21 @@ export const getTeacherByUserID = (userID: string, callback: Callback): void => 
   Teacher.findOne({ user: userID })
   .exec()
   .then((teacher: ITeacherModel) => {
-    callback(null, teacher);
-  })
-  .catch((error: Error) => {
-    callback([error], null);
+    if (!teacher) {
+      throw 'Unable to find teacher';
+    }
+    callback(teacher);
   });
 }
 
 export const addClassToTeacher = (classID: string, userID: string, callback: Callback): void => {
-  getTeacherByUserID(userID, (errors: Error[], teacher: ITeacherModel) => {
-    if (errors) {
-      callback(errors, null);
-    } else {
-      if (!teacher) {
-        callback([new Error('Unable to find teacher')], null)
-      } else {
-        teacher.classIDs.push(classID);
-        teacher.save((error: Error, teacher: ITeacherModel) => {
-          if (error) {
-            callback([error], null);
-          } else {
-            callback(null, teacher);
-          }
-        });
+  getTeacherByUserID(userID, (teacher: ITeacherModel) => {
+    teacher.classIDs.push(classID);
+    teacher.save((error: Error, teacher: ITeacherModel) => {
+      if (error) {
+        throw error;
       }
-    }
+      callback(teacher);
+    });
   });
-}
-
-const validateTeacherParams = (teacherParams: ITeacher): Error[] => {
-  return [];
 }
