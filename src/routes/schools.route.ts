@@ -11,7 +11,6 @@ export let schoolsRouter = Router();
 
   Request.body: {
     name,
-    testParameters?,
     teachersIDs?
   }
 */
@@ -62,7 +61,6 @@ schoolsRouter.get('/getByName', (request: Request, response: Response) => {
 const schoolFromRequest = (request: Request): ISchool => {
   return {
     name: request.body.name,
-    testParameters: request.body.testParameters,
     teacherIDs: request.body.teachers
   }
 }

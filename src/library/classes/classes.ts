@@ -1,5 +1,4 @@
 import { IClass } from '../classes/classes';
-import { ITestParameters } from '../testParameters/testParameters';
 import { Callback } from '../common';
 import { Class, IClassModel } from '../../models/class.model';
 import { ITeacherModel } from '../../models/teacher.model';
@@ -7,14 +6,12 @@ import { addClassToTeacher } from '../teachers/teachers';
 
 export interface IClass {
   classCode: string,
-  testParameters?: ITestParameters,
   studentIDs?: string[],
 }
 
 export const createClass = (classParams: IClass, userID: string, callback: Callback): void => {
   const newClass = new Class({
     classCode: classParams.classCode,
-    testParameters: classParams.testParameters,
     studentIDs: classParams.studentIDs,
   });
   newClass.save((error: Error, cls: IClassModel) => {

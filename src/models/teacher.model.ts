@@ -1,12 +1,10 @@
 import { Document, Schema, Model, model, SchemaTypes } from 'mongoose';
 import { ITeacher } from '../library/teachers/teachers';
-import { TestParametersSchema } from './testParameters.model';
 
 export interface ITeacherModel extends ITeacher, Document { }
 export const TeacherSchema: Schema = new Schema({
   user: SchemaTypes.ObjectId,
   displayName: String,
-  testParameters: TestParametersSchema,
   classIDs: [SchemaTypes.ObjectId],
 });
 

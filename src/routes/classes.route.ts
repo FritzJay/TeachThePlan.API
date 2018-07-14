@@ -11,7 +11,6 @@ export let classesRouter = Router();
 
   Request.body {
     classCode,
-    testParameters?,
     studentIDs?
   }
 */
@@ -36,7 +35,6 @@ classesRouter.post('/create', (request: Request, response: Response) => {
 const classFromRequest = (request: Request): IClass => {
   return {
     classCode: request.body.classCode,
-    testParameters: request.body.testParameters,
     studentIDs: request.body.students,
   }
 }

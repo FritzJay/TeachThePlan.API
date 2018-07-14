@@ -1,18 +1,15 @@
-import { ITestParameters } from '../testParameters/testParameters';
 import { Callback } from '../common';
 import { School, ISchoolModel } from '../../models/school.model';
 import { ITeacherModel } from '../../models/teacher.model';
 
 export interface ISchool {
   name: string,
-  testParameters?: ITestParameters,
   teacherIDs?: string[],
 }
 
 export const createSchool = (schoolParams: ISchool, callback: Callback): void => {
   const school = new School({
     name: schoolParams.name,
-    testParameters: schoolParams.testParameters,
     teachers: schoolParams.teacherIDs,
   });
   school.save((error: Error) => {

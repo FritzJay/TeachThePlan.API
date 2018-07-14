@@ -1,4 +1,3 @@
-import { ITestParameters } from '../testParameters/testParameters';
 import { Callback } from '../common';
 import { Teacher, ITeacherModel } from '../../models/teacher.model';
 import { addTeacherToSchool } from '../schools/schools';
@@ -7,7 +6,6 @@ import { ISchoolModel } from '../../models/school.model';
 export interface ITeacher {
   user: string,
   displayName: string,
-  testParameters?: ITestParameters,
   classIDs: string[],
 }
 
@@ -15,7 +13,6 @@ export const createTeacher = (teacherParams: ITeacher, schoolName: string, callb
   const newTeacher = new Teacher({
     user: teacherParams.user,
     displayName: teacherParams.displayName,
-    testParameters: teacherParams.testParameters,
     classIDs: teacherParams.classIDs,
   });
   newTeacher.save((error: Error, teacher: ITeacherModel) => {

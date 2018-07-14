@@ -13,7 +13,6 @@ export let teachersRouter = Router();
     schoolName,
     user,
     displayName,
-    testParameters?,
     classIDs?
   }
 */
@@ -39,7 +38,6 @@ const teacherFromRequest = (request: Request, userID: string): ITeacher => {
   return {
     user: userID,
     displayName: request.body.displayName,
-    testParameters: request.body.testParameters,
     classIDs: request.body.classIDs
   }
 }

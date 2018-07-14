@@ -1,5 +1,4 @@
 import { Callback, ArgumentError } from "../common";
-import { IUser } from "../users/users";
 import { ITestParameters } from "../testParameters/testParameters";
 import { Test, ITestModel } from "../../models/test.model";
 import * as mathjs from "mathjs";
