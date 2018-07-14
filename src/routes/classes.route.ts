@@ -16,27 +16,21 @@ export let classesRouter = Router();
   }
 */
 classesRouter.post('/create', (request: Request, response: Response) => {
-  authorizeUser(request.headers.authorization, 'TODO', (errors, user) => {
-    if (errors) {
-      return response.status(401).json({
-        error: errors.toString()
-      });
-    } else {
+  try {
+    authorizeUser(request.headers.authorization, 'TODO', (user) => {
       const newClass: IClass = classFromRequest(request);
-      createClass(newClass, user._id, (errors: Error[], cls: IClass) => {
-        if (errors) {
-          return response.status(401).json({
-            error: errors.toString()
-          });
-        } else {
-          return response.status(200).json({
-            success: 'Class was successfully created!',
-            class: cls,
-          });
-        }
+      createClass(newClass, user._id, (cls: IClass) => {
+        return response.status(200).json({
+          success: 'Class was successfully created!',
+          class: cls,
+        });
       });
-    }
-  });
+    });
+  } catch (error) {
+    return response.status(401).json({
+      error: error
+    });
+  }
 });
 
 const classFromRequest = (request: Request): IClass => {

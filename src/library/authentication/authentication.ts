@@ -25,12 +25,8 @@ export const comparePasswords = (raw: string, hash: string): boolean => {
 }
 
 export const authorizeUser = (token: string, _auth_type: string, callback: Callback) => {
-  getUserFromToken(token, (errors: Error[], user) => {
-    if (errors) {
-      callback(errors, null);
-    } else {
-      // TODO: Authorize stuff
-      callback(null, user);
-    }
+  getUserFromToken(token, (user) => {
+    // TODO: Authorize stuff
+    callback(user);
   });
 }

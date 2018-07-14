@@ -16,27 +16,21 @@ export let schoolsRouter = Router();
   }
 */
 schoolsRouter.post('/create', (request: Request, response: Response): void => {
-  authorizeUser(request.headers.authorization, 'Type', (errors, _user) => {
-    if (errors) {
-      return response.status(401).json({
-        error: errors.toString()
-      });
-    } else {
+  try {
+    authorizeUser(request.headers.authorization, 'Type', (_user) => {
       const newSchool: ISchool = schoolFromRequest(request);
-      createSchool(newSchool, (errors, school: ISchool) => {
-        if (errors) {
-          return response.status(401).json({
-            error: errors.toString()
-          });
-        } else {
-          return response.status(200).json({
-            success: 'School was successfully created!',
-            school: school
-          });
-        }
+      createSchool(newSchool, (school: ISchool) => {
+        response.status(200).json({
+          success: 'School was successfully created!',
+          school: school
+        });
       });
-    }
-  });
+    });
+  } catch (error) {
+    response.status(401).json({
+      error: error
+    });
+  }
 });
 
 /*
@@ -49,26 +43,20 @@ schoolsRouter.post('/create', (request: Request, response: Response): void => {
   }
 */
 schoolsRouter.get('/getByName', (request: Request, response: Response) => {
-  authorizeUser(request.headers.authorization, 'Type', (errors, _user) => {
-    if (errors) {
-      return response.status(401).json({
-        error: errors.toString()
+  try {
+    authorizeUser(request.headers.authorization, 'Type', (_user) => {
+      getSchoolByName(request.body.name, (school: ISchool) => {
+        response.status(401).json({
+          success: 'School was found!',
+          school: school,
+        });
       });
-    } else {
-      getSchoolByName(request.body.name, (errors, school: ISchool) => {
-        if (errors) {
-          return response.status(401).json({
-            error: errors.toString()
-          });
-        } else {
-          return response.status(401).json({
-            success: 'School was found!',
-            school: school,
-          });
-        }
-      });
-    }
-  });
+    });
+  } catch (error) {
+    return response.status(401).json({
+      error: error
+    });
+  }
 });
 
 const schoolFromRequest = (request: Request): ISchool => {
