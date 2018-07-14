@@ -5,12 +5,21 @@ import { Test, ITestModel } from "../../models/test.model";
 import * as mathjs from "mathjs";
 
 export const OPERATORS: string[] = ['+', '-', '*', '/'];
-export const NUMBERS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+export const NUMBERS: ITestNumber[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((n) => {
+  return {
+    number: n,
+    operators: OPERATORS
+  }
+});
 export const MAX_NUMBER = 12;
 
+export interface ITestNumber {
+  number: number;
+  operators: string[];
+}
+
 export interface IAvailableTests {
-  operators: string[],
-  numbers: number[],
+  numbers: ITestNumber[];
 }
 
 export interface ITest {
@@ -37,17 +46,17 @@ export interface ITestResults {
   quickest: IQuestion;
 }
 
-export const getAvailableTests = (_user: IUser, callback: Callback): void => {
+export const getAvailableTests = (userID: string, callback: Callback): void => {
   // Temporarily return all tests
   const availableTests: IAvailableTests = {
-    operators: OPERATORS,
     numbers: NUMBERS
   }
   callback(availableTests);
 }
 
-export const newTest = (params: ITestParameters, callback: Callback): void => {
+export const newTest = (params: ITestParameters, userID: string, callback: Callback): void => {
   validateNewTestArguments(params);
+  authorizeUserForNewTest(userID, params.number, params.operator);
   const questions: IQuestion[] = createQuestions(params.operator, params.number, params.questions, params.randomQuestions);
   const test: ITest = {
     duration: params.duration,
@@ -89,7 +98,7 @@ export const submitTest = (test: ITest, callback: Callback): void => {
   });
 }
 
-const validateNewTestArguments = (params: ITestParameters): void => {
+export const validateNewTestArguments = (params: ITestParameters): void => {
   let errors: ArgumentError[] = [];
   if (!OPERATORS.includes(params.operator)) {
     errors.push(new ArgumentError('operator', params.operator, `Must be one of ${OPERATORS}.`));
@@ -109,6 +118,19 @@ const validateNewTestArguments = (params: ITestParameters): void => {
   if (errors.length > 0) {
     throw errors;
   }
+}
+
+export const authorizeUserForNewTest = (userID: string, number: number, operator: string): void => {
+  getAvailableTests(userID, (availableTests: IAvailableTests) => {
+    const matchingTestNumber = availableTests.numbers.find((testNumber: ITestNumber) => testNumber.number == number);
+    if (!matchingTestNumber) {
+      throw `Student is not authorized to test the number '${number}`;
+    }
+    const operatorIsAvailable = matchingTestNumber.operators.includes(operator);
+    if (!operatorIsAvailable) {
+      throw `Student is not authorized to test the operator '${operator}' for the number ${number}`;
+    }
+  });
 }
 
 export const createQuestions = (operator: string, number: number, questions: number, randomQuestions: number): IQuestion[] => {

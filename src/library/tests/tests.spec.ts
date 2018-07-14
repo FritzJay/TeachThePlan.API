@@ -1,5 +1,4 @@
 import { ITest, IQuestion, ITestResults } from '../../library/tests/tests';
-import { IUser } from '../../library/users/users';
 import { ITestParameters } from '../../library/testParameters/testParameters';
 import { Callback } from '../../library/common';
 import * as Tests from "./tests";
@@ -12,35 +11,14 @@ const VALID_TEST_PARAMETERS: ITestParameters = {
   duration: 75,
 }
 
-describe('getAvailableTests', () => {
-  it('returns all available tests', (done) => {
-    const user: IUser = {
-      firstName: "test",
-      lastName: "user"
-    };
-    const callback: Callback = (availableTests: ITestParameters) => {
-      expect(availableTests).toEqual({
-        operators: Tests.OPERATORS,
-        numbers: Tests.NUMBERS,
-      });
-      done();
-    };
-    Tests.getAvailableTests(user, callback);
-  });
-});
-
-describe('newTest', () => {
+describe('validateNewTestArguments', () => {
   let testParameters: ITestParameters;
   beforeEach(() => {
     testParameters = { ...VALID_TEST_PARAMETERS }
   });
 
-  it('returns a test when given valid arguments', (done) => {
-    const callback: Callback = (test: ITest) => {
-      expect(test).not.toBeNull;
-      done();
-    };
-    Tests.newTest(testParameters, callback);
+  it('does not throw errors when given valid parameters', () => {
+    Tests.validateNewTestArguments(testParameters)
   });
 
   it('throws an error for each invalid argument', () => {
@@ -50,7 +28,11 @@ describe('newTest', () => {
     testParameters.randomQuestions = -1;
     testParameters.duration = -75;
 
-    expect(() => { Tests.newTest(testParameters, () => {}) }).toThrow();
+    try {
+      Tests.validateNewTestArguments(testParameters)
+    } catch (errors) {
+      expect(errors).toHaveLength(5);
+    }
   });
 });
 
