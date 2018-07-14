@@ -6,7 +6,6 @@ export interface ISchoolModel extends ISchool, Document { }
 const SchoolSchema: Schema = new Schema({
   name: { 
     type: String,
-    unique: true,
     required: true,
     trim: true,
     maxLength: 50
