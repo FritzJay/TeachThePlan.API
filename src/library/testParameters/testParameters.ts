@@ -1,9 +1,10 @@
 import { ITestParameters } from '../testParameters/testParameters';
 import { Callback } from '../common';
 import { TestParameters, ITestParametersModel } from '../../models/testParameters.model';
+import { Types } from 'mongoose';
 
 export interface ITestParameters {
-  objectID?: string;
+  objectID?: Types.ObjectId;
   operator: string;
   number: number;
   questions: number;

@@ -13,7 +13,6 @@ export interface IUser {
 
 export const createUser = (userParams: IUser, callback: Callback): void => {
   new User({
-    _id: new Types.ObjectId(),
     email: userParams.email,
     password: hashSync(userParams.password, 10),
     firstName: userParams.firstName,

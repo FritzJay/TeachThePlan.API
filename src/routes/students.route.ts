@@ -37,7 +37,7 @@ studentRouter.post('/create', (studentParams: IStudent, request: Request, respon
       error: error,
     });
   }
-}
+});
 
 /*
   Creates a session for a student

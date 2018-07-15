@@ -1,10 +1,11 @@
 import { Callback } from '../common';
 import { School, ISchoolModel } from '../../models/school.model';
 import { ITeacherModel } from '../../models/teacher.model';
+import { Types } from 'mongoose';
 
 export interface ISchool {
   name: string,
-  teacherIDs?: string[],
+  teacherIDs?: Types.ObjectId[],
 }
 
 export const createSchool = (schoolParams: ISchool, callback: Callback): void => {

@@ -2,6 +2,7 @@ import { Callback, ArgumentError } from "../common";
 import { ITestParameters } from "../testParameters/testParameters";
 import { Test, ITestModel } from "../../models/test.model";
 import * as mathjs from "mathjs";
+import { Types } from "mongoose";
 
 export const OPERATORS: string[] = ['+', '-', '*', '/'];
 export const NUMBERS: ITestNumber[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((n) => {
@@ -22,7 +23,7 @@ export interface IAvailableTests {
 }
 
 export interface ITest {
-  userID?: string;
+  userID?: Types.ObjectId;
   duration?: number;
   start?: Date;
   end?: Date;

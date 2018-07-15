@@ -3,10 +3,11 @@ import { Callback } from '../common';
 import { Class, IClassModel } from '../../models/class.model';
 import { ITeacherModel } from '../../models/teacher.model';
 import { addClassToTeacher } from '../teachers/teachers';
+import { Types } from 'mongoose';
 
 export interface IClass {
   classCode: string,
-  studentIDs?: string[],
+  studentIDs?: Types.ObjectId[],
 }
 
 export const createClass = (classParams: IClass, userID: string, callback: Callback): void => {
@@ -40,7 +41,7 @@ export const getClassByClassCode = (classCode: string, callback: Callback): void
   });
 }
 
-export const addStudentToClass = (studentID: string, classCode: string, callback: Callback): void => {
+export const addStudentToClass = (studentID: Types.ObjectId, classCode: string, callback: Callback): void => {
   getClassByClassCode(classCode, (cls: IClassModel) => {
     cls.studentIDs.push(studentID);
     cls.save((error: Error, cls: IClassModel) => {

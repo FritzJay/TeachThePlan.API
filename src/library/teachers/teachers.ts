@@ -2,9 +2,10 @@ import { Callback } from '../common';
 import { Teacher, ITeacherModel } from '../../models/teacher.model';
 import { addTeacherToSchool } from '../schools/schools';
 import { ISchoolModel } from '../../models/school.model';
+import { Types } from 'mongoose';
 
 export interface ITeacher {
-  userID: string,
+  userID: Types.ObjectId,
   displayName: string,
   classIDs: string[],
 }
