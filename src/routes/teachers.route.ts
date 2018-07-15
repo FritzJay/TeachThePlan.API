@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { ITeacher, createTeacher } from '../library/teachers/teachers';
 import { authorizeUser } from '../library/authentication/authentication';
+import { Types } from 'mongoose';
 
 export let teachersRouter = Router();
 
@@ -19,7 +20,11 @@ export let teachersRouter = Router();
 teachersRouter.post('/create', (request: Request, response: Response) => {
   try {
     authorizeUser(request.headers.authorization, 'Type', (user) => {
-      const newTeacher: ITeacher = teacherFromRequest(request, user._id);
+      const newTeacher: ITeacher = {
+        userID: request.body.userID,
+        displayName: request.body.displayName,
+        classIDs: request.body.classIDs,
+      };
       createTeacher(newTeacher, request.body.schoolName, (teacher: ITeacher) => {
         response.status(200).json({
           success: 'Teacher was successfully created!',
@@ -33,11 +38,3 @@ teachersRouter.post('/create', (request: Request, response: Response) => {
     });
   }
 });
-
-const teacherFromRequest = (request: Request, userID: string): ITeacher => {
-  return {
-    user: userID,
-    displayName: request.body.displayName,
-    classIDs: request.body.classIDs
-  }
-}
