@@ -151,3 +151,24 @@ describe('createQuestions', () => {
     }
   });
 });
+
+describe('createFormattedQuestion', () => {
+  it('does not flip numbers when the operator is subtract or divide', () => {
+    let operator = '-';
+    const num1 = 1;
+    const num2 = 2;
+    let expectedQuestion = {
+      question: `${num1} ${operator} ${num2}`
+    }
+    for (let i = 0; i < 25; i++) {
+      expect(Tests.createFormattedQuestion(operator, num1, num2)).toEqual(expectedQuestion);
+    }
+    operator = '/'
+    expectedQuestion = {
+      question: `${num1} ${operator} ${num2}`
+    }
+    for (let i = 0; i < 25; i++) {
+      expect(Tests.createFormattedQuestion(operator, num1, num2)).toEqual(expectedQuestion);
+    }
+  });
+});

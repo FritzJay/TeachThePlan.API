@@ -174,8 +174,9 @@ const getQuickestAnsweredQuestion = (test: ITest): IQuestion => {
   });
 }
 
-const createFormattedQuestion = (operator: string, firstNumber: Number, secondNumber: Number): IQuestion => {
-  const [num1, num2] = shuffleArray([firstNumber, secondNumber]);
+export const createFormattedQuestion = (operator: string, firstNumber: Number, secondNumber: Number): IQuestion => {
+  const numbersShouldNotBeShuffled = ['-', '/'].includes(operator);
+  const [num1, num2] = (numbersShouldNotBeShuffled) ? [firstNumber, secondNumber] : shuffleArray([firstNumber, secondNumber]);
   return {
     question: `${num1} ${operator} ${num2}`,
   }
