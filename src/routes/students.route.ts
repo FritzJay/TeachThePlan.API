@@ -18,7 +18,7 @@ export let studentRouter = Router();
     classCode
   }
 */
-studentRouter.post('/create', (studentParams: IStudent, request: Request, response: Response): void => {
+studentRouter.post('/create', (request: Request, response: Response): void => {
   const classCode: string = request.body.classCode;
   const newStudent: IStudent = new Student({
     userID: request.body.userID,
