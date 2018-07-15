@@ -6,14 +6,14 @@ import { Callback } from '../common';
 import { addStudentToClass } from '../classes/classes';
 
 export interface IStudent {
-  user: IUser,
+  userID: string,
   displayName: string,
   tests?: ITest[],
 }
 
 export const createStudent = (studentParams: IStudent, classCode: string, callback: Callback): void => {
   const newStudent = new Student({
-    user: studentParams.user,
+    userID: studentParams.userID,
     displayName: studentParams.displayName,
     tests: studentParams.tests,
   });

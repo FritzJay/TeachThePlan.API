@@ -3,7 +3,7 @@ import { ITeacher } from '../library/teachers/teachers';
 
 export interface ITeacherModel extends ITeacher, Document { }
 export const TeacherSchema: Schema = new Schema({
-  user: SchemaTypes.ObjectId,
+  userID: SchemaTypes.ObjectId,
   displayName: String,
   classIDs: [SchemaTypes.ObjectId],
 });

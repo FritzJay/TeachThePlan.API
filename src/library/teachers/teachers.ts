@@ -4,14 +4,14 @@ import { addTeacherToSchool } from '../schools/schools';
 import { ISchoolModel } from '../../models/school.model';
 
 export interface ITeacher {
-  user: string,
+  userID: string,
   displayName: string,
   classIDs: string[],
 }
 
 export const createTeacher = (teacherParams: ITeacher, schoolName: string, callback: Callback): void => {
   const newTeacher = new Teacher({
-    user: teacherParams.user,
+    userID: teacherParams.userID,
     displayName: teacherParams.displayName,
     classIDs: teacherParams.classIDs,
   });
