@@ -1,12 +1,12 @@
 import { ITest } from '../tests/tests';
-import { IUser } from '../users/users';
 import { Student, IStudentModel } from '../../models/student.model';
 import { IClassModel } from '../../models/class.model';
 import { Callback } from '../common';
-import { addStudentToClass } from '../classes/classes';
+import { addStudentToClass, IClass, getClassByClassCode } from '../classes/classes';
+import { Types } from 'mongoose';
 
 export interface IStudent {
-  userID: string,
+  userID: Types.ObjectId,
   displayName: string,
   tests?: ITest[],
 }
@@ -29,5 +29,18 @@ export const createStudent = (studentParams: IStudent, classCode: string, callba
       student.remove();
       throw error;
     }
+  });
+}
+
+export const getStudentByDisplayNameAndClassCode = (displayName: string, classCode: string, callback: Callback): void => {
+  getClassByClassCode(classCode, (cls: IClassModel) => {
+    Student.findOne({
+      displayName: displayName,
+      userID: { $in: cls.studentIDs }
+    })
+    .exec()
+    .then((student: IStudentModel) => {
+      callback(student);
+    });
   });
 }
