@@ -32,13 +32,13 @@ classesRouter.post('/create', (request: Request, response: Response) => {
     })
     .catch((error) => {
       return response.status(500).json({
-        error: error
+        error: error.toString()
       });
     })
   })
   .catch((error) => {
     return response.status(401).json({
-      error: error
+      error: error.toString()
     });
   });
 });

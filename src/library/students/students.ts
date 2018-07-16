@@ -24,7 +24,10 @@ export const createStudent = (studentParams: IStudent, classCode: string): Promi
         resolve(student);
       })
       .catch((error) => {
-        reject(error);
+        Student.remove({ _id: newStudent._id })
+        .then((error) => {
+          reject(error);
+        });
       })
     })
     .catch((error) => {

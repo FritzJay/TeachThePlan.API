@@ -22,11 +22,11 @@ export const createClass = (classParams: IClass, userID: string): Promise<IClass
         resolve(cls);
       })
       .catch((error) => {
+        Class.remove({ _id: newClass._id })
         reject(error);
       })
     })
     .catch((error) => {
-      newClass.remove();
       reject(error);
     });
   });

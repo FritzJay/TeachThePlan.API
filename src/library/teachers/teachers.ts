@@ -27,7 +27,7 @@ export const createTeacher = (teacherParams: ITeacher, schoolName: string): Prom
       });
     })
     .catch((error) => {
-      newTeacher.remove()
+      Teacher.remove({ _id: newTeacher._id })
       .then((_teacher: ITeacherModel) => {
         reject(error);
       })
