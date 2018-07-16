@@ -1,6 +1,8 @@
 import { School, ISchoolModel } from '../../models/school.model';
 import { ITeacherModel } from '../../models/teacher.model';
 import { Types } from 'mongoose';
+import { rejects } from 'assert';
+import { resolve } from 'path';
 
 export interface ISchool {
   name: string,
@@ -43,6 +45,24 @@ export const addTeacherToSchool = (teacher: ITeacherModel, schoolName: string): 
     .then((school: ISchoolModel) => {
       school.teacherIDs.push(teacher._id);
       school.save()
+      .then((school: ISchoolModel) => {
+        resolve(school);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+    })
+    .catch((error) => {
+      reject(error);
+    });
+  });
+}
+
+export const removeSchoolByName = (schoolName: string): Promise<ISchoolModel> => {
+  return new Promise((resolve, reject) => {
+    getSchoolByName(schoolName)
+    .then((school: ISchoolModel) => {
+      school.remove()
       .then((school: ISchoolModel) => {
         resolve(school);
       })

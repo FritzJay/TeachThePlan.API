@@ -66,3 +66,15 @@ export const getStudentByDisplayNameAndClassCode = (displayName: string, classCo
     });
   });
 }
+
+export const removeStudentByID = (studentID: Types.ObjectId): Promise<IStudentModel> => {
+  return new Promise((resolve, reject) => {
+    Student.findByIdAndRemove(studentID)
+    .then((student: IStudentModel) => {
+      resolve(student);
+    })
+    .catch((error) => {
+      reject(error);
+    });
+  });
+}

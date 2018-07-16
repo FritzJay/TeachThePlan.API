@@ -2,6 +2,7 @@ import { hashSync } from 'bcrypt';
 import { Types } from 'mongoose';
 import { User, IUserModel } from '../../models/user.model';
 import { verifyToken } from '../authentication/authentication';
+import { resolve } from 'url';
 
 export interface IUser {
   email?: string;
@@ -81,5 +82,19 @@ export const getUserByID = (id: Types.ObjectId): Promise<IUserModel> => {
     .catch((error) => {
       reject(error);
     })
+  });
+}
+
+export const removeUserByID = (id: Types.ObjectId): Promise<IUserModel> => {
+  console.log('Removing user by userID');
+  console.log(`userID: ${id}`);
+  return new Promise((resolve, reject) => {
+    User.findByIdAndRemove(id)
+    .then((user: IUserModel) => {
+      resolve(user);
+    })
+    .catch((error) => {
+      reject(error);
+    });
   });
 }

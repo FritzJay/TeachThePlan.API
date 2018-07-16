@@ -2,6 +2,7 @@ import { Teacher, ITeacherModel } from '../../models/teacher.model';
 import { addTeacherToSchool } from '../schools/schools';
 import { ISchoolModel } from '../../models/school.model';
 import { Types } from 'mongoose';
+import { resolve } from 'path';
 
 export interface ITeacher {
   userID: Types.ObjectId,
@@ -93,6 +94,18 @@ export const addClassToTeacher = (classID: string, userID: string): Promise<ITea
       .catch((error) => {
         reject(error);
       });
+    })
+    .catch((error) => {
+      reject(error);
+    });
+  });
+}
+
+export const removeTeacherByID = (teacherID: Types.ObjectId): Promise<ITeacher> => {
+  return new Promise((resolve, reject) => {
+    Teacher.findByIdAndRemove(teacherID)
+    .then((teacher: ITeacherModel) => {
+      resolve(teacher);
     })
     .catch((error) => {
       reject(error);

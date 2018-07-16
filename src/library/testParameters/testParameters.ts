@@ -1,6 +1,7 @@
 import { ITestParameters } from '../testParameters/testParameters';
 import { TestParameters, ITestParametersModel } from '../../models/testParameters.model';
 import { Types } from 'mongoose';
+import { resolve } from 'path';
 
 export interface ITestParameters {
   objectID?: Types.ObjectId;
@@ -26,7 +27,7 @@ export const createTestParameters = (params: ITestParameters): Promise<ITestPara
   });
 }
 
-export const getTestParameters = (userID: string): Promise<ITestParameters> => {
+export const getTestParameters = (userID: Types.ObjectId): Promise<ITestParameters> => {
   console.log('Getting test parameters for user');
   console.log(`userID: ${userID}`);
   return new Promise((resolve, _reject) => {
@@ -38,5 +39,11 @@ export const getTestParameters = (userID: string): Promise<ITestParameters> => {
       duration: 75,
     }
     resolve(testParameters);
+  });
+}
+
+export const removeTestParametersByUserID = (userID: Types.ObjectId): Promise<ITestParametersModel> => {
+  return new Promise((resolve, reject) => {
+    // TODO
   });
 }
