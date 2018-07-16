@@ -12,6 +12,8 @@ export interface ITestParameters {
 }
 
 export const createTestParameters = (params: ITestParameters): Promise<ITestParametersModel> => {
+  console.log('Creating new test parameters. ITestParameters:');
+  console.log(params);
   return new Promise((resolve, reject) => {
     new TestParameters({...params})
     .save()
@@ -24,7 +26,9 @@ export const createTestParameters = (params: ITestParameters): Promise<ITestPara
   });
 }
 
-export const getTestParameters = (_userID: string): Promise<ITestParameters> => {
+export const getTestParameters = (userID: string): Promise<ITestParameters> => {
+  console.log('Getting test parameters for user');
+  console.log(`userID: ${userID}`);
   return new Promise((resolve, _reject) => {
     const testParameters = {
       operator: 'sample operator',

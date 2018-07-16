@@ -10,6 +10,8 @@ export interface ITeacher {
 }
 
 export const createTeacher = (teacherParams: ITeacher, schoolName: string): Promise<ITeacherModel> => {
+  console.log('Creating a new teacher. ITeacher:');
+  console.log(teacherParams);
   return new Promise((resolve, reject) => {
     const newTeacher = new Teacher({
       userID: teacherParams.userID,
@@ -39,6 +41,8 @@ export const createTeacher = (teacherParams: ITeacher, schoolName: string): Prom
 }
 
 export const getTeacherByID = (teacherID: string): Promise<ITeacherModel> => {
+  console.log('Getting teacher by teacherID');
+  console.log(`teacherID: ${teacherID}`);
   return new Promise((resolve, reject) => {
     Teacher.findById(teacherID)
     .exec()
@@ -56,8 +60,10 @@ export const getTeacherByID = (teacherID: string): Promise<ITeacherModel> => {
 }
 
 export const getTeacherByUserID = (userID: string): Promise<ITeacherModel> => {
+  console.log('Getting teacher by userID');
+  console.log(`UserID: ${userID}`);
   return new Promise((resolve, reject) => {
-    Teacher.findOne({ user: userID })
+    Teacher.findOne({ userID: userID })
     .exec()
     .then((teacher: ITeacherModel) => {
       if (teacher) {
@@ -73,6 +79,9 @@ export const getTeacherByUserID = (userID: string): Promise<ITeacherModel> => {
 }
 
 export const addClassToTeacher = (classID: string, userID: string): Promise<ITeacherModel> => {
+  console.log('Adding class to teacher');
+  console.log(`classID: ${classID}`);
+  console.log(`userID: ${userID}`);
   return new Promise((resolve, reject) => {
     getTeacherByUserID(userID)
     .then((teacher: ITeacherModel) => {

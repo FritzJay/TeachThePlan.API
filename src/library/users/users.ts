@@ -11,6 +11,8 @@ export interface IUser {
 }
 
 export const createUser = (userParams: IUser): Promise<IUserModel> => {
+  console.log('Creating a new user. IUser:');
+  console.log(userParams);
   return new Promise((resolve, reject) => {
     new User({
       email: userParams.email,
@@ -29,6 +31,8 @@ export const createUser = (userParams: IUser): Promise<IUserModel> => {
 }
 
 export const getUserFromToken = (token: string): Promise<IUserModel> => {
+  console.log('Getting user from token');
+  console.log(`token: ${token}`);
   return new Promise((resolve, reject) => {
     const decodedToken = verifyToken(token);
     const email = decodedToken['email'];
@@ -43,6 +47,8 @@ export const getUserFromToken = (token: string): Promise<IUserModel> => {
 }
 
 export const getUserByEmail = (email: string): Promise<IUserModel> => {
+  console.log('Getting user by email');
+  console.log(`email: ${email}`);
   return new Promise((resolve, reject) => {
     User.findOne({ email: email })
     .exec()
@@ -60,6 +66,8 @@ export const getUserByEmail = (email: string): Promise<IUserModel> => {
 }
 
 export const getUserByID = (id: Types.ObjectId): Promise<IUserModel> => {
+  console.log('Getting user by userID');
+  console.log(`userID: ${id}`);
   return new Promise((resolve, reject) => {
     User.findOne({ _id: id })
     .exec()

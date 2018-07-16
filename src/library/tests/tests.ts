@@ -3,6 +3,7 @@ import { ITestParameters } from "../testParameters/testParameters";
 import { Test, ITestModel } from "../../models/test.model";
 import * as mathjs from "mathjs";
 import { Types } from "mongoose";
+import { TestParameters } from "../../models/testParameters.model";
 
 export const OPERATORS: string[] = ['+', '-', '*', '/'];
 export const NUMBERS: ITestNumber[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((n) => {
@@ -46,7 +47,9 @@ export interface ITestResults {
   quickest: IQuestion;
 }
 
-export const getAvailableTests = (_userID: string): Promise<IAvailableTests> => {
+export const getAvailableTests = (userID: string): Promise<IAvailableTests> => {
+  console.log('Getting available tests for userID');
+  console.log(`userID: ${userID}`);
   return new Promise((resolve, _reject) => {
     // Temporarily return all tests
     const availableTests: IAvailableTests = {
@@ -57,6 +60,9 @@ export const getAvailableTests = (_userID: string): Promise<IAvailableTests> => 
 }
 
 export const newTest = (params: ITestParameters, userID: string): Promise<ITest> => {
+  console.log('Creating a new test');
+  console.log(`userID: ${userID}`);
+  console.log(TestParameters);
   return new Promise((resolve, reject) => {
     validateNewTestArguments(params)
     .then(() => {
@@ -82,6 +88,8 @@ export const newTest = (params: ITestParameters, userID: string): Promise<ITest>
 }
 
 export const gradeTest = (test: ITest): Promise<ITestResults> => {
+  console.log('Grading test');
+  console.log(test);
   return new Promise((resolve, _reject) => {
     const numberOfCorrectAnswers: number = setCorrectAnswers(test);
     const incorrectQuestion: IQuestion = getRandomIncorrectlyAnsweredQuestion(test);
@@ -98,6 +106,8 @@ export const gradeTest = (test: ITest): Promise<ITestResults> => {
 }
 
 export const submitTest = (test: ITest): Promise<ITestModel> => {
+  console.log('Submitting test');
+  console.log(test);
   return new Promise((resolve, reject) => {
     if (test.userID) {
       new Test({

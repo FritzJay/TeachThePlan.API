@@ -11,6 +11,9 @@ export interface IStudent {
 }
 
 export const createStudent = (studentParams: IStudent, classCode: string): Promise<IStudentModel> => {
+  console.log('Creating a new student. IStudent:');
+  console.log(studentParams);
+  console.log(`classCode: ${classCode}`);
   return new Promise((resolve, reject) => {
     const newStudent = new Student({
       userID: studentParams.userID,
@@ -40,6 +43,9 @@ export const createStudent = (studentParams: IStudent, classCode: string): Promi
 }
 
 export const getStudentByDisplayNameAndClassCode = (displayName: string, classCode: string): Promise<IStudentModel> => {
+  console.log('Getting student by display name and class code');
+  console.log(`displayName: ${displayName}`);
+  console.log(`classCode: ${classCode}`);
   return new Promise((resolve, reject) => {
     getClassByClassCode(classCode)
     .then((cls: IClassModel) => {
