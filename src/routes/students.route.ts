@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { IUserModel } from '../models/user.model';
 import { getUserByID } from '../library/users/users';
 import { IStudentModel, Student } from '../models/student.model';
-import { createToken } from '../library/authentication/authentication';
+import { createToken, authorizeUser } from '../library/authentication/authentication';
 import { getStudentByDisplayNameAndClassCode, IStudent, createStudent } from '../library/students/students';
 
 export let studentRouter = Router();
@@ -18,25 +18,33 @@ export let studentRouter = Router();
     classCode
   }
 */
-studentRouter.post('/create', (request: Request, response: Response): void => {
-  const classCode: string = request.body.classCode;
-  const newStudent: IStudent = new Student({
-    userID: request.body.userID,
-    displayName: request.body.displayName,
-  });
-  try {
+studentRouter.post('/create', (request: Request, response: Response) => {
+  authorizeUser(request.headers.authorization, 'TODO')
+  .then((user: IUserModel) => {
+    const classCode: string = request.body.classCode;
+    const newStudent: IStudent = new Student({
+      userID: request.body.userID,
+      displayName: request.body.displayName,
+    });
     // Authorize user is a teacher that has a classID with a classCode of `classCode`
-    createStudent(newStudent, classCode, (student: IStudentModel) => {
+    createStudent(newStudent, classCode)
+    .then((student: IStudentModel) => {
       response.status(200).json({
         success: 'Student successfully created!',
         student: student
       });
+    })
+    .catch((error) => {
+      response.status(500).json({
+        error: error,
+      });
     });
-  } catch (error) {
+  })
+  .catch((error) => {
     response.status(401).json({
       error: error,
     });
-  }
+  });
 });
 
 /*
@@ -51,25 +59,31 @@ studentRouter.post('/create', (request: Request, response: Response): void => {
     classCode
   }
 */
-studentRouter.post('/signinstudent', (request: Request, response: Response): void => {
+studentRouter.post('/signinstudent', (request: Request, response: Response) => {
   const displayName = request.body.displayName;
   const classCode = request.body.classCode;
-  try {
-    getStudentByDisplayNameAndClassCode(displayName, classCode, (student: IStudentModel) => {
-      getUserByID(student.userID, (user: IUserModel) => {
-        const token = createToken(user);
-        response.status(200).json({
-          success: "Authenticated",
-          user: {
-            name: student.displayName,
-          },
-          token: token,
-        });
+  getStudentByDisplayNameAndClassCode(displayName, classCode)
+  .then((student: IStudentModel) => {
+    getUserByID(student.userID)
+    .then((user: IUserModel) => {
+      const token = createToken(user);
+      response.status(200).json({
+        success: "Authenticated",
+        user: {
+          name: student.displayName,
+        },
+        token: token,
+      });
+    })
+    .catch((error) => {
+      response.status(500).json({
+        error: error,
       });
     });
-  } catch (error) {
+  })
+  .catch((error) => {
     response.status(401).json({
       error: error,
     });
-  }
+  });
 });

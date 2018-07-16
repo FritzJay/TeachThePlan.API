@@ -2,13 +2,18 @@ import { compareSync } from 'bcrypt';
 import { sign, verify } from 'jsonwebtoken'
 import { IUserModel } from '../../models/user.model';
 import * as config from '../../../config';
-import { Callback } from '../common';
 import { getUserFromToken } from '../users/users';
 
-export const authorizeUser = (token: string, _auth_type: string, callback: Callback) => {
-  getUserFromToken(token, (user) => {
-    // TODO: Authorize stuff
-    callback(user);
+export const authorizeUser = (token: string, _auth_type: string): Promise<IUserModel> => {
+  return new Promise((resolve, reject) => {
+    getUserFromToken(token)
+    .then((user) => {
+      // Perform authorization steps here
+      resolve(user);
+    })
+    .catch((error) => {
+      reject(error);
+    })
   });
 }
 

@@ -1,4 +1,3 @@
-import { Callback } from '../common';
 import { School, ISchoolModel } from '../../models/school.model';
 import { ITeacherModel } from '../../models/teacher.model';
 import { Types } from 'mongoose';
@@ -8,38 +7,51 @@ export interface ISchool {
   teacherIDs?: Types.ObjectId[],
 }
 
-export const createSchool = (schoolParams: ISchool, callback: Callback): void => {
-  const school = new School({
-    name: schoolParams.name,
-    teachers: schoolParams.teacherIDs,
-  });
-  school.save((error: Error) => {
-    if (error) {
-      throw error;
-    }
-    callback(school);
-  });
-}
-
-export const getSchoolByName = (name: string, callback: Callback): void => {
-  School.findOne({name: name})
-  .exec()
-  .then((school: ISchoolModel) => {
-    if (!school) {
-      throw 'Unable to find school';
-    }
-    callback(school);
+export const createSchool = (schoolParams: ISchool): Promise<ISchoolModel> => {
+  return new Promise((resolve, reject) => {
+    const school = new School({
+      name: schoolParams.name,
+      teachers: schoolParams.teacherIDs,
+    });
+    school.save()
+    .then((school) => {
+      resolve(school);
+    })
+    .catch((error) => {
+      reject(error);
+    });
   });
 }
 
-export const addTeacherToSchool = (teacher: ITeacherModel, schoolName: string, callback: Callback) => {
-  getSchoolByName(schoolName, (school: ISchoolModel) => {
-    school.teacherIDs.push(teacher._id);
-    school.save((error: Error, _school: ISchoolModel) => {
-      if (error) {
-        throw error;
+export const getSchoolByName = (name: string): Promise<ISchoolModel> => {
+  return new Promise((resolve, reject) => {
+    School.findOne({name: name})
+    .exec()
+    .then((school: ISchoolModel) => {
+      if (school) {
+        resolve(school);
+      } else {
+        reject(new Error('Unable to find school'));
       }
-      callback(teacher);
+    });
+  });
+}
+
+export const addTeacherToSchool = (teacher: ITeacherModel, schoolName: string): Promise<ISchoolModel> => {
+  return new Promise((resolve, reject) => {
+    getSchoolByName(schoolName)
+    .then((school: ISchoolModel) => {
+      school.teacherIDs.push(teacher._id);
+      school.save()
+      .then((school: ISchoolModel) => {
+        resolve(school);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+    })
+    .catch((error) => {
+      reject(error);
     });
   });
 }

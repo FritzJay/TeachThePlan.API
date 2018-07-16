@@ -83,55 +83,55 @@ describe('gradeTest', () => {
     }
   });
   it('returns the total number of questions', (done) => {
-    const callback: Callback = (testResults: ITestResults) => {
+    Tests.gradeTest(test)
+    .then((testResults: ITestResults) => {
       expect(testResults.total).toEqual(questions.length);
       done();
-    }
-    Tests.gradeTest(test, callback);
+    });
   });
 
   it('returns needed as 80% of the total number of questions', (done) => {
-    const callback: Callback = (testResults: ITestResults) => {
+    Tests.gradeTest(test)
+    .then((testResults: ITestResults) => {
       expect(testResults.needed).toEqual(Math.round(questions.length * 0.8));
       done();
-    }
-    Tests.gradeTest(test, callback);
+    });
   });
 
   it('returns a count of the correctly answered questions', (done) => {
-    const callback: Callback = (testResults: ITestResults) => {
+    Tests.gradeTest(test)
+    .then((testResults: ITestResults) => {
       expect(testResults.correct).toEqual(3);
       done();
-    }
-    Tests.gradeTest(test, callback);
+    });
   });
 
   it('returns one of the incorrectly answered questions as incorrect', (done) => {
     const incorrectlyAnsweredQuestions = questions.slice(3);
-    const callback: Callback = (testResults: ITestResults) => {
+    Tests.gradeTest(test)
+    .then((testResults: ITestResults) => {
       expect(incorrectlyAnsweredQuestions.includes(testResults.incorrect)).toBe(true);
       done();
-    }
-    Tests.gradeTest(test, callback);
+    });
   });
 
   it('returns the question with the minimum difference between start and stop as the quickest answered', (done) => {
-    const callback: Callback = (testResults: ITestResults) => {
+    Tests.gradeTest(test)
+    .then((testResults: ITestResults) => {
       expect(testResults.quickest).toEqual(questions[0]);
       done();
-    }
-    Tests.gradeTest(test, callback);
+    });
   });
 
   it('sets the correct answer of each question', (done) => {
-    const callback: Callback = (testResults: ITestResults) => {
+    Tests.gradeTest(test)
+    .then((testResults: ITestResults) => {
       expect(testResults).not.toBeNull;
       for (let question in test.questions) {
         expect(question).not.toBeNull;
       }
       done();
-    }
-    Tests.gradeTest(test, callback);
+    });
   });
 });
 

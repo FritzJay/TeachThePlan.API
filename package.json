@@ -42,6 +42,10 @@
     "transform": {
       "^.+\\.(ts|tsx)$": "./node_modules/ts-jest/preprocessor.js"
     },
-    "testRegex": ".*spec.*.(ts|tsx)$$"
+    "testPathIgnorePatterns": [
+      "/node modules/",
+      "dist"
+    ],
+    "testRegex": ".*spec.*.(js|ts|tsx)$$"
   }
 }

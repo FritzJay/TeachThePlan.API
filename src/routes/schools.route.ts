@@ -14,22 +14,31 @@ export let schoolsRouter = Router();
     teachersIDs?
   }
 */
-schoolsRouter.post('/create', (request: Request, response: Response): void => {
-  try {
-    authorizeUser(request.headers.authorization, 'Type', (_user) => {
-      const newSchool: ISchool = schoolFromRequest(request);
-      createSchool(newSchool, (school: ISchool) => {
-        response.status(200).json({
-          success: 'School was successfully created!',
-          school: school
-        });
+schoolsRouter.post('/create', (request: Request, response: Response) => {
+  authorizeUser(request.headers.authorization, 'Type')
+  .then((_user) => {
+    const newSchool: ISchool = {
+      name: request.body.name,
+      teacherIDs: request.body.teachers
+    };
+    createSchool(newSchool)
+    .then((school: ISchool) => {
+      response.status(200).json({
+        success: 'School was successfully created!',
+        school: school
+      });
+    })
+    .catch((error) => {
+      response.status(500).json({
+        error: error
       });
     });
-  } catch (error) {
+  })
+  .catch((error) => {
     response.status(401).json({
       error: error
     });
-  }
+  });
 });
 
 /*
@@ -42,25 +51,24 @@ schoolsRouter.post('/create', (request: Request, response: Response): void => {
   }
 */
 schoolsRouter.get('/getByName', (request: Request, response: Response) => {
-  try {
-    authorizeUser(request.headers.authorization, 'Type', (_user) => {
-      getSchoolByName(request.body.name, (school: ISchool) => {
-        response.status(401).json({
-          success: 'School was found!',
-          school: school,
-        });
+  authorizeUser(request.headers.authorization, 'Type')
+  .then(() => {
+    getSchoolByName(request.body.name)
+    .then((school: ISchool) => {
+      response.status(401).json({
+        success: 'School was found!',
+        school: school,
+      });
+    })
+    .catch((error) => {
+      return response.status(500).json({
+        error: error
       });
     });
-  } catch (error) {
+  })
+  .catch((error) => {
     return response.status(401).json({
       error: error
     });
-  }
+  });
 });
-
-const schoolFromRequest = (request: Request): ISchool => {
-  return {
-    name: request.body.name,
-    teacherIDs: request.body.teachers
-  }
-}

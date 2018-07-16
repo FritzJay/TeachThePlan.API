@@ -1,6 +1,5 @@
 import { hashSync } from 'bcrypt';
 import { Types } from 'mongoose';
-import { Callback } from '../common';
 import { User, IUserModel } from '../../models/user.model';
 import { verifyToken } from '../authentication/authentication';
 
@@ -11,45 +10,68 @@ export interface IUser {
   lastName?: string;
 }
 
-export const createUser = (userParams: IUser, callback: Callback): void => {
-  new User({
-    email: userParams.email,
-    password: hashSync(userParams.password, 10),
-    firstName: userParams.firstName,
-    lastName: userParams.lastName
-  })
-  .save()
-  .then((newUser) => {
-    callback(newUser);
+export const createUser = (userParams: IUser): Promise<IUserModel> => {
+  return new Promise((resolve, reject) => {
+    new User({
+      email: userParams.email,
+      password: hashSync(userParams.password, 10),
+      firstName: userParams.firstName,
+      lastName: userParams.lastName
+    })
+    .save()
+    .then((newUser) => {
+      resolve(newUser);
+    })
+    .catch((error) => {
+      reject(error);
+    })
   });
 }
 
-export const getUserFromToken = (token: string, callback: Callback): void => {
-  const decodedToken = verifyToken(token);
-  const email = decodedToken['email'];
-  getUserByEmail(email, (user: IUserModel) => {
-    callback(user);
+export const getUserFromToken = (token: string): Promise<IUserModel> => {
+  return new Promise((resolve, reject) => {
+    const decodedToken = verifyToken(token);
+    const email = decodedToken['email'];
+    getUserByEmail(email)
+    .then((user) => {
+      resolve(user);
+    })
+    .catch((error) => {
+      reject(error);
+    });
   });
 }
 
-export const getUserByEmail = (email: string, callback: Callback): void => {
-  User.findOne({ email: email })
-  .exec()
-  .then((user: IUserModel) => {
-    if (!user) {
-      throw 'Could not find user';
-    }
-    callback(user);
+export const getUserByEmail = (email: string): Promise<IUserModel> => {
+  return new Promise((resolve, reject) => {
+    User.findOne({ email: email })
+    .exec()
+    .then((user: IUserModel) => {
+      if (user) {
+        resolve(user);
+      } else {
+        reject(new Error('Could not find user'));
+      }
+    })
+    .catch((error) => {
+      reject(error);
+    });
   });
 }
 
-export const getUserByID = (id: Types.ObjectId, callback: Callback): void => {
-  User.findOne({ _id: id })
-  .exec()
-  .then((user: IUserModel) => {
-    if (!user) {
-      throw 'Could not find user';
-    }
-    callback(user);
+export const getUserByID = (id: Types.ObjectId): Promise<IUserModel> => {
+  return new Promise((resolve, reject) => {
+    User.findOne({ _id: id })
+    .exec()
+    .then((user: IUserModel) => {
+      if (user) {
+        resolve(user);
+      } else {
+        reject(new Error('Could not find user'));
+      }
+    })
+    .catch((error) => {
+      reject(error);
+    })
   });
 }

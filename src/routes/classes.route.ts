@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { IClass, createClass } from '../library/classes/classes';
 import { authorizeUser } from '../library/authentication/authentication';
+import { IUserModel } from '../models/user.model';
+import { IClassModel } from '../models/class.model';
 
 export let classesRouter = Router();
 
@@ -15,26 +17,28 @@ export let classesRouter = Router();
   }
 */
 classesRouter.post('/create', (request: Request, response: Response) => {
-  try {
-    authorizeUser(request.headers.authorization, 'TODO', (user) => {
-      const newClass: IClass = classFromRequest(request);
-      createClass(newClass, user._id, (cls: IClass) => {
-        return response.status(200).json({
-          success: 'Class was successfully created!',
-          class: cls,
-        });
+  authorizeUser(request.headers.authorization, 'TODO')
+  .then((user: IUserModel) => {
+    const newClass: IClass = {
+      classCode: request.body.classCode,
+      studentIDs: request.body.students,
+    };
+    createClass(newClass, user._id)
+    .then((cls: IClassModel) => {
+      return response.status(200).json({
+        success: 'Class was successfully created!',
+        class: cls,
       });
-    });
-  } catch (error) {
+    })
+    .catch((error) => {
+      return response.status(500).json({
+        error: error
+      });
+    })
+  })
+  .catch((error) => {
     return response.status(401).json({
       error: error
     });
-  }
+  });
 });
-
-const classFromRequest = (request: Request): IClass => {
-  return {
-    classCode: request.body.classCode,
-    studentIDs: request.body.students,
-  }
-}

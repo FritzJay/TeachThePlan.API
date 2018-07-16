@@ -1,4 +1,4 @@
-import { Callback, ArgumentError } from "../common";
+import { ArgumentError } from "../common";
 import { ITestParameters } from "../testParameters/testParameters";
 import { Test, ITestModel } from "../../models/test.model";
 import * as mathjs from "mathjs";
@@ -46,90 +46,123 @@ export interface ITestResults {
   quickest: IQuestion;
 }
 
-export const getAvailableTests = (userID: string, callback: Callback): void => {
-  // Temporarily return all tests
-  const availableTests: IAvailableTests = {
-    numbers: NUMBERS
-  }
-  callback(availableTests);
-}
-
-export const newTest = (params: ITestParameters, userID: string, callback: Callback): void => {
-  validateNewTestArguments(params);
-  authorizeUserForNewTest(userID, params.number, params.operator);
-  const questions: IQuestion[] = createQuestions(params.operator, params.number, params.questions, params.randomQuestions);
-  const test: ITest = {
-    duration: params.duration,
-    start: null,
-    end: null,
-    questions: questions,
-  }
-  callback(test);
-}
-
-export const gradeTest = (test: ITest, callback: Callback): void => {
-  const numberOfCorrectAnswers: number = setCorrectAnswers(test);
-  const incorrectQuestion: IQuestion = getRandomIncorrectlyAnsweredQuestion(test);
-  const quickestQuestion: IQuestion = getQuickestAnsweredQuestion(test);
-  const testResults: ITestResults = {
-    total: test.questions.length,
-    needed: Math.round(test.questions.length * 0.8),
-    correct: numberOfCorrectAnswers,
-    incorrect: incorrectQuestion,
-    quickest: quickestQuestion,
-  }
-  callback(testResults);
-}
-
-export const submitTest = (test: ITest, callback: Callback): void => {
-  if (!test.userID) {
-    throw 'Unable to save test to database because there was no user assigned';
-  }
-  new Test({
-    userID: test.userID,
-    duration: test.duration,
-    start: test.start,
-    end: test.end,
-    questions: test.questions,
-  })
-  .save()
-  .then((newTest: ITestModel) => {
-    callback(newTest);
+export const getAvailableTests = (_userID: string): Promise<IAvailableTests> => {
+  return new Promise((resolve, _reject) => {
+    // Temporarily return all tests
+    const availableTests: IAvailableTests = {
+      numbers: NUMBERS
+    }
+    resolve(availableTests);
   });
 }
 
-export const validateNewTestArguments = (params: ITestParameters): void => {
-  let errors: ArgumentError[] = [];
-  if (!OPERATORS.includes(params.operator)) {
-    errors.push(new ArgumentError('operator', params.operator, `Must be one of ${OPERATORS}.`));
-  }
-  if (params.number < 0 || params.number > 20) {
-    errors.push(new ArgumentError('number', params.number, 'Must be in range 0-20'));
-  }
-  if (params.questions < 1) {
-    errors.push(new ArgumentError('questions', params.questions, 'Must be greater than 1'));
-  }
-  if (params.randomQuestions < 0) {
-    errors.push(new ArgumentError('randomQuestions', params.randomQuestions, 'Must be greater than 0'));
-  }
-  if (params.duration < 0) {
-    errors.push(new ArgumentError('duration', params.duration, 'Must be greater than 0'));
-  }
-  if (errors.length > 0) {
-    throw errors;
-  }
+export const newTest = (params: ITestParameters, userID: string): Promise<ITest> => {
+  return new Promise((resolve, reject) => {
+    validateNewTestArguments(params)
+    .then(() => {
+      authorizeUserForNewTest(userID, params.number, params.operator)
+      .then(() => {
+        const questions: IQuestion[] = createQuestions(params.operator, params.number, params.questions, params.randomQuestions);
+        const test: ITest = {
+        duration: params.duration,
+        start: null,
+        end: null,
+        questions: questions,
+      }
+      resolve(test);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+    })
+    .catch((error) => {
+      reject(error);
+    });
+  });
 }
 
-export const authorizeUserForNewTest = (userID: string, number: number, operator: string): void => {
-  getAvailableTests(userID, (availableTests: IAvailableTests) => {
-    const matchingTestNumber = availableTests.numbers.find((testNumber: ITestNumber) => testNumber.number == number);
-    if (!matchingTestNumber) {
-      throw `Student is not authorized to test the number '${number}`;
+export const gradeTest = (test: ITest): Promise<ITestResults> => {
+  return new Promise((resolve, _reject) => {
+    const numberOfCorrectAnswers: number = setCorrectAnswers(test);
+    const incorrectQuestion: IQuestion = getRandomIncorrectlyAnsweredQuestion(test);
+    const quickestQuestion: IQuestion = getQuickestAnsweredQuestion(test);
+    const testResults: ITestResults = {
+      total: test.questions.length,
+      needed: Math.round(test.questions.length * 0.8),
+      correct: numberOfCorrectAnswers,
+      incorrect: incorrectQuestion,
+      quickest: quickestQuestion,
     }
-    const operatorIsAvailable = matchingTestNumber.operators.includes(operator);
-    if (!operatorIsAvailable) {
-      throw `Student is not authorized to test the operator '${operator}' for the number ${number}`;
+    resolve(testResults);
+  });
+}
+
+export const submitTest = (test: ITest): Promise<ITestModel> => {
+  return new Promise((resolve, reject) => {
+    if (test.userID) {
+      new Test({
+        userID: test.userID,
+        duration: test.duration,
+        start: test.start,
+        end: test.end,
+        questions: test.questions,
+      })
+      .save()
+      .then((newTest: ITestModel) => {
+        resolve(newTest);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+    } else {
+      reject(new Error('Unable to save test to database because there was no user assigned'));
     }
+  });
+}
+
+export const validateNewTestArguments = (params: ITestParameters): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    let errors: ArgumentError[] = [];
+    if (!OPERATORS.includes(params.operator)) {
+      errors.push(new ArgumentError('operator', params.operator, `Must be one of ${OPERATORS}.`));
+    }
+    if (params.number < 0 || params.number > 20) {
+      errors.push(new ArgumentError('number', params.number, 'Must be in range 0-20'));
+    }
+    if (params.questions < 1) {
+      errors.push(new ArgumentError('questions', params.questions, 'Must be greater than 1'));
+    }
+    if (params.randomQuestions < 0) {
+      errors.push(new ArgumentError('randomQuestions', params.randomQuestions, 'Must be greater than 0'));
+    }
+    if (params.duration < 0) {
+      errors.push(new ArgumentError('duration', params.duration, 'Must be greater than 0'));
+    }
+    if (errors.length == 0) {
+      resolve();
+    } else {
+      reject(errors);
+    }
+  });
+}
+
+export const authorizeUserForNewTest = (userID: string, number: number, operator: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    getAvailableTests(userID)
+    .then((availableTests: IAvailableTests) => {
+      const matchingTestNumber = availableTests.numbers.find((testNumber: ITestNumber) => testNumber.number == number);
+      if (!matchingTestNumber) {
+        reject(new Error(`Student is not authorized to test the number '${number}`));
+      }
+      const operatorIsAvailable = matchingTestNumber.operators.includes(operator);
+      if (!operatorIsAvailable) {
+        reject(new Error(`Student is not authorized to test the operator '${operator}' for the number ${number}`));
+      }
+      resolve();
+    })
+    .catch((error) => {
+      reject(error);
+    });
   });
 }
 
