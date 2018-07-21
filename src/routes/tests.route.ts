@@ -100,13 +100,19 @@ testsRouter.post('/grade', (request: Request, response: Response) => {
         return response.status(200).json({testResults});
       })
       .catch((error) => {
-        response.status(500).json({error});
+        response.status(500).json({
+          error: error.toString()
+        });
       });
     })
     .catch((error) => {
-      response.status(500).json({error});
+      response.status(500).json({
+        error: error.toString()
+      });
     }).catch((error) => {
-      response.status(401).json({error});
+      response.status(401).json({
+        error: error.toString()
+      });
     });
   });
 });
