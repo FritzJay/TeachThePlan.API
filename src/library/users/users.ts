@@ -2,7 +2,6 @@ import { hashSync } from 'bcrypt';
 import { Types } from 'mongoose';
 import { User, IUserModel } from '../../models/user.model';
 import { verifyToken } from '../authentication/authentication';
-import { resolve } from 'url';
 
 export interface IUser {
   email?: string;
