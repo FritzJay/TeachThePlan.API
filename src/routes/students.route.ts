@@ -59,8 +59,8 @@ studentRouter.post('/create', (request: Request, response: Response) => {
     classCode
   }
 */
-studentRouter.post('/signinstudent', (request: Request, response: Response) => {
-  const displayName = request.body.displayName;
+studentRouter.post('/signin', (request: Request, response: Response) => {
+  const displayName = request.body.name;
   const classCode = request.body.classCode;
   getStudentByDisplayNameAndClassCode(displayName, classCode)
   .then((student: IStudentModel) => {
@@ -77,13 +77,13 @@ studentRouter.post('/signinstudent', (request: Request, response: Response) => {
     })
     .catch((error) => {
       response.status(500).json({
-        error: error,
+        error: error.toString(),
       });
     });
   })
   .catch((error) => {
     response.status(401).json({
-      error: error,
+      error: error.toString(),
     });
   });
 });
