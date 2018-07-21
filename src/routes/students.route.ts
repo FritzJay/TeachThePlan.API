@@ -36,13 +36,13 @@ studentRouter.post('/create', (request: Request, response: Response) => {
     })
     .catch((error) => {
       response.status(500).json({
-        error: error,
+        error: error.toString(),
       });
     });
   })
   .catch((error) => {
     response.status(401).json({
-      error: error,
+      error: error.toString(),
     });
   });
 });

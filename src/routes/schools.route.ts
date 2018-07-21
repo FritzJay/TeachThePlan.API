@@ -30,13 +30,13 @@ schoolsRouter.post('/create', (request: Request, response: Response) => {
     })
     .catch((error) => {
       response.status(500).json({
-        error: error
+        error: error.toString()
       });
     });
   })
   .catch((error) => {
     response.status(401).json({
-      error: error
+      error: error.toString()
     });
   });
 });
@@ -55,20 +55,20 @@ schoolsRouter.get('/getByName', (request: Request, response: Response) => {
   .then(() => {
     getSchoolByName(request.body.name)
     .then((school: ISchool) => {
-      response.status(401).json({
+      response.status(200).json({
         success: 'School was found!',
         school: school,
       });
     })
     .catch((error) => {
       return response.status(500).json({
-        error: error
+        error: error.toString()
       });
     });
   })
   .catch((error) => {
     return response.status(401).json({
-      error: error
+      error: error.toString()
     });
   });
 });

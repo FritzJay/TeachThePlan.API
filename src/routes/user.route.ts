@@ -33,7 +33,7 @@ userRouter.post('/create', (request: Request, response: Response): void => {
     }); 
   }).catch((error) => {
     response.status(401).json({
-      error: error
+      error: error.toString()
     });
   });
 });
@@ -69,7 +69,7 @@ userRouter.post('/signin', function(request: Request, response: Response): void 
     }
   }).catch((error) => {
     response.status(401).json({
-      error: error
+      error: error.toString()
     });
   });
 });

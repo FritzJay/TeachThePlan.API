@@ -22,12 +22,12 @@ testsRouter.get('/available', (request: Request, response: Response) => {
     })
     .catch((error) => {
       response.status(401).json({
-        error: error
+        error: error.toString()
       });
     });
   }).catch((error) => {
     response.status(401).json({
-      error: error
+      error: error.toString()
     });
   });
 });
@@ -57,16 +57,16 @@ testsRouter.post('/new', (request: Request, response: Response) => {
     };
     newTest(testParameters, user._id)
     .then((test: ITest) => {
-      response.status(200).json(test);
+      response.status(200).json({test});
     })
     .catch((error) => {
       response.status(500).json({
-        error: error
+        error: error.toString()
       });
     });
   }).catch((error) => {
     response.status(401).json({
-      error: error
+      error: error.toString()
     });
   });
 });
@@ -97,22 +97,16 @@ testsRouter.post('/grade', (request: Request, response: Response) => {
     .then((testResults: ITestResults) => {
       submitTest(test)
       .then((_test: ITest) => {
-        return response.status(200).json(testResults);
+        return response.status(200).json({testResults});
       })
       .catch((error) => {
-        response.status(500).json({
-          error: error
-        });
+        response.status(500).json({error});
       });
     })
     .catch((error) => {
-      response.status(500).json({
-        error: error
-      });
+      response.status(500).json({error});
     }).catch((error) => {
-      response.status(401).json({
-        error: error
-      });
+      response.status(401).json({error});
     });
   });
 });
