@@ -22,7 +22,7 @@ export const createStudent = (studentParams: IStudent, classCode: string): Promi
     });
     newStudent.save()
     .then((student: IStudentModel) => {
-      addStudentToClass(student._id, classCode)
+      addStudentToClass(student._id, classCode.toString())
       .then((_cls: IClassModel) => {
         resolve(student);
       })
@@ -51,14 +51,18 @@ export const getStudentByDisplayNameAndClassCode = (displayName: string, classCo
     .then((cls: IClassModel) => {
       Student.findOne({
         displayName: displayName,
-        userID: { $in: cls.studentIDs }
+        _id: { $in: cls.studentIDs }
       })
       .exec()
       .then((student: IStudentModel) => {
-        resolve(student);
+        if (student) {
+          resolve(student);
+        } else {
+          reject(new Error('Could not find student'));
+        }
       })
       .catch((error) => {
-        resolve(error);
+        reject(error);
       });
     })
     .catch((error) => {
