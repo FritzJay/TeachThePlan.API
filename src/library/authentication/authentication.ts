@@ -29,7 +29,11 @@ export const createToken = (user: IUserModel): string => {
 }
 
 export const verifyToken = (token: string) => {
-  return verify(token, config.secret);
+  if (token) {
+    return verify(token, config.secret);
+  } else {
+    throw new Error('Token cannot be undefined');
+  }
 }
 
 export const comparePasswords = (raw: string, hash: string): boolean => {
