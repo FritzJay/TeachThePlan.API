@@ -196,8 +196,9 @@ export const createQuestions = (operator: string, number: number, questions: num
 export const setCorrectAnswers = (test: ITest): number => {
   let numberOfCorrectAnswers = 0;
   for (let question of test.questions) {
+    const studentAnswer = (question.studentAnswer) ? question.studentAnswer.toString() : ''
     question.correctAnswer = mathjs.eval(question.question);
-    question.correctAnswer.toString() === question.studentAnswer.toString() && numberOfCorrectAnswers++; 
+    question.correctAnswer.toString() === studentAnswer && numberOfCorrectAnswers++; 
   }
   return numberOfCorrectAnswers;
 };
@@ -205,7 +206,8 @@ export const setCorrectAnswers = (test: ITest): number => {
 const getRandomIncorrectlyAnsweredQuestion = (test: ITest): IQuestion => {
   let incorrectlyAnsweredQuestions: IQuestion[] = [];
   for (let question of test.questions) {
-    question.correctAnswer.toString() !== question.studentAnswer.toString() && incorrectlyAnsweredQuestions.push(question); 
+    const studentAnswer = (question.studentAnswer) ? question.studentAnswer.toString() : ''
+    question.correctAnswer.toString() !== studentAnswer && incorrectlyAnsweredQuestions.push(question); 
   }
   return incorrectlyAnsweredQuestions[Math.floor(Math.random() * incorrectlyAnsweredQuestions.length)];
 }
