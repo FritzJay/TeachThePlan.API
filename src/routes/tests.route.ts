@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { getAvailableTests, newTest, gradeTest, IAvailableTests, submitTest, ITestResults } from '../library/tests/tests';
-import { ITestParameters } from '../library/testParameters/testParameters';
+import { ITestParameters, getTestParameters } from '../library/testParameters/testParameters';
 import { ITest, IQuestion } from '../library/tests/tests';
 import { authorizeUser } from '../library/authentication/authentication';
 
@@ -48,23 +48,27 @@ testsRouter.get('/available', (request: Request, response: Response) => {
 testsRouter.post('/new', (request: Request, response: Response) => {
   authorizeUser(request.headers.authorization, 'Type')
   .then((user) => {
-    const testParameters: ITestParameters = {
-      operator: request.body.operator,
-      number: request.body.number,
-      questions: request.body.questions,
-      randomQuestions: request.body.randomQuestions,
-      duration: request.body.duration,
-    };
-    newTest(testParameters, user._id)
-    .then((test: ITest) => {
-      response.status(200).json({test});
+    getTestParameters(user._id)
+    .then((testParameters: ITestParameters) => {
+      testParameters.operator = request.body.operator;
+      testParameters.number = request.body.number;
+      newTest(testParameters, user._id)
+      .then((test: ITest) => {
+        response.status(200).json({test});
+      })
+      .catch((error) => {
+        response.status(500).json({
+          error: error.toString()
+        });
+      });
     })
     .catch((error) => {
       response.status(500).json({
         error: error.toString()
       });
-    });
-  }).catch((error) => {
+    })
+  })
+  .catch((error) => {
     response.status(401).json({
       error: error.toString()
     });
@@ -109,10 +113,11 @@ testsRouter.post('/grade', (request: Request, response: Response) => {
       response.status(500).json({
         error: error.toString()
       });
-    }).catch((error) => {
-      response.status(401).json({
-        error: error.toString()
-      });
+    });
+  })
+  .catch((error) => {
+    response.status(401).json({
+      error: error.toString()
     });
   });
 });
