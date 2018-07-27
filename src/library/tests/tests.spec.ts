@@ -1,6 +1,5 @@
 import { ITest, IQuestion, ITestResults } from '../../library/tests/tests';
 import { ITestParameters } from '../../library/testParameters/testParameters';
-import { Callback } from '../../library/common';
 import * as Tests from "./tests";
 
 const VALID_TEST_PARAMETERS: ITestParameters = {
@@ -11,36 +10,11 @@ const VALID_TEST_PARAMETERS: ITestParameters = {
   duration: 75,
 }
 
-describe('validateNewTestArguments', () => {
-  let testParameters: ITestParameters;
-  beforeEach(() => {
-    testParameters = { ...VALID_TEST_PARAMETERS }
-  });
-
-  it('does not throw errors when given valid parameters', () => {
-    Tests.validateNewTestArguments(testParameters)
-  });
-
-  it('throws an error for each invalid argument', () => {
-    testParameters.operator = '%';
-    testParameters.number = -5;
-    testParameters.questions = 0;
-    testParameters.randomQuestions = -1;
-    testParameters.duration = -75;
-
-    try {
-      Tests.validateNewTestArguments(testParameters)
-    } catch (errors) {
-      expect(errors).toHaveLength(5);
-    }
-  });
-});
-
 describe('gradeTest', () => {
   const now = new Date(Date.now());
   const later = new Date(Date.now() + 10000);
   const questions: IQuestion[] = [
-      {
+    {
         question: '1 + 1',
         studentAnswer: 2,
         start: now,
@@ -71,25 +45,25 @@ describe('gradeTest', () => {
         end: later,
       }
     ];
-  const test: ITest = {
-    duration: 75,
-    start: now,
-    end: now,
-    questions: questions,
-  }
-  beforeEach(() => {
-    for (let question of test.questions) {
-      question.correctAnswer = null;
+    const test: ITest = {
+      duration: 75,
+      start: now,
+      end: now,
+      questions: questions,
     }
-  });
-  it('returns the total number of questions', (done) => {
-    Tests.gradeTest(test)
+    beforeEach(() => {
+      for (let question of test.questions) {
+        question.correctAnswer = null;
+      }
+    });
+    it('returns the total number of questions', (done) => {
+      Tests.gradeTest(test)
     .then((testResults: ITestResults) => {
       expect(testResults.total).toEqual(questions.length);
       done();
     });
   });
-
+  
   it('returns needed as 80% of the total number of questions', (done) => {
     Tests.gradeTest(test)
     .then((testResults: ITestResults) => {
@@ -97,7 +71,7 @@ describe('gradeTest', () => {
       done();
     });
   });
-
+  
   it('returns a count of the correctly answered questions', (done) => {
     Tests.gradeTest(test)
     .then((testResults: ITestResults) => {
@@ -105,7 +79,7 @@ describe('gradeTest', () => {
       done();
     });
   });
-
+  
   it('returns one of the incorrectly answered questions as incorrect', (done) => {
     const incorrectlyAnsweredQuestions = questions.slice(3);
     Tests.gradeTest(test)
@@ -114,7 +88,7 @@ describe('gradeTest', () => {
       done();
     });
   });
-
+  
   it('returns the question with the minimum difference between start and stop as the quickest answered', (done) => {
     Tests.gradeTest(test)
     .then((testResults: ITestResults) => {
@@ -122,7 +96,7 @@ describe('gradeTest', () => {
       done();
     });
   });
-
+  
   it('sets the correct answer of each question', (done) => {
     Tests.gradeTest(test)
     .then((testResults: ITestResults) => {
@@ -135,12 +109,35 @@ describe('gradeTest', () => {
   });
 });
 
+describe('validateNewTestArguments', () => {
+  let testParameters: ITestParameters;
+  beforeEach(() => {
+    testParameters = { ...VALID_TEST_PARAMETERS }
+  });
+  it('does not throw errors when given valid parameters', () => {
+    Tests.validateNewTestArguments(testParameters)
+  });
+
+  it('throws an error for each invalid argument', () => {
+    testParameters.operator = '%';
+    testParameters.number = -5;
+    testParameters.questions = 0;
+    testParameters.randomQuestions = -1;
+    testParameters.duration = -75;
+    try {
+      Tests.validateNewTestArguments(testParameters)
+    } catch (errors) {
+      expect(errors).toHaveLength(5);
+    }
+  });
+});
+
 describe('createQuestions', () => {
   it('returns the correct number of questions', () => {
     const questions: IQuestion[] = Tests.createQuestions('+', 5, 20, 5)
     expect(questions.length).toBe(25);
   });
-
+  
   it('returns questions with a maximum number of 12', () => {
     const operator = '-'
     const questions: IQuestion[] = Tests.createQuestions(operator, 10, 20, 10)
@@ -149,6 +146,82 @@ describe('createQuestions', () => {
       expect(parseInt(num1)).toBeLessThanOrEqual(12);
       expect(parseInt(num2)).toBeLessThanOrEqual(12);
     }
+  });
+});
+
+describe('setCorrectAnswers', () => {
+  const test = () => {
+    return {
+      questions: [
+        {
+          question: '1 + 1',
+          correctAnswer: undefined,
+          studentAnswer: 2,
+        },
+        {
+          question: '1 + 2',
+          correctAnswer: undefined,
+          studentAnswer: 2,
+        },
+      ],
+    };
+  };
+  it('sets correctAnswer on each question', () => {
+    const testInstance = test();
+    Tests.setCorrectAnswers(testInstance);
+    for (let question of testInstance.questions) {
+      expect(question.correctAnswer).not.toBeUndefined();
+    }
+  });
+
+  it('returns the number of correct questions', () => {
+    expect(Tests.setCorrectAnswers(test())).toBe(1);
+  });
+});
+
+describe('getRandomIncorrectlyAnsweredQuestion', () => {
+  const correctQuestion = {
+    question: '1 + 2',
+    studentAnswer: 3,
+    correctAnswer: 3,
+  }
+  const incorrectQuestion = {
+    question: '2 + 2',
+    studentAnswer: 3,
+    correctAnswer: 4,
+  }
+
+  it('returns an incorrectly answered question', () => {
+    const test = {
+      questions: [correctQuestion, incorrectQuestion]
+    }
+    expect(Tests.getRandomIncorrectlyAnsweredQuestion(test)).toBe(incorrectQuestion);
+  });
+  
+  it('returns undefined if all answers are correct', () => {
+    const test = {
+      questions: [correctQuestion, correctQuestion]
+    }
+    expect(Tests.getRandomIncorrectlyAnsweredQuestion(test)).toBeUndefined();
+  });
+});
+
+describe('getQuickestAnsweredQuestion', () => {
+  it('returns the quickest answered question', () => {
+    const slowQuestion = {
+      start: new Date(),
+      end: new Date(Date.now() + 1000),
+      question: '',
+    };
+    const quickestQuestion = {
+      start: new Date(),
+      end: new Date(),
+      question: '',
+    }
+    const test = {
+      questions: [slowQuestion, quickestQuestion],
+    }
+    expect(Tests.getQuickestAnsweredQuestion(test)).toEqual(quickestQuestion);
   });
 });
 
@@ -170,5 +243,37 @@ describe('createFormattedQuestion', () => {
     for (let i = 0; i < 25; i++) {
       expect(Tests.createFormattedQuestion(operator, num1, num2)).toEqual(expectedQuestion);
     }
+  });
+});
+
+describe('createFormattedQuestion', () => {
+  it('randomly changes the order of the numbers if operator is not one of / or -', () => {
+    let orderHasChanged = false;
+    for (let i = 0; i < 100; i++) {
+      const numbers = Tests.createFormattedQuestion('+', 1, 2).question.split(' + ');
+      if (parseInt(numbers[0], 10) == 2) {
+        orderHasChanged = true;
+        break;
+      }
+    }
+    expect(orderHasChanged).toBeTruthy();
+  });
+
+  it('does not change the order of the numbers if operator is one of / or -', () => {
+    for (let i = 0; i < 100; i++) {
+      const numbers = Tests.createFormattedQuestion('-', 1, 2).question.split(' - ');
+      expect(parseInt(numbers[0], 10)).toBe(1);
+    }
+  });
+});
+
+describe('incrementOrResetAt', () => {
+  const max = 10;
+  it('increments when number is less than max', () => {
+    expect(Tests.incrementOrResetAt(5, max)).toBe(6);
+  });
+
+  it('resets to zero when number is >= max', () => {
+    expect(Tests.incrementOrResetAt(max, max)).toBe(0);
   });
 });

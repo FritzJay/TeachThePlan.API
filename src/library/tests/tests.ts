@@ -130,6 +130,26 @@ export const submitTest = (test: ITest): Promise<ITestModel> => {
   });
 }
 
+export const authorizeUserForNewTest = (userID: string, number: number, operator: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    getAvailableTests(userID)
+    .then((availableTests: IAvailableTests) => {
+      const matchingTestNumber = availableTests.numbers.find((testNumber: ITestNumber) => testNumber.number == number);
+      if (!matchingTestNumber) {
+        reject(new Error(`Student is not authorized to test the number '${number}`));
+      }
+      const operatorIsAvailable = matchingTestNumber.operators.includes(operator);
+      if (!operatorIsAvailable) {
+        reject(new Error(`Student is not authorized to test the operator '${operator}' for the number ${number}`));
+      }
+      resolve();
+    })
+    .catch((error) => {
+      reject(error);
+    });
+  });
+}
+
 export const validateNewTestArguments = (params: ITestParameters): Promise<void> => {
   return new Promise((resolve, reject) => {
     let errors: ArgumentError[] = [];
@@ -156,36 +176,14 @@ export const validateNewTestArguments = (params: ITestParameters): Promise<void>
   });
 }
 
-export const authorizeUserForNewTest = (userID: string, number: number, operator: string): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    getAvailableTests(userID)
-    .then((availableTests: IAvailableTests) => {
-      const matchingTestNumber = availableTests.numbers.find((testNumber: ITestNumber) => testNumber.number == number);
-      if (!matchingTestNumber) {
-        reject(new Error(`Student is not authorized to test the number '${number}`));
-      }
-      const operatorIsAvailable = matchingTestNumber.operators.includes(operator);
-      if (!operatorIsAvailable) {
-        reject(new Error(`Student is not authorized to test the operator '${operator}' for the number ${number}`));
-      }
-      resolve();
-    })
-    .catch((error) => {
-      reject(error);
-    });
-  });
-}
-
 export const createQuestions = (operator: string, number: number, questions: number, randomQuestions: number): IQuestion[] => {
   let formattedQuestions: IQuestion[] = [];
-  let questionsIndex;
-  let secondNumberIndex = 0;
-  for (questionsIndex = 0; questionsIndex < questions; questionsIndex++) {
-    formattedQuestions.push(createFormattedQuestion(operator, number, secondNumberIndex));
-    secondNumberIndex = incrementOrResetAt(secondNumberIndex, MAX_NUMBER);
+  while (formattedQuestions.length < questions) {
+    const secondNumber = formattedQuestions.length % MAX_NUMBER;
+    const formattedQuestion = createFormattedQuestion(operator, number, secondNumber);
+    formattedQuestions.push(formattedQuestion);
   }
-  let randomIndex;
-  for (randomIndex = 0; randomIndex < randomQuestions; randomIndex++) {
+  while (formattedQuestions.length < questions + randomQuestions) {
     const randomNumberBetweenZeroAndNumber = (Math.random() * (number + 1) | 0);
     const randomNumberBetweenZeroAndMax = (Math.random() * (MAX_NUMBER + 1) | 0);
     formattedQuestions.push(createFormattedQuestion(operator, randomNumberBetweenZeroAndNumber, randomNumberBetweenZeroAndMax));
@@ -203,7 +201,7 @@ export const setCorrectAnswers = (test: ITest): number => {
   return numberOfCorrectAnswers;
 };
 
-const getRandomIncorrectlyAnsweredQuestion = (test: ITest): IQuestion => {
+export const getRandomIncorrectlyAnsweredQuestion = (test: ITest): IQuestion => {
   let incorrectlyAnsweredQuestions: IQuestion[] = [];
   for (let question of test.questions) {
     const studentAnswer = (question.studentAnswer) ? question.studentAnswer.toString() : ''
@@ -212,7 +210,7 @@ const getRandomIncorrectlyAnsweredQuestion = (test: ITest): IQuestion => {
   return incorrectlyAnsweredQuestions[Math.floor(Math.random() * incorrectlyAnsweredQuestions.length)];
 }
 
-const getQuickestAnsweredQuestion = (test: ITest): IQuestion => {
+export const getQuickestAnsweredQuestion = (test: ITest): IQuestion => {
   return test.questions.reduce((a, b) => {
     const aDuration: number = a.end.getTime() - a.start.getTime();
     const bDuration: number = b.end.getTime() - b.start.getTime();
@@ -221,22 +219,17 @@ const getQuickestAnsweredQuestion = (test: ITest): IQuestion => {
 }
 
 export const createFormattedQuestion = (operator: string, firstNumber: Number, secondNumber: Number): IQuestion => {
-  const numbersShouldNotBeShuffled = ['-', '/'].includes(operator);
-  const [num1, num2] = (numbersShouldNotBeShuffled) ? [firstNumber, secondNumber] : shuffleArray([firstNumber, secondNumber]);
+  const numbers = [firstNumber, secondNumber];
+  const shufflingWontResultInFractionsOrNegatives = !['-', '/'].includes(operator)
+  if (shufflingWontResultInFractionsOrNegatives) {
+    numbers.sort(() => Math.random() - 0.5);
+  }
   return {
-    question: `${num1} ${operator} ${num2}`,
+    question: `${numbers[0]} ${operator} ${numbers[1]}`,
   }
 }
 
-const shuffleArray = (array: any[]): any[] => {
-  for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]]; // eslint-disable-line no-param-reassign
-  }
-  return array;
-}
-
-const incrementOrResetAt = (number: number, max: number): number => {
+export const incrementOrResetAt = (number: number, max: number): number => {
   if (number < max) {
     return number + 1;
   } else {
