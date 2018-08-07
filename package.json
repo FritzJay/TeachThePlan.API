@@ -46,6 +46,7 @@
       "/node modules/",
       "dist"
     ],
-    "testRegex": ".*spec.*.(js|ts|tsx)$$"
+    "testRegex": ".*spec.*.(js|ts|tsx)$$",
+    "testURL": "https://localhost/"
   }
 }
