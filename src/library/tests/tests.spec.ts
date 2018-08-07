@@ -228,8 +228,8 @@ describe('getQuickestAnsweredQuestion', () => {
 describe('createFormattedQuestion', () => {
   it('does not flip numbers when the operator is subtract or divide', () => {
     let operator = '-';
-    const num1 = 1;
-    const num2 = 2;
+    const num1 = 2;
+    const num2 = 1;
     let expectedQuestion = {
       question: `${num1} ${operator} ${num2}`
     }
@@ -257,13 +257,6 @@ describe('createFormattedQuestion', () => {
       }
     }
     expect(orderHasChanged).toBeTruthy();
-  });
-
-  it('does not change the order of the numbers if operator is one of / or -', () => {
-    for (let i = 0; i < 100; i++) {
-      const numbers = Tests.createFormattedQuestion('-', 1, 2).question.split(' - ');
-      expect(parseInt(numbers[0], 10)).toBe(1);
-    }
   });
 });
 

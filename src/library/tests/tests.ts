@@ -223,6 +223,8 @@ export const createFormattedQuestion = (operator: string, firstNumber: Number, s
   const shufflingWontResultInFractionsOrNegatives = !['-', '/'].includes(operator)
   if (shufflingWontResultInFractionsOrNegatives) {
     numbers.sort(() => Math.random() - 0.5);
+  } else {
+    numbers.sort((a: number, b: number) => b - a);
   }
   return {
     question: `${numbers[0]} ${operator} ${numbers[1]}`,
