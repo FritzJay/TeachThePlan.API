@@ -202,24 +202,33 @@ export const setCorrectAnswers = (test: ITest): number => {
 };
 
 export const getRandomIncorrectlyAnsweredQuestion = (test: ITest): IQuestion => {
-  let incorrectlyAnsweredQuestions: IQuestion[] = [];
-  for (let question of test.questions) {
-    const studentAnswer = (question.studentAnswer) ? question.studentAnswer.toString() : ''
-    question.correctAnswer.toString() !== studentAnswer && incorrectlyAnsweredQuestions.push(question); 
-  }
+  const incorrectlyAnsweredQuestions: IQuestion[] = test.questions.filter((q) => !isCorrect(q));
   return incorrectlyAnsweredQuestions[Math.floor(Math.random() * incorrectlyAnsweredQuestions.length)];
 }
 
 export const getQuickestAnsweredQuestion = (test: ITest): IQuestion => {
-  return test.questions.reduce((a, b) => {
-    const aDuration: number = a.end.getTime() - a.start.getTime();
-    const bDuration: number = b.end.getTime() - b.start.getTime();
-    return aDuration < bDuration ? a : b;
-  });
+  const correctlyAnsweredQuestions = test.questions.filter((q) => isCorrect(q));
+  if (correctlyAnsweredQuestions.length !== 0) {
+    return correctlyAnsweredQuestions.reduce((a, b) => {
+      const aDuration: number = a.end.getTime() - a.start.getTime();
+      const bDuration: number = b.end.getTime() - b.start.getTime();
+      return aDuration < bDuration ? a : b;
+    });
+  }
 }
 
-export const createFormattedQuestion = (operator: string, firstNumber: Number, secondNumber: Number): IQuestion => {
+const isCorrect = (question: IQuestion): Boolean => {
+  if(!question.studentAnswer) {
+    return false;
+  }
+  return question.correctAnswer.toString() === question.studentAnswer.toString();
+}
+
+export const createFormattedQuestion = (operator: string, firstNumber: number, secondNumber: number): IQuestion => {
   const numbers = [firstNumber, secondNumber];
+  if (operator === '/') {
+    numbers[1] = secondNumber * firstNumber;
+  }
   const shufflingWontResultInFractionsOrNegatives = !['-', '/'].includes(operator)
   if (shufflingWontResultInFractionsOrNegatives) {
     numbers.sort(() => Math.random() - 0.5);
