@@ -218,7 +218,7 @@ export const getQuickestAnsweredQuestion = (test: ITest): IQuestion => {
 }
 
 const isCorrect = (question: IQuestion): Boolean => {
-  if(!question.studentAnswer) {
+  if(question.studentAnswer === undefined) {
     return false;
   }
   return question.correctAnswer.toString() === question.studentAnswer.toString();
