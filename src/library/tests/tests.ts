@@ -197,7 +197,9 @@ export const setCorrectAnswers = (test: ITest): number => {
   for (let question of test.questions) {
     const studentAnswer = (question.studentAnswer) ? question.studentAnswer.toString() : ''
     question.correctAnswer = mathjs.eval(question.question);
-    question.correctAnswer.toString() === studentAnswer && numberOfCorrectAnswers++; 
+    if (question.correctAnswer.toString() === studentAnswer) {
+      numberOfCorrectAnswers++; 
+    }
   }
   return numberOfCorrectAnswers;
 };
@@ -219,7 +221,7 @@ export const getQuickestAnsweredQuestion = (test: ITest): IQuestion => {
 }
 
 const isCorrect = (question: IQuestion): Boolean => {
-  if(question.studentAnswer === undefined) {
+  if (question.studentAnswer === undefined || question.studentAnswer === null) {
     return false;
   }
   return question.correctAnswer.toString() === question.studentAnswer.toString();
