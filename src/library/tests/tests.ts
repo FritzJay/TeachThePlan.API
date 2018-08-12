@@ -13,6 +13,7 @@ export const NUMBERS: ITestNumber[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   }
 });
 export const MAX_NUMBER = 12;
+export const PASSING_PERCENTAGE = 0.9;
 
 export interface ITestNumber {
   number: number;
@@ -96,7 +97,7 @@ export const gradeTest = (test: ITest): Promise<ITestResults> => {
     const quickestQuestion: IQuestion = getQuickestAnsweredQuestion(test);
     const testResults: ITestResults = {
       total: test.questions.length,
-      needed: Math.round(test.questions.length * 0.8),
+      needed: Math.round(test.questions.length * PASSING_PERCENTAGE),
       correct: numberOfCorrectAnswers,
       incorrect: incorrectQuestion,
       quickest: quickestQuestion,

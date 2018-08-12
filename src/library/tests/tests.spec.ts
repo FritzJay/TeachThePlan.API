@@ -64,10 +64,10 @@ describe('gradeTest', () => {
     });
   });
   
-  it('returns needed as 80% of the total number of questions', (done) => {
+  it('returns needed as PASSING_PERCENTAGE of the total number of questions', (done) => {
     Tests.gradeTest(test)
     .then((testResults: ITestResults) => {
-      expect(testResults.needed).toEqual(Math.round(questions.length * 0.8));
+      expect(testResults.needed).toEqual(Math.round(questions.length * Tests.PASSING_PERCENTAGE));
       done();
     });
   });
