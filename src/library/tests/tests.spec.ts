@@ -190,6 +190,11 @@ describe('getRandomIncorrectlyAnsweredQuestion', () => {
     studentAnswer: 3,
     correctAnswer: 4,
   }
+  const undefinedQuestion = {
+    question: '2 + 2',
+    studentAnswer: undefined,
+    correctAnswer: 4,
+  }
 
   it('returns an incorrectly answered question', () => {
     const test = {
@@ -204,30 +209,62 @@ describe('getRandomIncorrectlyAnsweredQuestion', () => {
     }
     expect(Tests.getRandomIncorrectlyAnsweredQuestion(test)).toBeUndefined();
   });
+
+  it('treats undefined student answers as incorrect', () => {
+    const test = {
+      questions: [undefinedQuestion],
+    }
+    expect(Tests.getRandomIncorrectlyAnsweredQuestion(test)).toBe(undefinedQuestion);
+  });
 });
 
 describe('getQuickestAnsweredQuestion', () => {
+  const slowQuestion = {
+    start: new Date(),
+    end: new Date(Date.now() + 1000),
+    question: '1 + 1',
+    correctAnswer: 2,
+    studentAnswer: 2,
+  };
+  const quickestQuestion = {
+    start: new Date(),
+    end: new Date(),
+    question: '1 + 1',
+    correctAnswer: 2,
+    studentAnswer: 2,
+  };
+  const incorrectQuestion = {
+    start: new Date(),
+    end: new Date(),
+    question: '1 + 1',
+    correctAnswer: 2,
+    studentAnswer: 1,
+  }
   it('returns the quickest answered question', () => {
-    const slowQuestion = {
-      start: new Date(),
-      end: new Date(Date.now() + 1000),
-      question: '',
-    };
-    const quickestQuestion = {
-      start: new Date(),
-      end: new Date(),
-      question: '',
-    }
     const test = {
       questions: [slowQuestion, quickestQuestion],
     }
     expect(Tests.getQuickestAnsweredQuestion(test)).toEqual(quickestQuestion);
   });
+  
+  it('returns only correctly answered questions', () => {
+    const test = {
+      questions: [slowQuestion, incorrectQuestion],
+    }
+    expect(Tests.getQuickestAnsweredQuestion(test)).toEqual(slowQuestion);
+  });
+
+  it('returns undefined if there are no correctly answered questions', () => {
+    const test = {
+      questions: [incorrectQuestion],
+    }
+    expect(Tests.getQuickestAnsweredQuestion(test)).toBeUndefined();
+  });
 });
 
 describe('createFormattedQuestion', () => {
-  it('does not flip numbers when the operator is subtract or divide', () => {
-    let operator = '-';
+  it('does not flip numbers when the operator is subtract', () => {
+    const operator = '-';
     const num1 = 2;
     const num2 = 1;
     let expectedQuestion = {
@@ -236,14 +273,17 @@ describe('createFormattedQuestion', () => {
     for (let i = 0; i < 25; i++) {
       expect(Tests.createFormattedQuestion(operator, num1, num2)).toEqual(expectedQuestion);
     }
-    operator = '/'
-    expectedQuestion = {
-      question: `${num1} ${operator} ${num2}`
-    }
-    for (let i = 0; i < 25; i++) {
-      expect(Tests.createFormattedQuestion(operator, num1, num2)).toEqual(expectedQuestion);
-    }
   });
+
+  it('multiplies the second number by the first when the operator is division', () => {
+    const operator = '/'
+    const num1 = 2;
+    const num2 = 1;
+    let expectedQuestion = {
+      question: `${num1} ${operator} ${num2 * num1}`
+    }
+    expect(Tests.createFormattedQuestion(operator, num1, num2)).toEqual(expectedQuestion);
+  })
 });
 
 describe('createFormattedQuestion', () => {
