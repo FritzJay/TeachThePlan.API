@@ -11,7 +11,7 @@ import { teachersRouter } from './src/routes/teachers.route';
 import { classesRouter } from './src/routes/classes.route';
 import { studentRouter } from './src/routes/students.route';
 
-const PORT: number = 3000;
+const PORT: number = parseInt(process.env.PORT, 10) || 3000;
 
 const allowCrossDomain = (require, res, next) => {
   res.header('Access-Control-Allow-Origin', 'http://localhost:3001, https://ttp-factfluency.herokuapp.com:3001');
