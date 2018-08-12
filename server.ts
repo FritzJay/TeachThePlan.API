@@ -3,6 +3,7 @@ import * as config from './config';
 var app = express();
 import { urlencoded, json } from 'body-parser';
 import { connect } from 'mongoose';
+import { baseRouter } from './src/routes/base.route';
 import { userRouter } from './src/routes/user.route';
 import { testsRouter } from './src/routes/tests.route';
 import { schoolsRouter } from './src/routes/schools.route';
@@ -24,6 +25,7 @@ connect(`mongodb://factfluency:${config.mongodbPassword}@factfluency-shard-00-00
 app.use(urlencoded({ extended: false }));
 app.use(json());
 app.use(allowCrossDomain);
+app.use('/', baseRouter);
 app.use('/user', userRouter);
 app.use('/tests', testsRouter);
 app.use('/schools', schoolsRouter);
