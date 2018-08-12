@@ -1,2 +1,2 @@
-export const secret = 'secret goes here';
-export const mongodbPassword = 'password goes here';
+export const SECRET = 'secret goes here';
+export const MONGODB_PASSWORD = 'password goes here';

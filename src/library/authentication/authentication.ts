@@ -22,7 +22,7 @@ export const createToken = (user: IUserModel): string => {
       email: user.email,
       _id: user._id
     },
-    config.secret,
+    process.env.SECRET || config.SECRET,
     {
       expiresIn: '2h'
     });
@@ -30,7 +30,7 @@ export const createToken = (user: IUserModel): string => {
 
 export const verifyToken = (token: string) => {
   if (token) {
-    return verify(token, config.secret);
+    return verify(token, process.env.SECRET || config.SECRET);
   } else {
     throw new Error('Token cannot be undefined');
   }
