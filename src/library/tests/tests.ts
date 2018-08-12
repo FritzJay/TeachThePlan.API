@@ -195,9 +195,8 @@ export const createQuestions = (operator: string, number: number, questions: num
 export const setCorrectAnswers = (test: ITest): number => {
   let numberOfCorrectAnswers = 0;
   for (let question of test.questions) {
-    const studentAnswer = (question.studentAnswer) ? question.studentAnswer.toString() : ''
     question.correctAnswer = mathjs.eval(question.question);
-    if (question.correctAnswer.toString() === studentAnswer) {
+    if (isCorrect(question)) {
       numberOfCorrectAnswers++; 
     }
   }
