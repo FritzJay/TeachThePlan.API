@@ -94,7 +94,7 @@ testsRouter.post('/grade', (request: Request, response: Response) => {
       userID: user.id,
       duration: request.body.duration,
       start: new Date(request.body.start),
-      end: new Date(request.body.start),
+      end: new Date(request.body.end),
       questions: getQuestionsFromRequest(request),
     }
     gradeTest(test)
