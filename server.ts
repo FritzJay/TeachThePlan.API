@@ -13,7 +13,7 @@ import { studentRouter } from './src/routes/students.route';
 const PORT: number = parseInt(process.env.PORT, 10) || 3000;
 
 const allowCrossDomain = (require, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://ttp-factfluency.herokuapp.com:3001');
+  res.header('Access-Control-Allow-Origin', 'http://ttp-factfluency.herokuapp.com');
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
