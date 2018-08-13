@@ -6,7 +6,8 @@
   "scripts": {
     "start-dev": "nodemon --exec ./node_modules/.bin/ts-node -- ./server.ts",
     "start": "node dist/server.js",
-    "postinstall": "tsc"
+    "postinstall": "tsc",
+    "test": "jest"
   },
   "author": "Fritz Jay",
   "license": "ISC",
