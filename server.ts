@@ -1,5 +1,4 @@
 import * as express from 'express';
-import * as config from './config';
 var app = express();
 import { urlencoded, json } from 'body-parser';
 import { connect } from 'mongoose';

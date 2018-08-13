@@ -1,7 +1,6 @@
 import { compareSync } from 'bcrypt';
 import { sign, verify } from 'jsonwebtoken'
 import { IUserModel } from '../../models/user.model';
-import * as config from '../../../config';
 import { getUserFromToken } from '../users/users';
 
 export const authorizeUser = (token: string, _auth_type: string): Promise<IUserModel> => {
