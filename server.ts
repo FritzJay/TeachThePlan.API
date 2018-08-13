@@ -32,4 +32,6 @@ app.use('/teachers', teachersRouter);
 app.use('/classes', classesRouter);
 app.use('/students', studentRouter);
 
-app.listen(PORT);
+app.listen(PORT, () => {
+  console.log(`Listening for api requests on ${PORT}`);
+});
