@@ -9,11 +9,21 @@ import { schoolsRouter } from './src/routes/schools.route';
 import { teachersRouter } from './src/routes/teachers.route';
 import { classesRouter } from './src/routes/classes.route';
 import { studentRouter } from './src/routes/students.route';
+require('dotenv').config()
 
 const PORT: number = parseInt(process.env.PORT, 10) || 3000;
 
-const allowCrossDomain = (require, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://ttp-factfluency.herokuapp.com');
+const allowCrossDomain = (req, res, next) => {
+  const allowedOrigins = [
+    'http://ttp-factfluency.herokuapp.com',
+    'http://localhost:3001'
+  ];
+  const origin = req.headers.origin;
+  allowedOrigins.forEach((allowed: string) => {
+    if (allowed.startsWith(origin)) {
+      res.header('Access-Control-Allow-Origin', origin);
+    }
+  });
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
