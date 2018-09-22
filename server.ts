@@ -14,11 +14,7 @@ require('dotenv').config()
 const PORT: number = parseInt(process.env.PORT, 10) || 3000;
 
 const allowCrossDomain = (req, res, next) => {
-  const allowedOrigins = [
-    'http://ttp-factfluency.herokuapp.com',
-    'http://ttp-stage.herokuapp.com',
-    'http://localhost:3001'
-  ];
+  const allowedOrigins = [process.env.TTP_URL];
   const origin = req.headers.origin;
   allowedOrigins.forEach((allowed: string) => {
     if (allowed.startsWith(origin)) {
