@@ -217,7 +217,7 @@ describe('getRandomIncorrectlyAnsweredQuestion', () => {
     expect(Tests.getRandomIncorrectlyAnsweredQuestion(test)).toBe(undefinedQuestion);
   });
 
-  it('prioritises incorrectly answered questions over skipped questions', () => {
+  it('prioritizes incorrectly answered questions over skipped questions', () => {
     const test = {
       questions: [
         undefinedQuestion,
