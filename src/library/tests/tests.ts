@@ -205,7 +205,16 @@ export const setCorrectAnswers = (test: ITest): number => {
 
 export const getRandomIncorrectlyAnsweredQuestion = (test: ITest): IQuestion => {
   const incorrectlyAnsweredQuestions: IQuestion[] = test.questions.filter((q) => !isCorrect(q));
-  return incorrectlyAnsweredQuestions[Math.floor(Math.random() * incorrectlyAnsweredQuestions.length)];
+  if (incorrectlyAnsweredQuestions.length > 0) {
+    const answeredQuestions: IQuestion[] = incorrectlyAnsweredQuestions.filter((q) => !isSkipped(q));
+    if (answeredQuestions.length > 0) {
+      return answeredQuestions[Math.floor(Math.random() * answeredQuestions.length)];
+    } else {
+      return incorrectlyAnsweredQuestions[Math.floor(Math.random() * incorrectlyAnsweredQuestions.length)];
+    }
+  } else {
+    return undefined;
+  }
 }
 
 export const getQuickestAnsweredQuestion = (test: ITest): IQuestion => {
@@ -220,10 +229,14 @@ export const getQuickestAnsweredQuestion = (test: ITest): IQuestion => {
 }
 
 const isCorrect = (question: IQuestion): Boolean => {
-  if (question.studentAnswer === undefined || question.studentAnswer === null) {
+  if (isSkipped(question)) {
     return false;
   }
   return question.correctAnswer.toString() === question.studentAnswer.toString();
+}
+
+const isSkipped = (question: IQuestion): Boolean => {
+  return question.studentAnswer === undefined || question.studentAnswer === null;
 }
 
 export const createFormattedQuestion = (operator: string, firstNumber: number, secondNumber: number): IQuestion => {
