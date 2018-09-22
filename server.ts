@@ -16,6 +16,7 @@ const PORT: number = parseInt(process.env.PORT, 10) || 3000;
 const allowCrossDomain = (req, res, next) => {
   const allowedOrigins = [
     'http://ttp-factfluency.herokuapp.com',
+    'http://ttp-stage.herokuapp.com'
     'http://localhost:3001'
   ];
   const origin = req.headers.origin;
