@@ -216,6 +216,18 @@ describe('getRandomIncorrectlyAnsweredQuestion', () => {
     }
     expect(Tests.getRandomIncorrectlyAnsweredQuestion(test)).toBe(undefinedQuestion);
   });
+
+  it('prioritizes incorrectly answered questions over skipped questions', () => {
+    const test = {
+      questions: [
+        undefinedQuestion,
+        incorrectQuestion
+      ],
+    }
+    for (let i = 0; i < 10; i++) {
+      expect(Tests.getRandomIncorrectlyAnsweredQuestion(test)).toBe(incorrectQuestion);
+    }
+  });
 });
 
 describe('getQuickestAnsweredQuestion', () => {
