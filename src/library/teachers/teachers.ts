@@ -3,6 +3,7 @@ import { addTeacherToSchool } from '../schools/schools';
 import { ISchoolModel } from '../../models/school.model';
 import { Types } from 'mongoose';
 import { resolve } from 'path';
+import { User, IUserModel } from '../../models/user.model';
 
 export interface ITeacher {
   userID: Types.ObjectId,
@@ -37,6 +38,37 @@ export const createTeacher = (teacherParams: ITeacher, schoolName: string): Prom
       .catch((error) => {
         reject(error);
       });
+    });
+  });
+}
+
+
+export const getTeacherByEmail = (email: string): Promise<ITeacherModel> => {
+  console.log('Getting teacher by email');
+  console.log(`email: ${email}`);
+  return new Promise((resolve, reject) => {
+    User.findOne({
+      email: email
+    })
+    .exec()
+    .then((user: IUserModel) => {
+      if (user) {
+        Teacher.findOne({
+          userID: user._id,
+        })
+        .exec()
+        .then((teacher) => {
+          resolve(teacher)
+        })
+        .catch((error) => {
+          reject(error)
+        })
+      } else {
+        reject(new Error('Could not find teacher'))
+      }
+    })
+    .catch((error) => {
+      reject(error)
     });
   });
 }

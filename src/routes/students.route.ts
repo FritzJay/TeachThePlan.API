@@ -55,8 +55,8 @@ studentRouter.post('/create', (request: Request, response: Response) => {
       expiresIn: '2h'
     }
   Request.body {
-    displayName,
-    classCode
+    email,
+    password
   }
 */
 studentRouter.post('/signin', (request: Request, response: Response) => {
