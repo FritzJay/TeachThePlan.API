@@ -9,10 +9,10 @@ export let testsRouter = Router();
 /*
   Return a list of available tests
 
-  Authorization: TODO
+  Authorization: student
 */
 testsRouter.get('/available', (request: Request, response: Response) => {
-  authorizeUser(request.headers.authorization, 'Type')
+  authorizeUser(request.headers.authorization, 'student')
   .then((user) => {
     getAvailableTests(user._id)
     .then((availableTests: IAvailableTests) => {
@@ -35,7 +35,7 @@ testsRouter.get('/available', (request: Request, response: Response) => {
 /*
   Returns a new test with empty questions
 
-  Authorization: TODO
+  Authorization: student
 
   Request.body {
     operator,
@@ -46,7 +46,7 @@ testsRouter.get('/available', (request: Request, response: Response) => {
   }
 */
 testsRouter.post('/new', (request: Request, response: Response) => {
-  authorizeUser(request.headers.authorization, 'Type')
+  authorizeUser(request.headers.authorization, 'student')
   .then((user) => {
     getTestParameters(user._id)
     .then((testParameters: ITestParameters) => {
@@ -78,7 +78,7 @@ testsRouter.post('/new', (request: Request, response: Response) => {
 /*
   Returns a graded version of a given test
 
-  Authorization: TODO
+  Authorization: student
 
   Request.body {
     duration,
@@ -88,7 +88,7 @@ testsRouter.post('/new', (request: Request, response: Response) => {
   }
 */
 testsRouter.post('/grade', (request: Request, response: Response) => {
-  authorizeUser(request.headers.authorization, 'Type')
+  authorizeUser(request.headers.authorization, 'student')
   .then((user) => {
     const test: ITest = {
       userID: user.id,

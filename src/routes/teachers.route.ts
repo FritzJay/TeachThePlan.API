@@ -7,7 +7,7 @@ export let teachersRouter = Router();
 /*
   Creates a new teacher
 
-  Authorization: TODO
+  Authorization: administrator
 
   Request.body {
     schoolName,
@@ -17,7 +17,7 @@ export let teachersRouter = Router();
   }
 */
 teachersRouter.post('/create', (request: Request, response: Response) => {
-  authorizeUser(request.headers.authorization, 'Type')
+  authorizeUser(request.headers.authorization, 'administrator')
   .then((user) => {
     const newTeacher: ITeacher = {
       userID: request.body.userID,

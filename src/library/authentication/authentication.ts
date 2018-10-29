@@ -3,12 +3,17 @@ import { sign, verify } from 'jsonwebtoken'
 import { IUserModel } from '../../models/user.model';
 import { getUserFromToken } from '../users/users';
 
-export const authorizeUser = (token: string, _auth_type: string): Promise<IUserModel> => {
+export const authorizeUser = (token: string, userType: string): Promise<IUserModel> => {
   return new Promise((resolve, reject) => {
     getUserFromToken(token)
     .then((user) => {
-      // Perform authorization steps here
-      resolve(user);
+      console.log(user);
+      if (user.userType.includes(userType)) {
+        resolve(user);
+      } else {
+        console.log('Invalid user type');
+        reject(new Error('Invalid user type'));
+      }
     })
     .catch((error) => {
       reject(error);
@@ -19,7 +24,8 @@ export const authorizeUser = (token: string, _auth_type: string): Promise<IUserM
 export const createToken = (user: IUserModel): string => {
   return sign({
       email: user.email,
-      _id: user._id
+      _id: user._id,
+      userType: user.userType,
     },
     process.env.SECRET,
     {

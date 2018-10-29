@@ -15,7 +15,8 @@ export let userRouter = Router();
     email,
     password,
     firstName,
-    lastName
+    lastName,
+    userType
   }
 */
 userRouter.post('/create', (request: Request, response: Response): void => {
@@ -23,7 +24,8 @@ userRouter.post('/create', (request: Request, response: Response): void => {
     email: request.body.email,
     password: request.body.password,
     firstName: request.body.firstName,
-    lastName: request.body.lastName
+    lastName: request.body.lastName,
+    userType: request.body.userType,
   });
   createUser(newUser)
   .then((user: IUserModel) => {
@@ -41,7 +43,7 @@ userRouter.post('/create', (request: Request, response: Response): void => {
 /*
   Creates a new session for a user
 
-  Authorization: TODO
+  Authorization: None
 
   request.body {
     email,

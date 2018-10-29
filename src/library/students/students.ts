@@ -3,6 +3,7 @@ import { Student, IStudentModel } from '../../models/student.model';
 import { IClassModel } from '../../models/class.model';
 import { addStudentToClass, getClassByClassCode } from '../classes/classes';
 import { Types } from 'mongoose';
+import { User, IUserModel } from '../../models/user.model';
 
 export interface IStudent {
   userID: Types.ObjectId,
@@ -28,7 +29,7 @@ export const createStudent = (studentParams: IStudent, classCode: string): Promi
       })
       .catch((error) => {
         Student.remove({ _id: newStudent._id })
-        .then((error) => {
+        .then((_student) => {
           reject(error);
         });
       })
@@ -67,6 +68,36 @@ export const getStudentByDisplayNameAndClassCode = (displayName: string, classCo
     })
     .catch((error) => {
       reject(error);
+    });
+  });
+}
+
+export const getStudentByEmail = (email: string): Promise<IStudentModel> => {
+  console.log('Getting student by email');
+  console.log(`email: ${email}`);
+  return new Promise((resolve, reject) => {
+    User.findOne({
+      email: email
+    })
+    .exec()
+    .then((user: IUserModel) => {
+      if (user) {
+        Student.findOne({
+          userID: user._id,
+        })
+        .exec()
+        .then((student) => {
+          resolve(student)
+        })
+        .catch((error) => {
+          reject(error)
+        })
+      } else {
+        reject(new Error('Could not find student'))
+      }
+    })
+    .catch((error) => {
+      reject(error)
     });
   });
 }

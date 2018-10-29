@@ -7,7 +7,7 @@ export let schoolsRouter = Router();
 /*
   Creates a new school
 
-  Authorization: TODO
+  Authorization: administrator
 
   Request.body: {
     name,
@@ -15,7 +15,7 @@ export let schoolsRouter = Router();
   }
 */
 schoolsRouter.post('/create', (request: Request, response: Response) => {
-  authorizeUser(request.headers.authorization, 'Type')
+  authorizeUser(request.headers.authorization, 'administrator')
   .then((_user) => {
     const newSchool: ISchool = {
       name: request.body.name,
@@ -44,14 +44,14 @@ schoolsRouter.post('/create', (request: Request, response: Response) => {
 /*
   Returns a school who's name matches `Request.body.name`
 
-  Authorization: TODO
+  Authorization: administrator
 
   Request.body {
     name
   }
 */
 schoolsRouter.get('/getByName', (request: Request, response: Response) => {
-  authorizeUser(request.headers.authorization, 'Type')
+  authorizeUser(request.headers.authorization, 'administrator')
   .then(() => {
     getSchoolByName(request.body.name)
     .then((school: ISchool) => {

@@ -8,6 +8,7 @@ export interface IUser {
   password?: string;
   firstName?: string;
   lastName?: string;
+  userType?: string[];
 }
 
 export const createUser = (userParams: IUser): Promise<IUserModel> => {
@@ -18,7 +19,8 @@ export const createUser = (userParams: IUser): Promise<IUserModel> => {
       email: userParams.email,
       password: hashSync(userParams.password, 10),
       firstName: userParams.firstName,
-      lastName: userParams.lastName
+      lastName: userParams.lastName,
+      userType: userParams.userType,
     })
     .save()
     .then((newUser) => {

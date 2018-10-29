@@ -2,15 +2,15 @@ import { Router, Request, Response } from 'express';
 import { IUserModel } from '../models/user.model';
 import { getUserByID } from '../library/users/users';
 import { IStudentModel, Student } from '../models/student.model';
-import { createToken, authorizeUser } from '../library/authentication/authentication';
-import { getStudentByDisplayNameAndClassCode, IStudent, createStudent } from '../library/students/students';
+import { createToken, authorizeUser, comparePasswords } from '../library/authentication/authentication';
+import { getStudentByEmail, IStudent, createStudent } from '../library/students/students';
 
 export let studentRouter = Router();
 
 /*
   Creates a new student
 
-  Authentication: TODO,
+  Authentication: teacher,
 
   Request.body {
     userID,
@@ -19,7 +19,7 @@ export let studentRouter = Router();
   }
 */
 studentRouter.post('/create', (request: Request, response: Response) => {
-  authorizeUser(request.headers.authorization, 'TODO')
+  authorizeUser(request.headers.authorization, 'teacher')
   .then((user: IUserModel) => {
     const classCode: string = request.body.classCode;
     const newStudent: IStudent = new Student({
@@ -60,20 +60,26 @@ studentRouter.post('/create', (request: Request, response: Response) => {
   }
 */
 studentRouter.post('/signin', (request: Request, response: Response) => {
-  const displayName = request.body.name;
-  const classCode = request.body.classCode;
-  getStudentByDisplayNameAndClassCode(displayName, classCode)
+  const email = request.body.email;
+  const password = request.body.password;
+  getStudentByEmail(email)
   .then((student: IStudentModel) => {
     getUserByID(student.userID)
     .then((user: IUserModel) => {
-      const token = createToken(user);
-      response.status(200).json({
-        success: "Authenticated",
-        user: {
-          name: student.displayName,
-        },
-        token: token,
-      });
+      if (!comparePasswords(password, user.password)) {
+        response.status(401).json({
+          error: 'Incorrect password'
+        })
+      } else {
+        const token = createToken(user);
+        response.status(200).json({
+          success: "Authenticated",
+          user: {
+            name: student.displayName,
+          },
+          token: token,
+        });
+      }
     })
     .catch((error) => {
       response.status(500).json({

@@ -3,13 +3,15 @@ import { IUser } from "../library/users/users";
 
 export interface IUserModel extends IUser, Document {
   displayName: string;
+  userType: string[];
 }
 
 export var UserSchema: Schema = new Schema({
   email: String,
   password: String,
   firstName: String,
-  lastName: String
+  lastName: String,
+  userType: [String],
 });
 
 export const User: Model<IUserModel> = model<IUserModel>("User", UserSchema);

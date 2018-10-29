@@ -9,7 +9,7 @@ export let classesRouter = Router();
 /*
   Creates a new class
 
-  Authorization: TODO
+  Authorization: teacher
 
   Request.body {
     classCode,
@@ -17,7 +17,7 @@ export let classesRouter = Router();
   }
 */
 classesRouter.post('/create', (request: Request, response: Response) => {
-  authorizeUser(request.headers.authorization, 'TODO')
+  authorizeUser(request.headers.authorization, 'teacher')
   .then((user: IUserModel) => {
     const newClass: IClass = {
       classCode: request.body.classCode,
