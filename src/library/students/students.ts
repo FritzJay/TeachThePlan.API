@@ -3,7 +3,7 @@ import { Student, IStudentModel } from '../../models/student.model';
 import { IClassModel } from '../../models/class.model';
 import { addStudentToClass, getClassByClassCode } from '../classes/classes';
 import { Types } from 'mongoose';
-import { User, IUserModel } from '../../models/user.model';
+import { getUserByEmail } from '../users/users';
 
 export interface IStudent {
   userID: Types.ObjectId,
@@ -76,8 +76,7 @@ export const getStudentByEmail = async (email: string): Promise<IStudentModel> =
   console.log('Getting student by email');
   console.log(`email: ${email}`);
 
-  const user = await User.findOne({ email }).exec()
-
+  const user = await getUserByEmail(email)
   return await Student.findOne({ userID: user._id }).exec()
 }
 
