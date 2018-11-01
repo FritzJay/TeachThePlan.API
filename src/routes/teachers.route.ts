@@ -67,13 +67,15 @@ teachersRouter.post('/signin', (request: Request, response: Response) => {
   getTeacherByEmail(email)
     .then((teacher: ITeacherModel) => {
       getUserByID(teacher.userID)
-      .then((user: IUserModel) => {
-        if (!comparePasswords(password, user.password)) {
+      .then(async (user: IUserModel) => {
+        const passwordsMatch = await comparePasswords(password, user.password)
+
+        if (!passwordsMatch) {
           response.status(401).json({
             error: 'Incorrect password'
           })
         } else {
-          const token = createToken(user);
+          const token = await createToken(user);
           response.status(200).json({
             success: "Authenticated",
             user: {

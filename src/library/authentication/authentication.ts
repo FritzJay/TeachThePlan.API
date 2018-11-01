@@ -1,39 +1,30 @@
-import { compareSync } from 'bcrypt';
+import { compare } from 'bcrypt';
 import { sign, verify } from 'jsonwebtoken'
 import { IUserModel } from '../../models/user.model';
 import { getUserFromToken } from '../users/users';
 
-export const authorizeUser = (token: string, userType: string): Promise<IUserModel> => {
-  return new Promise((resolve, reject) => {
-    getUserFromToken(token)
-    .then((user) => {
-      console.log(user);
-      if (user.userType.includes(userType)) {
-        resolve(user);
-      } else {
-        console.log('Invalid user type');
-        reject(new Error('Invalid user type'));
-      }
-    })
-    .catch((error) => {
-      reject(error);
-    })
-  });
+export const authorizeUser = async (token: string, userType: string): Promise<IUserModel> => {
+  const user = await getUserFromToken(token)
+  
+  if (user.userType.includes(userType)) {
+    return user
+  } else {
+    console.log('User does not contain the required user type', user, userType)
+    throw Error('Invalid user type')
+  }
 }
 
-export const createToken = (user: IUserModel): string => {
-  return sign({
-      email: user.email,
-      _id: user._id,
-      userType: user.userType,
-    },
+export const createToken = async (user: IUserModel): Promise<string> => {
+  const { email, _id, userType } = user
+
+  return sign(
+    { email, _id, userType, },
     process.env.SECRET,
-    {
-      expiresIn: '2h'
-    });
+    { expiresIn: '2h' }
+  )
 }
 
-export const verifyToken = (token: string) => {
+export const verifyToken = async (token: string): Promise<string | object> => {
   if (token) {
     return verify(token, process.env.SECRET);
   } else {
@@ -41,6 +32,6 @@ export const verifyToken = (token: string) => {
   }
 }
 
-export const comparePasswords = (raw: string, hash: string): boolean => {
-  return compareSync(raw, hash);
+export const comparePasswords = (raw: string, hash: string): Promise<boolean> => {
+  return compare(raw, hash);
 }

@@ -35,8 +35,8 @@ export const createUser = (userParams: IUser): Promise<IUserModel> => {
 export const getUserFromToken = (token: string): Promise<IUserModel> => {
   console.log('Getting user from token');
   console.log(`token: ${token}`);
-  return new Promise((resolve, reject) => {
-    const decodedToken = verifyToken(token);
+  return new Promise(async (resolve, reject) => {
+    const decodedToken = await verifyToken(token);
     const email = decodedToken['email'];
     getUserByEmail(email)
     .then((user) => {

@@ -56,10 +56,11 @@ userRouter.post('/signin', function(request: Request, response: Response): void 
     password: request.body.password,
   }
   getUserByEmail(newSession.email)
-  .then((user: IUserModel) => {
-    const passwordMatch = comparePasswords(newSession.password, user.password)
+  .then(async (user: IUserModel) => {
+    const passwordMatch = await comparePasswords(newSession.password, user.password)
+    
     if (passwordMatch) {
-      const token = createToken(user);
+      const token = await createToken(user);
       response.status(200).json({
         success: "Authenticated",
         token: token
