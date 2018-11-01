@@ -72,34 +72,13 @@ export const getStudentByDisplayNameAndClassCode = (displayName: string, classCo
   });
 }
 
-export const getStudentByEmail = (email: string): Promise<IStudentModel> => {
+export const getStudentByEmail = async (email: string): Promise<IStudentModel> => {
   console.log('Getting student by email');
   console.log(`email: ${email}`);
-  return new Promise((resolve, reject) => {
-    User.findOne({
-      email: email
-    })
-    .exec()
-    .then((user: IUserModel) => {
-      if (user) {
-        Student.findOne({
-          userID: user._id,
-        })
-        .exec()
-        .then((student) => {
-          resolve(student)
-        })
-        .catch((error) => {
-          reject(error)
-        })
-      } else {
-        reject(new Error('Could not find student'))
-      }
-    })
-    .catch((error) => {
-      reject(error)
-    });
-  });
+
+  const user = await User.findOne({ email }).exec()
+
+  return await Student.findOne({ userID: user._id }).exec()
 }
 
 export const removeStudentByID = (studentID: Types.ObjectId): Promise<IStudentModel> => {
