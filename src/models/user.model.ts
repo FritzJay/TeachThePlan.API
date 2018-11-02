@@ -1,9 +1,9 @@
-import { Document, Schema, Model, model } from "mongoose";
-import { IUser } from "../library/users/users";
+import { Document, Schema, Model, model } from "mongoose"
+import { IUser } from "../library/users/users"
 
 export interface IUserModel extends IUser, Document {
-  displayName: string;
-  userType: string[];
+  displayName: string
+  userType: string[]
 }
 
 export var UserSchema: Schema = new Schema({
@@ -12,6 +12,6 @@ export var UserSchema: Schema = new Schema({
   firstName: String,
   lastName: String,
   userType: [String],
-});
+})
 
-export const User: Model<IUserModel> = model<IUserModel>("User", UserSchema);
+export const User: Model<IUserModel> = model<IUserModel>("User", UserSchema)

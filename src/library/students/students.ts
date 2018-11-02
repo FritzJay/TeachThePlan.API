@@ -1,9 +1,9 @@
-import { ITest } from '../tests/tests';
-import { Student, IStudentModel } from '../../models/student.model';
-import { IClassModel } from '../../models/class.model';
-import { addStudentToClass, getClassByClassCode } from '../classes/classes';
-import { Types } from 'mongoose';
-import { getUserByEmail } from '../users/users';
+import { ITest } from '../tests/tests'
+import { Student, IStudentModel } from '../../models/student.model'
+import { IClassModel } from '../../models/class.model'
+import { addStudentToClass, getClassByClassCode } from '../classes/classes'
+import { Types } from 'mongoose'
+import { getUserByEmail } from '../users/users'
 
 export interface IStudent {
   userID: Types.ObjectId,
@@ -12,41 +12,41 @@ export interface IStudent {
 }
 
 export const createStudent = (studentParams: IStudent, classCode: string): Promise<IStudentModel> => {
-  console.log('Creating a new student. IStudent:');
-  console.log(studentParams);
-  console.log(`classCode: ${classCode}`);
+  console.log('Creating a new student. IStudent:')
+  console.log(studentParams)
+  console.log(`classCode: ${classCode}`)
   return new Promise((resolve, reject) => {
     const newStudent = new Student({
       userID: studentParams.userID,
       displayName: studentParams.displayName,
       tests: studentParams.tests,
-    });
+    })
     newStudent.save()
     .then((student: IStudentModel) => {
       addStudentToClass(student._id, classCode.toString())
       .then((_cls: IClassModel) => {
-        resolve(student);
+        resolve(student)
       })
       .catch((error) => {
         Student.remove({ _id: newStudent._id })
         .then((_student) => {
-          reject(error);
-        });
+          reject(error)
+        })
       })
     })
     .catch((error) => {
       newStudent.remove()
       .then((_student) => {
-        reject(error);
-      });
-    });
-  });
+        reject(error)
+      })
+    })
+  })
 }
 
 export const getStudentByDisplayNameAndClassCode = (displayName: string, classCode: string): Promise<IStudentModel> => {
-  console.log('Getting student by display name and class code');
-  console.log(`displayName: ${displayName}`);
-  console.log(`classCode: ${classCode}`);
+  console.log('Getting student by display name and class code')
+  console.log(`displayName: ${displayName}`)
+  console.log(`classCode: ${classCode}`)
   return new Promise((resolve, reject) => {
     getClassByClassCode(classCode)
     .then((cls: IClassModel) => {
@@ -57,24 +57,24 @@ export const getStudentByDisplayNameAndClassCode = (displayName: string, classCo
       .exec()
       .then((student: IStudentModel) => {
         if (student) {
-          resolve(student);
+          resolve(student)
         } else {
-          reject(new Error('Could not find student'));
+          reject(new Error('Could not find student'))
         }
       })
       .catch((error) => {
-        reject(error);
-      });
+        reject(error)
+      })
     })
     .catch((error) => {
-      reject(error);
-    });
-  });
+      reject(error)
+    })
+  })
 }
 
 export const getStudentByEmail = async (email: string): Promise<IStudentModel> => {
-  console.log('Getting student by email');
-  console.log(`email: ${email}`);
+  console.log('Getting student by email')
+  console.log(`email: ${email}`)
 
   const user = await getUserByEmail(email)
   return await Student.findOne({ userID: user._id }).exec()
@@ -84,10 +84,10 @@ export const removeStudentByID = (studentID: Types.ObjectId): Promise<IStudentMo
   return new Promise((resolve, reject) => {
     Student.findByIdAndRemove(studentID)
     .then((student: IStudentModel) => {
-      resolve(student);
+      resolve(student)
     })
     .catch((error) => {
-      reject(error);
-    });
-  });
+      reject(error)
+    })
+  })
 }

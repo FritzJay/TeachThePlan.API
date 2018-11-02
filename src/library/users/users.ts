@@ -1,19 +1,19 @@
-import { hashSync } from 'bcrypt';
-import { Types } from 'mongoose';
-import { User, IUserModel } from '../../models/user.model';
-import { verifyToken } from '../authentication/authentication';
+import { hashSync } from 'bcrypt'
+import { Types } from 'mongoose'
+import { User, IUserModel } from '../../models/user.model'
+import { verifyToken } from '../authentication/authentication'
 
 export interface IUser {
-  email?: string;
-  password?: string;
-  firstName?: string;
-  lastName?: string;
-  userType?: string[];
+  email?: string
+  password?: string
+  firstName?: string
+  lastName?: string
+  userType?: string[]
 }
 
 export const createUser = async (userParams: IUser): Promise<IUserModel> => {
-  console.log('Creating a new user. IUser:');
-  console.log(userParams);
+  console.log('Creating a new user. IUser:')
+  console.log(userParams)
 
   return new User({
     email: userParams.email,
@@ -26,18 +26,18 @@ export const createUser = async (userParams: IUser): Promise<IUserModel> => {
 }
 
 export const getUserFromToken = async (token: string): Promise<IUserModel> => {
-  console.log('Getting user from token');
-  console.log(`token: ${token}`);
+  console.log('Getting user from token')
+  console.log(`token: ${token}`)
 
-  const decodedToken = await verifyToken(token);
-  const email = decodedToken['email'];
+  const decodedToken = await verifyToken(token)
+  const email = decodedToken['email']
 
   return getUserByEmail(email)
 }
 
 export const getUserByEmail = async (email: string): Promise<IUserModel> => {
-  console.log('Getting user by email');
-  console.log(`email: ${email}`);
+  console.log('Getting user by email')
+  console.log(`email: ${email}`)
 
   const user = await User.findOne({ email }).exec()
 
@@ -50,8 +50,8 @@ export const getUserByEmail = async (email: string): Promise<IUserModel> => {
 }
 
 export const getUserByID = async (id: Types.ObjectId): Promise<IUserModel> => {
-  console.log('Getting user by userID');
-  console.log(`userID: ${id}`);
+  console.log('Getting user by userID')
+  console.log(`userID: ${id}`)
 
   const user = await User.findById(id).exec()
 
@@ -64,8 +64,8 @@ export const getUserByID = async (id: Types.ObjectId): Promise<IUserModel> => {
 }
 
 export const removeUserByID = async (id: Types.ObjectId): Promise<IUserModel> => {
-  console.log('Removing user by userID');
-  console.log(`userID: ${id}`);
+  console.log('Removing user by userID')
+  console.log(`userID: ${id}`)
 
   return User.findByIdAndRemove(id)
 }

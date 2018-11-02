@@ -1,7 +1,7 @@
-import { compare } from 'bcrypt';
+import { compare } from 'bcrypt'
 import { sign, verify } from 'jsonwebtoken'
-import { IUserModel } from '../../models/user.model';
-import { getUserFromToken } from '../users/users';
+import { IUserModel } from '../../models/user.model'
+import { getUserFromToken } from '../users/users'
 
 export const authorizeUser = async (token: string, userType: string): Promise<IUserModel> => {
   const user = await getUserFromToken(token)
@@ -26,12 +26,12 @@ export const createToken = async (user: IUserModel): Promise<string> => {
 
 export const verifyToken = async (token: string): Promise<string | object> => {
   if (token) {
-    return verify(token, process.env.SECRET);
+    return verify(token, process.env.SECRET)
   } else {
-    throw new Error('Token cannot be undefined');
+    throw new Error('Token cannot be undefined')
   }
 }
 
 export const comparePasswords = (raw: string, hash: string): Promise<boolean> => {
-  return compare(raw, hash);
+  return compare(raw, hash)
 }
