@@ -45,34 +45,22 @@ testsRouter.get('/available', (request: Request, response: Response) => {
     duration
   }
 */
-testsRouter.post('/new', (request: Request, response: Response) => {
-  authorizeUser(request.headers.authorization, 'student')
-  .then((user) => {
-    getTestParameters(user._id)
-    .then((testParameters: ITestParameters) => {
-      testParameters.operator = request.body.operator;
-      testParameters.number = request.body.number;
-      newTest(testParameters, user._id)
-      .then((test: ITest) => {
-        response.status(200).json({test});
-      })
-      .catch((error) => {
-        response.status(500).json({
-          error: error.toString()
-        });
-      });
-    })
-    .catch((error) => {
-      response.status(500).json({
-        error: error.toString()
-      });
-    })
-  })
-  .catch((error) => {
-    response.status(401).json({
+testsRouter.post('/new', async (request: Request, response: Response) => {
+  try {
+    const { _id } = await authorizeUser(request.headers.authorization, 'student')
+
+    const testParameters = await getTestParameters(_id)
+    testParameters.operator = request.body.operator;
+    testParameters.number = request.body.number;
+
+    const test = await newTest(testParameters, _id)
+    response.status(200).json({ test })
+  } catch (error) {
+    console.log('Error ocurred during test/new', error)
+    response.status(500).json({
       error: error.toString()
-    });
-  });
+    })
+  }
 });
 
 /*

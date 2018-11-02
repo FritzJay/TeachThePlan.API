@@ -109,13 +109,13 @@ describe('gradeTest', () => {
   });
 });
 
-describe('validateNewTestArguments', () => {
+describe('assertNewTestArgumentsAreValid', () => {
   let testParameters: ITestParameters;
   beforeEach(() => {
     testParameters = { ...VALID_TEST_PARAMETERS }
   });
   it('does not throw errors when given valid parameters', () => {
-    Tests.validateNewTestArguments(testParameters)
+    Tests.assertNewTestArgumentsAreValid(testParameters)
   });
 
   it('throws an error for each invalid argument', () => {
@@ -125,7 +125,7 @@ describe('validateNewTestArguments', () => {
     testParameters.randomQuestions = -1;
     testParameters.duration = -75;
     try {
-      Tests.validateNewTestArguments(testParameters)
+      Tests.assertNewTestArgumentsAreValid(testParameters)
     } catch (errors) {
       expect(errors).toHaveLength(5);
     }
