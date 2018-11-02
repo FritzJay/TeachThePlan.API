@@ -1,10 +1,9 @@
-import { Router, Request, Response } from 'express';
-import { IUserModel, User } from '../models/user.model';
-import { IUser } from '../library/users/users';
-import { createUser, getUserByEmail } from '../library/users/users';
-import { comparePasswords, createToken } from '../library/authentication/authentication';
+import { Router, Request, Response } from 'express'
+import { IUserModel } from '../models/user.model'
+import { createUser, getUserByEmail } from '../library/users/users'
+import { comparePasswords, createToken } from '../library/authentication/authentication'
 
-export let userRouter = Router();
+export let userRouter = Router()
 
 /*
   Creates a new user
@@ -19,26 +18,31 @@ export let userRouter = Router();
     userType
   }
 */
-userRouter.post('/create', (request: Request, response: Response): void => {
-  const newUser: IUser = new User({
-    email: request.body.email,
-    password: request.body.password,
-    firstName: request.body.firstName,
-    lastName: request.body.lastName,
-    userType: request.body.userType,
-  });
-  createUser(newUser)
-  .then((user: IUserModel) => {
+userRouter.post('/create', async (request: Request, response: Response) => {
+  try {
+    const { email, password, firstName, lastName, userType } = request.body
+
+    const user = await createUser({
+      email,
+      password,
+      firstName,
+      lastName,
+      userType,
+    })
+
     response.status(200).json({
-      success: 'User successfully created!',
-      user: user
-    }); 
-  }).catch((error) => {
-    response.status(401).json({
+      success: 'User successfully created',
+      user,
+    })
+
+  } catch(error) {
+    console.log('Error ocurred in users/create', error)
+    response.status(500).json({
       error: error.toString()
-    });
-  });
-});
+    })
+  }
+
+})
 
 /*
   Creates a new session for a user
@@ -50,29 +54,32 @@ userRouter.post('/create', (request: Request, response: Response): void => {
     password
   }
 */
-userRouter.post('/signin', function(request: Request, response: Response): void {
-  const newSession = {
-    email: request.body.email,
-    password: request.body.password,
-  }
-  getUserByEmail(newSession.email)
-  .then(async (user: IUserModel) => {
-    const passwordMatch = await comparePasswords(newSession.password, user.password)
-    
+userRouter.post('/signin', async (request: Request, response: Response) => {
+  try {
+    const { email, password } = request.body
+  
+    const user = await getUserByEmail(email)
+  
+    const passwordMatch = await comparePasswords(password, user.password)
+      
     if (passwordMatch) {
-      const token = await createToken(user);
+      const token = await createToken(user)
+  
       response.status(200).json({
         success: "Authenticated",
         token: token
-      });
+      })
+  
     } else {
       response.status(401).json({
         error: "Invalid credentials provided."
-      });
+      })
     }
-  }).catch((error) => {
-    response.status(401).json({
+
+  } catch(error) {
+    console.log('Error ocurred in users/signin', error)
+    response.status(500).json({
       error: error.toString()
-    });
-  });
-});
+    })
+  }
+})
