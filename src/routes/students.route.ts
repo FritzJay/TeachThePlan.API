@@ -1,9 +1,7 @@
 import { Router, Request, Response } from 'express'
-import { IUserModel } from '../models/user.model'
 import { getUserByID } from '../library/users/users'
-import { IStudentModel, Student } from '../models/student.model'
 import { createToken, authorizeUser, comparePasswords } from '../library/authentication/authentication'
-import { getStudentByEmail, IStudent, createStudent } from '../library/students/students'
+import { getStudentByEmail, createStudent } from '../library/students/students'
 
 export let studentRouter = Router()
 
