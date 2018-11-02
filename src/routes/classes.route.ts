@@ -1,10 +1,8 @@
-import { Router, Request, Response } from 'express';
-import { IClass, createClass } from '../library/classes/classes';
-import { authorizeUser } from '../library/authentication/authentication';
-import { IUserModel } from '../models/user.model';
-import { IClassModel } from '../models/class.model';
+import { Router, Request, Response } from 'express'
+import { createClass } from '../library/classes/classes'
+import { authorizeUser } from '../library/authentication/authentication'
 
-export let classesRouter = Router();
+export let classesRouter = Router()
 
 /*
   Creates a new class
@@ -16,29 +14,28 @@ export let classesRouter = Router();
     studentIDs?
   }
 */
-classesRouter.post('/create', (request: Request, response: Response) => {
-  authorizeUser(request.headers.authorization, 'teacher')
-  .then((user: IUserModel) => {
-    const newClass: IClass = {
-      classCode: request.body.classCode,
-      studentIDs: request.body.students,
-    };
-    createClass(newClass, user._id)
-    .then((cls: IClassModel) => {
-      return response.status(200).json({
-        success: 'Class was successfully created!',
-        class: cls,
-      });
+classesRouter.post('/create', async (request: Request, response: Response) => {
+  try {
+    const user = await authorizeUser(request.headers.authorization, 'teacher')
+
+    const newClass = await createClass(
+      {
+        classCode: request.body.classCode,
+        studentIDs: request.body.students,
+      },
+      user._id
+    )
+
+    return response.status(200).json({
+      success: 'Class was successfully created!',
+      class: newClass,
     })
-    .catch((error) => {
-      return response.status(500).json({
-        error: error.toString()
-      });
-    })
-  })
-  .catch((error) => {
-    return response.status(401).json({
+
+  } catch (error) {
+
+    console.log('Error ocurred in class/create', error)
+    return response.status(500).json({
       error: error.toString()
-    });
-  });
-});
+    })
+  }
+})
