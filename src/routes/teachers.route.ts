@@ -9,29 +9,16 @@ export let teachersRouter = Router()
 /*
   Creates a new teacher
 
-  Authorization: administrator
-
   Request.body {
-    schoolName,
-    user,
-    displayName,
-    classIDs?
+    email,
+    password
   }
 */
 teachersRouter.post('/create', async (request: Request, response: Response) => {
   try {
-    const { userID, displayName, classIDs, schoolName } = request.body
-  
-    await authorizeUser(request.headers.authorization, 'administrator')
-  
-    const teacher = await createTeacher(
-    {
-        userID,
-        displayName,
-        classIDs,
-      },
-      schoolName
-    )
+    const { email, password } = request.body
+    
+    const teacher = await createTeacher({ email, password })
   
     response.status(200).json({
       success: 'Teacher was successfully created!',
