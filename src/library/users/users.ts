@@ -18,6 +18,8 @@ export const createUser = async (userParams: IUser): Promise<IUserModel> => {
 
   const hashedPassword = await hash(password, 10)
 
+  await assertUserWithEmailDoesNotExist(email)
+
   return await new User({
     email,
     password: hashedPassword,
@@ -26,6 +28,14 @@ export const createUser = async (userParams: IUser): Promise<IUserModel> => {
     userType,
   })
   .save()
+}
+
+const assertUserWithEmailDoesNotExist = async (email: string) => {
+  const user = await User.findOne({ email }).exec()
+
+  if (user !== null) {
+    throw new Error(`User with an email of ${email} already exists`)
+  }
 }
 
 export const getUserFromToken = async (token: string): Promise<IUserModel> => {
