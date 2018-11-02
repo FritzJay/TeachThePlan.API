@@ -1,11 +1,11 @@
-import { Router, Request, Response } from 'express';
-import { IUserModel } from '../models/user.model';
-import { getUserByID } from '../library/users/users';
-import { IStudentModel, Student } from '../models/student.model';
-import { createToken, authorizeUser, comparePasswords } from '../library/authentication/authentication';
-import { getStudentByEmail, IStudent, createStudent } from '../library/students/students';
+import { Router, Request, Response } from 'express'
+import { IUserModel } from '../models/user.model'
+import { getUserByID } from '../library/users/users'
+import { IStudentModel, Student } from '../models/student.model'
+import { createToken, authorizeUser, comparePasswords } from '../library/authentication/authentication'
+import { getStudentByEmail, IStudent, createStudent } from '../library/students/students'
 
-export let studentRouter = Router();
+export let studentRouter = Router()
 
 /*
   Creates a new student
@@ -18,34 +18,32 @@ export let studentRouter = Router();
     classCode
   }
 */
-studentRouter.post('/create', (request: Request, response: Response) => {
-  authorizeUser(request.headers.authorization, 'teacher')
-  .then((user: IUserModel) => {
-    const classCode: string = request.body.classCode;
-    const newStudent: IStudent = new Student({
-      userID: request.body.userID,
-      displayName: request.body.displayName,
-    });
-    // Authorize user is a teacher that has a classID with a classCode of `classCode`
-    createStudent(newStudent, classCode)
-    .then((student: IStudentModel) => {
-      response.status(200).json({
-        success: 'Student successfully created!',
-        student: student
-      });
+studentRouter.post('/create', async (request: Request, response: Response) => {
+  try {
+    const { classCode, userID, displayName } = request.body
+
+    await authorizeUser(request.headers.authorization, 'teacher')
+
+    const student = await createStudent(
+      {
+        userID: userID,
+        displayName: displayName,
+      },
+      classCode
+    )
+
+    response.status(200).json({
+      success: 'Student successfully created!',
+      student: student
     })
-    .catch((error) => {
-      response.status(500).json({
-        error: error.toString(),
-      });
-    });
-  })
-  .catch((error) => {
-    response.status(401).json({
-      error: error.toString(),
-    });
-  });
-});
+
+  } catch (error) {
+    console.log('Error ocurred in student/create', error)
+    response.status(500).json({
+      error: error.toString()
+    })
+  }
+})
 
 /*
   Creates a session for a student
@@ -59,39 +57,37 @@ studentRouter.post('/create', (request: Request, response: Response) => {
     password
   }
 */
-studentRouter.post('/signin', (request: Request, response: Response) => {
-  const email = request.body.email;
-  const password = request.body.password;
-  getStudentByEmail(email)
-  .then((student: IStudentModel) => {
-    getUserByID(student.userID)
-    .then(async (user: IUserModel) => {
-      const passwordsMatch = await comparePasswords(password, user.password)
-      
-      if (!passwordsMatch) {
-        response.status(401).json({
-          error: 'Incorrect password'
-        })
-      } else {
-        const token = await createToken(user);
-        response.status(200).json({
-          success: "Authenticated",
-          user: {
-            name: student.displayName,
-          },
-          token: token,
-        });
-      }
+studentRouter.post('/signin', async (request: Request, response: Response) => {
+  try {
+    const { email, password } = request.body
+  
+    const student = await getStudentByEmail(email)
+
+    const user = await getUserByID(student.userID)
+
+    const passwordsMatch = await comparePasswords(password, user.password)
+
+    if (!passwordsMatch) {
+      response.status(401).json({
+        error: 'Incorrect password'
+      })
+
+    } else {
+      const token = await createToken(user)
+
+      response.status(200).json({
+        success: "Authenticated",
+        user: {
+          name: student.displayName,
+        },
+        token: token,
+      })
+    }
+
+  } catch (error) {
+    console.log('Error ocurred in students/signin', error)
+    response.status(500).json({
+      error: error.toString()
     })
-    .catch((error) => {
-      response.status(500).json({
-        error: error.toString(),
-      });
-    });
-  })
-  .catch((error) => {
-    response.status(401).json({
-      error: error.toString(),
-    });
-  });
-});
+  }
+})

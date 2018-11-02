@@ -26,7 +26,7 @@ classesRouter.post('/create', async (request: Request, response: Response) => {
       user._id
     )
 
-    return response.status(200).json({
+    response.status(200).json({
       success: 'Class was successfully created!',
       class: newClass,
     })
@@ -34,7 +34,7 @@ classesRouter.post('/create', async (request: Request, response: Response) => {
   } catch (error) {
 
     console.log('Error ocurred in class/create', error)
-    return response.status(500).json({
+    response.status(500).json({
       error: error.toString()
     })
   }
