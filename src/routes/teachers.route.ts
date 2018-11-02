@@ -1,12 +1,10 @@
-import { Router, Request, Response } from 'express';
-import { ITeacher, createTeacher, getTeacherByUserID, getTeacherByEmail } from '../library/teachers/teachers';
-import { authorizeUser, createToken, comparePasswords } from '../library/authentication/authentication';
-import { ITeacherModel } from '../models/teacher.model';
-import { Class } from '../models/class.model';
-import { getUserByID } from '../library/users/users';
-import { IUserModel } from '../models/user.model';
+import { Router, Request, Response } from 'express'
+import { createTeacher, getTeacherByUserID, getTeacherByEmail } from '../library/teachers/teachers'
+import { authorizeUser, createToken, comparePasswords } from '../library/authentication/authentication'
+import { Class } from '../models/class.model'
+import { getUserByID } from '../library/users/users'
 
-export let teachersRouter = Router();
+export let teachersRouter = Router()
 
 /*
   Creates a new teacher
@@ -20,33 +18,33 @@ export let teachersRouter = Router();
     classIDs?
   }
 */
-teachersRouter.post('/create', (request: Request, response: Response) => {
-  authorizeUser(request.headers.authorization, 'administrator')
-  .then((user) => {
-    const newTeacher: ITeacher = {
-      userID: request.body.userID,
-      displayName: request.body.displayName,
-      classIDs: request.body.classIDs,
-    };
-    createTeacher(newTeacher, request.body.schoolName)
-    .then((teacher: ITeacher) => {
-      response.status(200).json({
-        success: 'Teacher was successfully created!',
-        teacher: teacher
-      });
+teachersRouter.post('/create', async (request: Request, response: Response) => {
+  try {
+    const { userID, displayName, classIDs, schoolName } = request.body
+  
+    await authorizeUser(request.headers.authorization, 'administrator')
+  
+    const teacher = await createTeacher(
+    {
+        userID,
+        displayName,
+        classIDs,
+      },
+      schoolName
+    )
+  
+    response.status(200).json({
+      success: 'Teacher was successfully created!',
+      teacher: teacher
     })
-    .catch((error) => {
-      response.status(500).json({
-        error: error.toString()
-      });
-    });
-  })
-  .catch((error) => {
-    response.status(401).json({
+
+  } catch (error) {
+    console.log('Error ocurred in teachers/create', error)
+    response.status(500).json({
       error: error.toString()
-    });
-  });
-});
+    })
+  }
+})
 
 /*
   Creates a session for a teacher
@@ -60,79 +58,63 @@ teachersRouter.post('/create', (request: Request, response: Response) => {
     password
   }
 */
-teachersRouter.post('/signin', (request: Request, response: Response) => {
-  const email = request.body.email;
-  const password = request.body.password;
+teachersRouter.post('/signin', async (request: Request, response: Response) => {
+  try {
+    const { email, password } = request.body
 
-  getTeacherByEmail(email)
-    .then((teacher: ITeacherModel) => {
-      getUserByID(teacher.userID)
-      .then(async (user: IUserModel) => {
-        const passwordsMatch = await comparePasswords(password, user.password)
+    const { userID, displayName } = await getTeacherByEmail(email)
 
-        if (!passwordsMatch) {
-          response.status(401).json({
-            error: 'Incorrect password'
-          })
-        } else {
-          const token = await createToken(user);
-          response.status(200).json({
-            success: "Authenticated",
-            user: {
-              name: teacher.displayName,
-            },
-            token: token,
-          });
-        }
+    const user = await getUserByID(userID)
+
+    const passwordsMatch = await comparePasswords(password, user.password)
+
+    if (!passwordsMatch) {
+      response.status(401).json({
+        error: 'Incorrect password'
       })
-      .catch((error) => {
-        response.status(500).json({
-          error: error.toString(),
-        });
-      });
+
+    } else {
+      const token = await createToken(user)
+
+      response.status(200).json({
+        success: "Authenticated",
+        user: {
+          name: displayName,
+        },
+        token,
+      })
+    }
+
+  } catch (error) {
+    console.log('Error ocurred in teachers/signin', error)
+    response.status(500).json({
+      error: error.toString()
     })
-  .catch((error) => {
-    response.status(401).json({
-      error: error.toString(),
-    });
-  });
-});
+  }
+})
 
 /*
   Returns a list of classes owned by a teacher
 
   Authorization: teacher
 */
-teachersRouter.get('/classes', (request: Request, response: Response) => {
-  authorizeUser(request.headers.authorization, 'teacher')
-    .then((user) => {
-      getTeacherByUserID(user._id)
-        .then((teacher: ITeacherModel) => {
-          Class.find({
-            _id: { $in: teacher.classIDs }
-          })
-            .exec()
-            .then((classes) => {
-              response.status(200).json({
-                success: 'Classes where found',
-                classes: classes
-              });
-            })
-            .catch((error) => {
-              response.status(500).json({
-                error: error.toString(),
-              });
-            })
-        })
-        .catch((error) => {
-          response.status(500).json({
-            error: error.toString(),
-          });
-        })
+teachersRouter.get('/classes', async (request: Request, response: Response) => {
+  try {
+    const { _id } = await authorizeUser(request.headers.authorization, 'teacher')
+  
+    const teacher = await getTeacherByUserID(_id)
+  
+    const classes = Class.find({ _id: { $in: teacher.classIDs } }).exec()
+  
+    response.status(200).json({
+      success: 'Classes were found',
+      classes
     })
-    .catch((error) => {
-      response.status(401).json({
-        error: error.toString(),
-      })
+
+  } catch (error) {
+    console.log('Error ocurred in /classes', error)
+    response.status(500).json({
+      error: error.toString()
     })
+  }
 })
