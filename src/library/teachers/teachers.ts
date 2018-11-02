@@ -1,8 +1,7 @@
 import { Teacher, ITeacherModel } from '../../models/teacher.model'
-import { addTeacherToSchool } from '../schools/schools'
-import { ISchoolModel } from '../../models/school.model'
 import { Types } from 'mongoose'
-import { getUserByEmail } from '../users/users'
+import { getUserByEmail, IUser } from '../users/users'
+import { User } from '../../models/user.model';
 
 export interface ITeacher {
   userID: Types.ObjectId,
@@ -10,35 +9,22 @@ export interface ITeacher {
   classIDs: string[],
 }
 
-export const createTeacher = (teacherParams: ITeacher, schoolName: string): Promise<ITeacherModel> => {
-  console.log('Creating a new teacher. ITeacher:')
-  console.log(teacherParams)
-  return new Promise((resolve, reject) => {
-    const newTeacher = new Teacher({
-      userID: teacherParams.userID,
-      displayName: teacherParams.displayName,
-      classIDs: teacherParams.classIDs,
-    })
-    newTeacher.save()
-    .then((teacher: ITeacherModel) => {
-      addTeacherToSchool(teacher, schoolName)
-      .then((_school: ISchoolModel) => {
-        resolve(newTeacher)
-      })
-      .catch((error) => {
-        reject(error)
-      })
-    })
-    .catch((error) => {
-      Teacher.remove({ _id: newTeacher._id })
-      .then((_teacher: ITeacherModel) => {
-        reject(error)
-      })
-      .catch((error) => {
-        reject(error)
-      })
-    })
-  })
+export const createTeacher = async (userParams: IUser): Promise<ITeacherModel> => {
+  console.log('Creating a new teacher: userParams:')
+  console.log(userParams)
+
+  const { email, password } = userParams
+
+  const user = await new User({ email, password }).save()
+
+  try {
+    return await new Teacher({ userID: user._id }).save()
+
+  } catch (error) {
+    console.log(`Unable to create a new teacher using _id ${user._id}`, error)
+    await user.remove()
+    console.log(`Removed user with _id ${user._id}`)
+  }
 }
 
 
