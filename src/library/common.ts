@@ -7,7 +7,3 @@ export class ArgumentError extends Error {
     }
   }
 }
-
-export interface Callback {
-  (result?: any): any;
-}
