@@ -1,7 +1,6 @@
 import { Teacher, ITeacherModel } from '../../models/teacher.model'
 import { Types } from 'mongoose'
 import { getUserByEmail, IUser, createUser } from '../users/users'
-import { User } from '../../models/user.model';
 
 export interface ITeacher {
   userID: Types.ObjectId,
@@ -18,7 +17,7 @@ export const createTeacher = async (userParams: IUser): Promise<ITeacherModel> =
   const user = await createUser({ email, password, userType })
 
   try {
-    return await new Teacher({ userID: user._id }).save()
+    return await new Teacher({ userID: user._id, displayName: email }).save()
 
   } catch (error) {
     console.log(`Unable to create a new teacher using _id ${user._id}`, error)

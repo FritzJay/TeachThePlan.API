@@ -21,7 +21,7 @@ export const createStudent = async (userParams: IUser): Promise<IStudentModel> =
   const user = await createUser({ email, password, userType })
 
   try {
-    return await new Student({ userID: user._id }).save()
+    return await new Student({ userID: user._id, displayName: email }).save()
 
   } catch(error) {
     console.log(`Unable to create a new student using _id ${user._id}`, error)
