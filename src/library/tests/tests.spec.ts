@@ -224,7 +224,7 @@ describe('getRandomIncorrectlyAnsweredQuestion', () => {
         incorrectQuestion
       ],
     }
-    for (let i = 0 i < 10 i++) {
+    for (let i = 0; i < 10; i++) {
       expect(Tests.getRandomIncorrectlyAnsweredQuestion(test)).toBe(incorrectQuestion)
     }
   })
@@ -282,7 +282,7 @@ describe('createFormattedQuestion', () => {
     let expectedQuestion = {
       question: `${num1} ${operator} ${num2}`
     }
-    for (let i = 0 i < 25 i++) {
+    for (let i = 0; i < 25; i++) {
       expect(Tests.createFormattedQuestion(operator, num1, num2)).toEqual(expectedQuestion)
     }
   })
@@ -301,7 +301,7 @@ describe('createFormattedQuestion', () => {
 describe('createFormattedQuestion', () => {
   it('randomly changes the order of the numbers if operator is not one of / or -', () => {
     let orderHasChanged = false
-    for (let i = 0 i < 100 i++) {
+    for (let i = 0; i < 100; i++) {
       const numbers = Tests.createFormattedQuestion('+', 1, 2).question.split(' + ')
       if (parseInt(numbers[0], 10) == 2) {
         orderHasChanged = true
