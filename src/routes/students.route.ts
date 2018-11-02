@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express'
 import { getUserByID } from '../library/users/users'
-import { createToken, authorizeUser, comparePasswords } from '../library/authentication/authentication'
+import { createToken, comparePasswords } from '../library/authentication/authentication'
 import { getStudentByEmail, createStudent } from '../library/students/students'
 
 export let studentRouter = Router()
@@ -8,31 +8,20 @@ export let studentRouter = Router()
 /*
   Creates a new student
 
-  Authentication: teacher,
-
   Request.body {
-    userID,
-    displayName,
-    classCode
+    email,
+    password
   }
 */
 studentRouter.post('/create', async (request: Request, response: Response) => {
   try {
-    const { classCode, userID, displayName } = request.body
-
-    await authorizeUser(request.headers.authorization, 'teacher')
-
-    const student = await createStudent(
-      {
-        userID: userID,
-        displayName: displayName,
-      },
-      classCode
-    )
-
+    const { email, password } = request.body
+    
+    const student = await createStudent({ email, password })
+  
     response.status(200).json({
-      success: 'Student successfully created!',
-      student: student
+      success: 'Student was successfully created!',
+      student
     })
 
   } catch (error) {

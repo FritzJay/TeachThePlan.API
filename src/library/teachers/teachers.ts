@@ -1,6 +1,6 @@
 import { Teacher, ITeacherModel } from '../../models/teacher.model'
 import { Types } from 'mongoose'
-import { getUserByEmail, IUser } from '../users/users'
+import { getUserByEmail, IUser, createUser } from '../users/users'
 import { User } from '../../models/user.model';
 
 export interface ITeacher {
@@ -10,12 +10,12 @@ export interface ITeacher {
 }
 
 export const createTeacher = async (userParams: IUser): Promise<ITeacherModel> => {
-  console.log('Creating a new teacher: userParams:')
-  console.log(userParams)
+  console.log('Creating a new teacher:', userParams)
 
+  const userType = [ 'teacher' ]
   const { email, password } = userParams
 
-  const user = await new User({ email, password }).save()
+  const user = await createUser({ email, password, userType })
 
   try {
     return await new Teacher({ userID: user._id }).save()
