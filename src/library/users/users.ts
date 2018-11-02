@@ -11,91 +11,61 @@ export interface IUser {
   userType?: string[];
 }
 
-export const createUser = (userParams: IUser): Promise<IUserModel> => {
+export const createUser = async (userParams: IUser): Promise<IUserModel> => {
   console.log('Creating a new user. IUser:');
   console.log(userParams);
-  return new Promise((resolve, reject) => {
-    new User({
-      email: userParams.email,
-      password: hashSync(userParams.password, 10),
-      firstName: userParams.firstName,
-      lastName: userParams.lastName,
-      userType: userParams.userType,
-    })
-    .save()
-    .then((newUser) => {
-      resolve(newUser);
-    })
-    .catch((error) => {
-      reject(error);
-    })
-  });
+
+  return new User({
+    email: userParams.email,
+    password: hashSync(userParams.password, 10),
+    firstName: userParams.firstName,
+    lastName: userParams.lastName,
+    userType: userParams.userType,
+  })
+  .save()
 }
 
-export const getUserFromToken = (token: string): Promise<IUserModel> => {
+export const getUserFromToken = async (token: string): Promise<IUserModel> => {
   console.log('Getting user from token');
   console.log(`token: ${token}`);
-  return new Promise(async (resolve, reject) => {
-    const decodedToken = await verifyToken(token);
-    const email = decodedToken['email'];
-    getUserByEmail(email)
-    .then((user) => {
-      resolve(user);
-    })
-    .catch((error) => {
-      reject(error);
-    });
-  });
+
+  const decodedToken = await verifyToken(token);
+  const email = decodedToken['email'];
+
+  return getUserByEmail(email)
 }
 
-export const getUserByEmail = (email: string): Promise<IUserModel> => {
+export const getUserByEmail = async (email: string): Promise<IUserModel> => {
   console.log('Getting user by email');
   console.log(`email: ${email}`);
-  return new Promise((resolve, reject) => {
-    User.findOne({ email: email })
-    .exec()
-    .then((user: IUserModel) => {
-      if (user) {
-        resolve(user);
-      } else {
-        reject(new Error('Could not find user'));
-      }
-    })
-    .catch((error) => {
-      reject(error);
-    });
-  });
+
+  const user = await User.findOne({ email }).exec()
+
+  if (user !== undefined && user !== null) {
+    return user
+  } else {
+    console.log(`Could not find the user with an email of ${email}`)
+    throw new Error(`Could not find the user with an email of ${email}`)
+  }
 }
 
-export const getUserByID = (id: Types.ObjectId): Promise<IUserModel> => {
+export const getUserByID = async (id: Types.ObjectId): Promise<IUserModel> => {
   console.log('Getting user by userID');
   console.log(`userID: ${id}`);
-  return new Promise((resolve, reject) => {
-    User.findOne({ _id: id })
-    .exec()
-    .then((user: IUserModel) => {
-      if (user) {
-        resolve(user);
-      } else {
-        reject(new Error('Could not find user'));
-      }
-    })
-    .catch((error) => {
-      reject(error);
-    })
-  });
+
+  const user = await User.findById(id).exec()
+
+  if (user !== undefined && user !== null) {
+    return user
+  } else {
+    console.log(`Could not find the user with an id of ${id}`)
+    throw new Error(`Could not find the user with an id of ${id}`)
+  }
 }
 
-export const removeUserByID = (id: Types.ObjectId): Promise<IUserModel> => {
+export const removeUserByID = async (id: Types.ObjectId): Promise<IUserModel> => {
   console.log('Removing user by userID');
   console.log(`userID: ${id}`);
-  return new Promise((resolve, reject) => {
-    User.findByIdAndRemove(id)
-    .then((user: IUserModel) => {
-      resolve(user);
-    })
-    .catch((error) => {
-      reject(error);
-    });
-  });
+
+  return User.findByIdAndRemove(id)
 }
