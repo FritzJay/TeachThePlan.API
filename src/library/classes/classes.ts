@@ -37,13 +37,23 @@ export const updateClass = async (classID: string, updates: IClass, userID: stri
   const { grade, name } = updates
 
   const teacher = await getTeacherByUserID(userID)
+  
+  const cls = await getClassByID(classID)
 
-  if (teacher.classIDs.map((id) => id.toString()).includes(classID) === false) {
+  const classes = await getClassesByTeacherID(teacher._id)
+
+  console.log(classes)
+
+  if (classes.some((c) => c._id.toString() === classID) === false) {
     console.log('Teacher does not contain the given classID', teacher, classID)
-    throw Error('Teacher does not contain the given classID')
+    throw new Error('Teacher does not contain the given classID')
   }
 
-  const cls = await getClassByID(classID)
+  if (classes.some((c) => c._id.toString() !== classID && c.name === name)) {
+    console.log('Teacher already contains a different class with the given name', teacher, name)
+    throw new Error('Teacher already contains a different class with the given name')
+  }
+
 
   if (grade !== '' && grade !== undefined && grade !== null) {
     cls.grade = grade
@@ -61,7 +71,7 @@ export const deleteClass = async (classID: string, userID: string): Promise<ICla
 
   const teacher = await getTeacherByUserID(userID)
 
-  if (teacher.classIDs.map((id) => id.toString()).includes(classID) === false) {
+  if (teacher.classIDs.some((id) => id.toString() === classID) === false) {
     console.log('Teacher does not contain the given classID', teacher, classID)
     throw Error('Teacher does not contain the given classID')
   }
