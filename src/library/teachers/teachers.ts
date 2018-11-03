@@ -1,6 +1,8 @@
 import { Teacher, ITeacherModel } from '../../models/teacher.model'
 import { Types } from 'mongoose'
 import { getUserByEmail, IUser, createUser } from '../users/users'
+import { getClassesByTeacherID, getClassByID } from '../classes/classes';
+import { IClassModel } from '../../models/class.model';
 
 export interface ITeacher {
   userID: Types.ObjectId,
@@ -60,12 +62,22 @@ export const getTeacherByUserID = (userID: string): Promise<ITeacherModel> => {
   })
 }
 
-export const addClassToTeacher = async (classID: string, teacherID: string): Promise<ITeacherModel> => {
-  console.log('Adding class to teacher', classID, teacherID)
+export const addClassToTeacher = async (newClass: IClassModel, teacherID: string): Promise<ITeacherModel> => {
+  console.log('Adding class to teacher', newClass, teacherID)
 
   const teacher = await getTeacherByID(teacherID)
 
-  teacher.classIDs.push(classID)
+  const classes = await getClassesByTeacherID(teacherID)
+
+  if (classes.some((c) => c._id === newClass.id)) {
+    throw new Error(`Teacher already has a class with an _id of ${newClass._id}`)
+  }
+
+  if (classes.some((c) => c.name === newClass.name)) {
+    throw new Error(`Teacher already has a class with a name of ${newClass.name}`)
+  }
+
+  teacher.classIDs.push(newClass._id)
   return teacher.save()
 }
 

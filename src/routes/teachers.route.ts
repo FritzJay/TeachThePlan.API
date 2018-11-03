@@ -1,8 +1,8 @@
 import { Router, Request, Response } from 'express'
-import { createTeacher, getTeacherByUserID, getTeacherByEmail } from '../library/teachers/teachers'
+import { createTeacher, getTeacherByEmail } from '../library/teachers/teachers'
 import { authorizeUser, createToken, comparePasswords } from '../library/authentication/authentication'
-import { Class } from '../models/class.model'
 import { getUserByID } from '../library/users/users'
+import { getClassesByUserID } from '../library/classes/classes';
 
 export let teachersRouter = Router()
 
@@ -88,10 +88,8 @@ teachersRouter.post('/signin', async (request: Request, response: Response) => {
 teachersRouter.get('/classes', async (request: Request, response: Response) => {
   try {
     const { _id } = await authorizeUser(request.headers.authorization, 'teacher')
-  
-    const teacher = await getTeacherByUserID(_id)
-  
-    const classes = await Class.find({ _id: { $in: teacher.classIDs } }).exec()
+    
+    const classes = await getClassesByUserID(_id)
   
     response.status(200).json({
       success: 'Classes were found',

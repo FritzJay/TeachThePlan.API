@@ -1,6 +1,6 @@
 import { IClass } from '../classes/classes'
 import { Class, IClassModel } from '../../models/class.model'
-import { addClassToTeacher, getTeacherByUserID } from '../teachers/teachers'
+import { addClassToTeacher, getTeacherByUserID, getTeacherByID } from '../teachers/teachers'
 import { Types, SchemaTypes } from 'mongoose'
 
 export interface IClass {
@@ -20,7 +20,7 @@ export const createClass = async (classParams: IClass, userID: string): Promise<
   const newClass = await new Class({ grade, name, studentIDs: [] }).save()
 
   try {
-    await addClassToTeacher(newClass._id, teacher._id)
+    await addClassToTeacher(newClass, teacher._id)
 
     return newClass
 
@@ -89,6 +89,18 @@ export const deleteClass = async (classID: string, userID: string): Promise<ICla
 
 export const getClassByID = async (classID: string): Promise<IClassModel> => {
   return await Class.findById(classID)
+}
+
+export const getClassesByTeacherID = async (teacherID: string): Promise<IClassModel[]> => {
+  const teacher = await getTeacherByID(teacherID)
+
+  return await Class.find({ _id: { $in: teacher.classIDs } }).exec()
+}
+
+export const getClassesByUserID = async (userID: string): Promise<IClassModel[]> => {
+  const { _id } = await getTeacherByUserID(userID)
+
+  return await getClassesByTeacherID(_id)
 }
 
 
