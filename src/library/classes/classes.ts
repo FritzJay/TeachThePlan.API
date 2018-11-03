@@ -7,6 +7,7 @@ import { resolve } from 'url'
 
 export interface IClass {
   classCode: string,
+  name: string,
   studentIDs?: Types.ObjectId[],
 }
 

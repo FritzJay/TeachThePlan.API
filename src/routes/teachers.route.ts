@@ -91,7 +91,7 @@ teachersRouter.get('/classes', async (request: Request, response: Response) => {
   
     const teacher = await getTeacherByUserID(_id)
   
-    const classes = Class.find({ _id: { $in: teacher.classIDs } }).exec()
+    const classes = await Class.find({ _id: { $in: teacher.classIDs } }).exec()
   
     response.status(200).json({
       success: 'Classes were found',
