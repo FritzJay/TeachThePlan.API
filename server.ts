@@ -16,14 +16,18 @@ const PORT: number = parseInt(process.env.PORT, 10) || 3000
 
 const allowCrossDomain = (req, res, next) => {
   const allowedOrigins = [process.env.TTP_URL]
+
   const origin = req.headers.origin
+
   allowedOrigins.forEach((allowed: string) => {
     if (allowed.startsWith(origin)) {
       res.header('Access-Control-Allow-Origin', origin)
     }
   })
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH')
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  
   next()
 }
 

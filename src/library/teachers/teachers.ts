@@ -38,7 +38,7 @@ export const getTeacherByEmail = async (email: string): Promise<ITeacherModel> =
 export const getTeacherByID = async (teacherID: string): Promise<ITeacherModel> => {
   console.log('Getting teacher by teacherID', teacherID)
 
-  return Teacher.findById(teacherID)
+  return Teacher.findById(teacherID).exec()
 }
 
 export const getTeacherByUserID = (userID: string): Promise<ITeacherModel> => {
@@ -66,9 +66,7 @@ export const addClassToTeacher = async (classID: string, teacherID: string): Pro
   const teacher = await getTeacherByID(teacherID)
 
   teacher.classIDs.push(classID)
-  await teacher.save()
-
-  return teacher
+  return teacher.save()
 }
 
 export const removeTeacherByID = (teacherID: Types.ObjectId): Promise<ITeacher> => {

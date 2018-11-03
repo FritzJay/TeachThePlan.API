@@ -1,7 +1,6 @@
 import { Router, Request, Response } from 'express'
-import { createClass } from '../library/classes/classes'
+import { createClass, deleteClass, updateClass } from '../library/classes/classes'
 import { authorizeUser } from '../library/authentication/authentication'
-import { getTeacherByUserID } from '../library/teachers/teachers';
 
 export let classesRouter = Router()
 
@@ -11,25 +10,21 @@ export let classesRouter = Router()
   Authorization: teacher
 
   Request.body {
-    classCode,
-    studentIDs?
+    grade,
+    name,
   }
 */
-classesRouter.post('/create', async (request: Request, response: Response) => {
-  const { classCode, grade, name, students } = request.body
+classesRouter.put('/', async (request: Request, response: Response) => {
+  const { grade, name } = request.body
 
   try {
     const { _id } = await authorizeUser(request.headers.authorization, 'teacher')
 
-    const teacher = await getTeacherByUserID(_id)
-
     const newClass = await createClass({
-      classCode,
       grade,
       name,
-      studentIDs: students,
     },
-      teacher._id
+      _id
     )
 
     response.status(200).json({
@@ -45,3 +40,66 @@ classesRouter.post('/create', async (request: Request, response: Response) => {
     })
   }
 })
+
+/*
+  Updates a class
+
+  Authorization: teacher
+
+  Request.body {
+    
+  }
+*/
+classesRouter.patch('/', async (request: Request, response: Response) => {
+  const { classID, updates } = request.body
+
+  try {
+    const { _id } = await authorizeUser(request.headers.authorization, 'teacher')
+    
+    const cls = await updateClass(classID, { ...updates }, _id)
+
+    response.status(200).json({
+      success: 'Class successfully updated',
+      class: cls
+    })
+
+  } catch(error) {
+
+    console.log('Error ocurred in class/update', error)
+    response.status(500).json({
+      error: error.toString()
+    })
+  }
+})
+
+/*
+  Deletes a class
+
+  Authorization: teacher
+
+  Request.body {
+    classID
+  }
+*/
+classesRouter.delete('/', async (request: Request, response: Response) => {
+  const { classID } = request.body
+
+  try {
+    const { _id } = await authorizeUser(request.headers.authorization, 'teacher')
+    
+    const cls = await deleteClass(classID, _id)
+
+    response.status(200).json({
+      success: 'Class successfully deleted',
+      class: cls
+    })
+
+  } catch(error) {
+
+    console.log('Error ocurred in class/delete', error)
+    response.status(500).json({
+      error: error.toString()
+    })
+  }
+})
+

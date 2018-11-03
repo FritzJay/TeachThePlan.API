@@ -4,6 +4,7 @@ import { IClass } from '../library/classes/classes'
 export interface IClassModel extends IClass, Document { }
 export const ClassSchema: Schema = new Schema({
   classCode: String,
+  grade: String,
   name: String,
   studentIDs: [SchemaTypes.ObjectId]
 }) 
