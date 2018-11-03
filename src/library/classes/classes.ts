@@ -1,37 +1,31 @@
 import { IClass } from '../classes/classes'
 import { Class, IClassModel } from '../../models/class.model'
-import { ITeacherModel } from '../../models/teacher.model'
 import { addClassToTeacher } from '../teachers/teachers'
 import { Types } from 'mongoose'
-import { resolve } from 'url'
 
 export interface IClass {
   classCode: string,
+  grade: string,
   name: string,
   studentIDs?: Types.ObjectId[],
 }
 
-export const createClass = (classParams: IClass, userID: string): Promise<IClassModel> => {
-  return new Promise((resolve, reject) => {
-    const newClass = new Class({
-      classCode: classParams.classCode,
-      studentIDs: classParams.studentIDs,
-    })
-    newClass.save()
-    .then((cls: IClassModel) => {
-      addClassToTeacher(cls._id, userID)
-      .then((_teacher: ITeacherModel) => {
-        resolve(cls)
-      })
-      .catch((error) => {
-        Class.remove({ _id: newClass._id })
-        reject(error)
-      })
-    })
-    .catch((error) => {
-      reject(error)
-    })
-  })
+export const createClass = async (classParams: IClass, teacherID: string): Promise<IClassModel> => {
+  console.log('Creating a new class', classParams, teacherID)
+
+  const { grade, name } = classParams
+
+  const newClass = await new Class({ grade, name }).save()
+
+  try {
+    await addClassToTeacher(newClass._id, teacherID)
+
+    return newClass
+
+  } catch(error) {
+    Class.remove(newClass._id)
+    throw error
+  }
 }
 
 export const getClassByClassCode = (classCode: string): Promise<IClassModel> => {

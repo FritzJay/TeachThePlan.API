@@ -35,23 +35,10 @@ export const getTeacherByEmail = async (email: string): Promise<ITeacherModel> =
   return await Teacher.findOne({ userID: user._id })
 }
 
-export const getTeacherByID = (teacherID: string): Promise<ITeacherModel> => {
-  console.log('Getting teacher by teacherID')
-  console.log(`teacherID: ${teacherID}`)
-  return new Promise((resolve, reject) => {
-    Teacher.findById(teacherID)
-    .exec()
-    .then((teacher: ITeacherModel) => {
-      if (teacher) {
-        resolve(teacher)
-      } else {
-        reject(new Error('Unable to find teacher'))
-      }
-    })
-    .catch((error) => { 
-      reject(error)
-    })
-  })
+export const getTeacherByID = async (teacherID: string): Promise<ITeacherModel> => {
+  console.log('Getting teacher by teacherID', teacherID)
+
+  return Teacher.findById(teacherID)
 }
 
 export const getTeacherByUserID = (userID: string): Promise<ITeacherModel> => {
@@ -73,26 +60,15 @@ export const getTeacherByUserID = (userID: string): Promise<ITeacherModel> => {
   })
 }
 
-export const addClassToTeacher = (classID: string, userID: string): Promise<ITeacherModel> => {
-  console.log('Adding class to teacher')
-  console.log(`classID: ${classID}`)
-  console.log(`userID: ${userID}`)
-  return new Promise((resolve, reject) => {
-    getTeacherByUserID(userID)
-    .then((teacher: ITeacherModel) => {
-      teacher.classIDs.push(classID)
-      teacher.save()
-      .then((teacher: ITeacherModel) => {
-        resolve(teacher)
-      })
-      .catch((error) => {
-        reject(error)
-      })
-    })
-    .catch((error) => {
-      reject(error)
-    })
-  })
+export const addClassToTeacher = async (classID: string, teacherID: string): Promise<ITeacherModel> => {
+  console.log('Adding class to teacher', classID, teacherID)
+
+  const teacher = await getTeacherByID(teacherID)
+
+  teacher.classIDs.push(classID)
+  await teacher.save()
+
+  return teacher
 }
 
 export const removeTeacherByID = (teacherID: Types.ObjectId): Promise<ITeacher> => {

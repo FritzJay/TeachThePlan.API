@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express'
 import { createClass } from '../library/classes/classes'
 import { authorizeUser } from '../library/authentication/authentication'
+import { getTeacherByUserID } from '../library/teachers/teachers';
 
 export let classesRouter = Router()
 
@@ -15,15 +16,20 @@ export let classesRouter = Router()
   }
 */
 classesRouter.post('/create', async (request: Request, response: Response) => {
-  try {
-    const user = await authorizeUser(request.headers.authorization, 'teacher')
+  const { classCode, grade, name, students } = request.body
 
-    const newClass = await createClass(
-      {
-        classCode: request.body.classCode,
-        studentIDs: request.body.students,
-      },
-      user._id
+  try {
+    const { _id } = await authorizeUser(request.headers.authorization, 'teacher')
+
+    const teacher = await getTeacherByUserID(_id)
+
+    const newClass = await createClass({
+      classCode,
+      grade,
+      name,
+      studentIDs: students,
+    },
+      teacher._id
     )
 
     response.status(200).json({
