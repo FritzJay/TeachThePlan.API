@@ -1,7 +1,8 @@
+import { generate } from 'shortid'
 import { IClass } from '../classes/classes'
 import { Class, IClassModel } from '../../models/class.model'
 import { addClassToTeacher, getTeacherByUserID, getTeacherByID } from '../teachers/teachers'
-import { Types, SchemaTypes } from 'mongoose'
+import { Types } from 'mongoose'
 
 export interface IClass {
   classCode?: string,
@@ -17,7 +18,12 @@ export const createClass = async (classParams: IClass, userID: string): Promise<
 
   const teacher = await getTeacherByUserID(userID)
 
-  const newClass = await new Class({ grade, name, studentIDs: [] }).save()
+  const newClass = await new Class({
+    grade,
+    name,
+    studentIDs: [],
+    classCode: generate()
+  }).save()
 
   try {
     await addClassToTeacher(newClass, teacher._id)
