@@ -77,7 +77,7 @@ export const removeTestParametersByUserID = (userID: Types.ObjectId): Promise<IT
 }
 
 export const assertUserIsAuthorizedForGetTestParameters = async (user: IUserModel, classID: string) => {
-  const teacher = await getTeacherByID(user._id)
+  const teacher = await getTeacherByUserID(user._id)
   
   await assertTeacherOwnsClass(teacher, classID)
 }
