@@ -1,14 +1,17 @@
 import { Router, Request, Response } from 'express'
 import { authorizeUser } from '../library/authentication/authentication'
-import { createTestParameters, updateTestParameters, getTestParametersByClassID } from '../library/testParameters/testParameters';
+import {
+  createTestParameters,
+  updateTestParameters,
+  getTestParametersByClassID,
+  assertUserIsAuthorizedForNewTestParameters,
+  assertUserIsAuthorizedForGetTestParameters,
+  assertUserIsAuthorizedForUpdateTestParameters
+} from '../library/testParameters/testParameters';
 
 export let testParametersRoute = Router()
 
 /*
-  TODO: Assert the user is a teacher that owns the class that testParameters.objectID refers to
-  TODO: Assert the class that testParameters.objectID refers to doesn't already exist
-
-
   Creates new Test Parameters
 
   Authorization: student
@@ -26,7 +29,9 @@ testParametersRoute.put('/', async (request: Request, response: Response) => {
   const { objectID, duration, numbers, operators, questions, randomQuestions } = request.body
 
   try {
-    await authorizeUser(request.headers.authorization, 'teacher')
+    const user = await authorizeUser(request.headers.authorization, 'teacher')
+
+    await assertUserIsAuthorizedForNewTestParameters(user, objectID)
 
     const testParameters = await createTestParameters({
       objectID,
@@ -65,7 +70,9 @@ testParametersRoute.get('/:classID', async (request: Request, response: Response
   const { classID } = request.params
 
   try {
-    await authorizeUser(request.headers.authorization, 'teacher')
+    const user = await authorizeUser(request.headers.authorization, 'teacher')
+
+    await assertUserIsAuthorizedForGetTestParameters(user, classID)
 
     const testParameters = await getTestParametersByClassID(classID)
 
@@ -102,9 +109,11 @@ testParametersRoute.patch('/', async (request: Request, response: Response) => {
   const { testParametersID, updates } = request.body
 
   try {
-    const { _id } = await authorizeUser(request.headers.authorization, 'teacher')
+    const user = await authorizeUser(request.headers.authorization, 'teacher')
 
-    const testParameters = await updateTestParameters(testParametersID, updates, _id)
+    await assertUserIsAuthorizedForUpdateTestParameters(user, testParametersID)
+
+    const testParameters = await updateTestParameters(testParametersID, updates, user._id)
 
     response.status(200).json({
       success: 'Test Parameters were successfully updated!',
