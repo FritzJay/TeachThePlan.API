@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express'
 import { authorizeUser } from '../library/authentication/authentication'
-import { createTestParameters, updateTestParameters } from '../library/testParameters/testParameters';
+import { createTestParameters, updateTestParameters, getTestParametersByClassID } from '../library/testParameters/testParameters';
 
 export let testParametersRoute = Router()
 
@@ -43,7 +43,39 @@ testParametersRoute.put('/', async (request: Request, response: Response) => {
     })
 
   } catch (error) {
-    console.log('Error ocurred during test/new', error)
+    console.log('Error ocurred during test-parameters/put', error)
+    response.status(500).json({
+      error: error.toString()
+    })
+  }
+})
+
+/*
+  TODO: Verify user is the teacher that owns the class referred by classID
+
+  Returns Test Parameters
+
+  Authorization: student
+
+  Request.params {
+    classID
+  }
+*/
+testParametersRoute.get('/:classID', async (request: Request, response: Response) => {
+  const { classID } = request.params
+
+  try {
+    await authorizeUser(request.headers.authorization, 'teacher')
+
+    const testParameters = await getTestParametersByClassID(classID)
+
+    response.status(200).json({
+      success: 'Test Parameters were successfully found!',
+      testParameters,
+    })
+
+  } catch (error) {
+    console.log('Error ocurred during test-parameters/get', error)
     response.status(500).json({
       error: error.toString()
     })
@@ -80,7 +112,7 @@ testParametersRoute.patch('/', async (request: Request, response: Response) => {
     })
 
   } catch (error) {
-    console.log('Error ocurred during test/new', error)
+    console.log('Error ocurred during test-parameters/patch', error)
     response.status(500).json({
       error: error.toString()
     })

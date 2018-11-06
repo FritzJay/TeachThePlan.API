@@ -15,8 +15,20 @@ export interface ITestParameters {
 
 const getTestParametersByID = async (testParametersID: string): Promise<ITestParametersModel> => {
   console.log('Getting test parameters by id', testParametersID)
-
+  
   return await TestParameters.findById(testParametersID).exec()
+}
+
+const getTestParametersByClassIDs = async (classIDs: string[]): Promise<ITestParametersModel[]> => {
+  console.log('Getting test parameters by classIDs', classIDs)
+  
+  return await TestParameters.find({ objectID: { $in: classIDs } })
+}
+
+export const getTestParametersByClassID = async (classID: string): Promise<ITestParameters> => {
+  console.log('Getting test parameters class', classID)
+
+  return await TestParameters.findOne({ objectID: classID }).exec()
 }
 
 export const createTestParameters = async (params: ITestParameters): Promise<ITestParametersModel> => {
@@ -64,17 +76,6 @@ export const updateTestParameters = async (testParametersID: string, updates: IT
   }
 
   return await testParameters.save()
-}
-
-const getTestParametersByClassIDs = async (classIDs: string[]): Promise<ITestParametersModel[]> => {
-  console.log('Getting test parameters by classIDs', classIDs)
-
-  return await TestParameters.find({ objectID: { $in: classIDs } })
-}
-export const getTestParametersByClassID = async (classID: string): Promise<ITestParameters> => {
-  console.log('Getting test parameters class', classID)
-
-  return await TestParameters.findOne({ objectID: classID }).exec()
 }
 
 export const removeTestParametersByUserID = (userID: Types.ObjectId): Promise<ITestParametersModel> => {
