@@ -14,6 +14,18 @@ export interface ITestParameters {
   randomQuestions: number
 }
 
+export const addTestParametersToClass = async (classID: string) => {
+  console.log('Adding test parameters to class', classID)
+
+  createTestParameters({
+    objectID: classID,
+    duration: 75,
+    operators: ['+', '-', '*', '/'],
+    numbers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    questions: 20,
+    randomQuestions: 5,
+  })
+}
 
 const getTestParametersByID = async (testParametersID: string): Promise<ITestParametersModel> => {
   console.log('Getting test parameters by id', testParametersID)
@@ -38,7 +50,6 @@ export const createTestParameters = async (params: ITestParameters): Promise<ITe
   
   return await new TestParameters({...params}).save()
 }
-
 
 export const updateTestParameters = async (testParametersID: string, updates: ITestParameters, userID: string): Promise<ITestParametersModel> => {
   console.log('Updating test parameters', updates, userID)

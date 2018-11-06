@@ -3,6 +3,7 @@ import { IClass } from '../classes/classes'
 import { Class, IClassModel } from '../../models/class.model'
 import { addClassToTeacher, getTeacherByUserID, getTeacherByID } from '../teachers/teachers'
 import { Types } from 'mongoose'
+import { addTestParametersToClass } from '../testParameters/testParameters';
 
 export interface IClass {
   classCode?: string,
@@ -28,13 +29,15 @@ export const createClass = async (classParams: IClass, userID: string): Promise<
   try {
     await addClassToTeacher(newClass, teacher._id)
 
-    return newClass
-
   } catch(error) {
     Class.findByIdAndRemove(newClass._id).exec()
 
     throw error
   }
+
+  await addTestParametersToClass(newClass._id)
+
+  return newClass
 }
 
 export const updateClass = async (classID: string, updates: IClass, userID: string): Promise<IClassModel> => {
