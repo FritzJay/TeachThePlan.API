@@ -30,6 +30,10 @@ export const createStudent = async (userParams: IUser): Promise<IStudentModel> =
   }
 }
 
+export const getStudentByUserID = async (userID: string): Promise<IStudentModel> => {
+  return await Student.findOne({ userID })
+}
+
 export const getStudentByDisplayNameAndClassCode = (displayName: string, classCode: string): Promise<IStudentModel> => {
   console.log('Getting student by display name and class code')
   console.log(`displayName: ${displayName}`)

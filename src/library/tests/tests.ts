@@ -1,9 +1,8 @@
 import { ArgumentError } from "../common"
-import { ITestParameters } from "../testParameters/testParameters"
+import { getTestParametersByClassID } from "../testParameters/testParameters"
 import { Test, ITestModel } from "../../models/test.model"
 import * as mathjs from "mathjs"
 import { Types } from "mongoose"
-import { TestParameters } from "../../models/testParameters.model"
 
 export const OPERATORS: string[] = ['+', '-', '*', '/']
 export const NUMBERS: ITestNumber[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((n) => {
@@ -22,6 +21,12 @@ export interface ITestNumber {
 
 export interface IAvailableTests {
   numbers: ITestNumber[]
+}
+
+export interface INewTestParameters {
+  number: number
+  operator: string
+  duration
 }
 
 export interface ITest {
@@ -58,19 +63,23 @@ export const getAvailableTests = async (userID: string): Promise<IAvailableTests
   }
 }
 
-export const newTest = async (params: ITestParameters, userID: string): Promise<ITest> => {
-  console.log('Creating a new test')
-  console.log(`userID: ${userID}`)
-  console.log(TestParameters)
+export const newTest = async (classID: string, number: number, operator: string): Promise<ITest> => {
+  console.log('Creating a new test', classID, number, operator)
 
-  await assertNewTestArgumentsAreValid(params)
+  const { duration, numbers, operators, questions, randomQuestions } = await getTestParametersByClassID(classID)
 
-  const { duration, number, operator, questions, randomQuestions } = params
+  console.log(duration, numbers, operators, questions, randomQuestions)
 
-  await assertUserIsAuthorizedForNewTest(userID, number, operator)
-
-  const newQuestions: IQuestion[] = createQuestions(operator, number, questions, randomQuestions)
+  if (!numbers.includes(number)) {
+    throw new Error(`User is not authorized for a new test with a number of ${number}`)
+  }
   
+  if (!operators.includes(operator)) {
+    throw new Error(`User is not authorized for a new test with an operator of ${operator}`)
+  }
+
+  const newQuestions = createQuestions(operator, number, questions, randomQuestions)
+
   return {
     duration,
     start: null,
@@ -128,7 +137,7 @@ export const assertUserIsAuthorizedForNewTest = async (userID: string, number: n
   }
 }
 
-export const assertNewTestArgumentsAreValid = async (params: ITestParameters) => {
+export const assertNewTestArgumentsAreValid = async (params: INewTestParameters) => {
   let errors: ArgumentError[] = []
 
   if (!OPERATORS.includes(params.operator)) {
@@ -136,15 +145,6 @@ export const assertNewTestArgumentsAreValid = async (params: ITestParameters) =>
   }
   if (params.number < 0 || params.number > 20) {
     errors.push(new ArgumentError('number', params.number, 'Must be in range 0-20'))
-  }
-  if (params.questions < 1) {
-    errors.push(new ArgumentError('questions', params.questions, 'Must be greater than 1'))
-  }
-  if (params.randomQuestions < 0) {
-    errors.push(new ArgumentError('randomQuestions', params.randomQuestions, 'Must be greater than 0'))
-  }
-  if (params.duration < 0) {
-    errors.push(new ArgumentError('duration', params.duration, 'Must be greater than 0'))
   }
 
   if (errors.length > 0) {

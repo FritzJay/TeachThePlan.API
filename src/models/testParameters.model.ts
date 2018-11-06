@@ -5,7 +5,7 @@ export interface ITestParametersModel extends ITestParameters, Document { }
 export const TestParametersSchema: Schema = new Schema({
   objectID: SchemaTypes.ObjectId,
   duration: Number,
-  numbers: [String],
+  numbers: [Number],
   operators: [String],
   questions: Number,
   randomQuestions: Number,

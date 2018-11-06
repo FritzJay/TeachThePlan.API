@@ -10,6 +10,7 @@ import { teachersRouter } from './src/routes/teachers.route'
 import { classesRouter } from './src/routes/classes.route'
 import { studentRouter } from './src/routes/students.route'
 import { parentRouter } from './src/routes/parents.route';
+import { testParametersRoute } from './src/routes/testParameters.route';
 require('dotenv').config()
 
 const PORT: number = parseInt(process.env.PORT, 10) || 3000
@@ -46,6 +47,7 @@ app.use('/teachers', teachersRouter)
 app.use('/classes', classesRouter)
 app.use('/students', studentRouter)
 app.use('/parents', parentRouter)
+app.use('/test-parameters', testParametersRoute)
 
 app.listen(PORT, () => {
   console.log(`Listening for api requests on ${PORT}`)

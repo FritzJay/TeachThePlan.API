@@ -1,8 +1,9 @@
 import { Router, Request, Response } from 'express'
 import { getAvailableTests, newTest, gradeTest, submitTest } from '../library/tests/tests'
-import { getTestParameters } from '../library/testParameters/testParameters'
 import { IQuestion } from '../library/tests/tests'
 import { authorizeUser } from '../library/authentication/authentication'
+import { getClassByID } from '../library/classes/classes';
+import { getStudentByUserID } from '../library/students/students';
 
 export let testsRouter = Router()
 
@@ -37,22 +38,26 @@ testsRouter.get('/available', async (request: Request, response: Response) => {
   Authorization: student
 
   Request.body {
-    operator,
+    classID,
     number,
-    questions,
-    randomQuestions,
-    duration
+    operator,
   }
 */
 testsRouter.post('/new', async (request: Request, response: Response) => {
+  const { classID, number, operator } = request.body
+
   try {
-    const { _id } = await authorizeUser(request.headers.authorization, 'student')
+    const user = await authorizeUser(request.headers.authorization, 'student')
 
-    const testParameters = await getTestParameters(_id)
-    testParameters.operator = request.body.operator
-    testParameters.number = request.body.number
+    const student = await getStudentByUserID(user._id)
 
-    const test = await newTest(testParameters, _id)
+    const cls = await getClassByID(classID)
+
+    if (!cls.studentIDs.some((id) => id.equals(student._id))) {
+      throw new Error('Student is not a part of the given class')
+    }
+
+    const test = await newTest(classID, number, operator)
 
     response.status(200).json({
       success: 'Test was created',
