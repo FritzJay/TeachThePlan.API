@@ -76,6 +76,12 @@ testParametersRoute.get('/:classID', async (request: Request, response: Response
 
     const testParameters = await getTestParametersByClassID(classID)
 
+    if (testParameters === null) {
+      response.status(400).json({
+        error: 'Class does not have any test parameters'
+      })
+    }
+
     response.status(200).json({
       success: 'Test Parameters were successfully found!',
       testParameters,
