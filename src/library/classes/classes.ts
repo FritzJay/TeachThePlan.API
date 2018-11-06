@@ -48,8 +48,6 @@ export const updateClass = async (classID: string, updates: IClass, userID: stri
 
   const classes = await getClassesByTeacherID(teacher._id)
 
-  console.log(classes)
-
   if (classes.some((c) => c._id.toString() === classID) === false) {
     console.log('Teacher does not contain the given classID', teacher, classID)
     throw new Error('Teacher does not contain the given classID')
