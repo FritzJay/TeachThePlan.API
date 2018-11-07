@@ -2,11 +2,9 @@ import { ITest, IQuestion, ITestResults } from '../../library/tests/tests'
 import { ITestParameters } from '../../library/testParameters/testParameters'
 import * as Tests from "./tests"
 
-const VALID_TEST_PARAMETERS: ITestParameters = {
+const VALID_TEST_PARAMETERS: Tests.INewTestParameters = {
   operator: '+',
   number: 5,
-  questions: 20,
-  randomQuestions: 5,
   duration: 75,
 }
 
@@ -110,7 +108,7 @@ describe('gradeTest', () => {
 })
 
 describe('assertNewTestArgumentsAreValid', () => {
-  let testParameters: ITestParameters
+  let testParameters: Tests.INewTestParameters
   beforeEach(() => {
     testParameters = { ...VALID_TEST_PARAMETERS }
   })
@@ -121,13 +119,10 @@ describe('assertNewTestArgumentsAreValid', () => {
   it('throws an error for each invalid argument', () => {
     testParameters.operator = '%'
     testParameters.number = -5
-    testParameters.questions = 0
-    testParameters.randomQuestions = -1
-    testParameters.duration = -75
     try {
       Tests.assertNewTestArgumentsAreValid(testParameters)
     } catch (errors) {
-      expect(errors).toHaveLength(5)
+      expect(errors).toHaveLength(2)
     }
   })
 })
