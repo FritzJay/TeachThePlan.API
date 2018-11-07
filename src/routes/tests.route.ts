@@ -51,9 +51,9 @@ testsRouter.post('/new', async (request: Request, response: Response) => {
 
     const student = await getStudentByUserID(user._id)
 
-    const classes = await getClassesByStudentID(student._id) //Temp: grab the first class
-
-    const cls = classes[0]
+    const classes = await getClassesByStudentID(student._id)
+    
+    const cls = classes[0] //Temp: grab the first class
 
     if (!cls.studentIDs.some((id) => id.equals(student._id))) {
       throw new Error('Student is not a part of the given class')

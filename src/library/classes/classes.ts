@@ -120,10 +120,10 @@ export const getClassesByUserID = async (userID: string): Promise<IClassModel[]>
   return await getClassesByTeacherID(_id)
 }
 
-export const getClassesByStudentID = async (studentID: string): Promise<IClassModel[]> => {
+export const getClassesByStudentID = async (studentID: Types.ObjectId): Promise<IClassModel[]> => {
   console.log('Getting classes by student id', studentID)
 
-  return await Class.find({ studentIDs: studentID.toString() }).exec()
+  return await Class.find({ studentIDs: studentID }).exec()
 }
 
 
