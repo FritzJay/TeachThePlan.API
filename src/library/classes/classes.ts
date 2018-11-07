@@ -120,6 +120,12 @@ export const getClassesByUserID = async (userID: string): Promise<IClassModel[]>
   return await getClassesByTeacherID(_id)
 }
 
+export const getClassesByStudentID = async (studentID: string): Promise<IClassModel[]> => {
+  console.log('Getting classes by student id', studentID)
+
+  return await Class.find({ studentIDs: studentID.toString() }).exec()
+}
+
 
 // Deprecated 
 export const getClassByClassCode = (classCode: string): Promise<IClassModel> => {

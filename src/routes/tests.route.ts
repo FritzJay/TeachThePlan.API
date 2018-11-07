@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express'
 import { getAvailableTests, newTest, gradeTest, submitTest } from '../library/tests/tests'
 import { IQuestion } from '../library/tests/tests'
 import { authorizeUser } from '../library/authentication/authentication'
-import { getClassByID } from '../library/classes/classes';
+import { getClassesByStudentID } from '../library/classes/classes';
 import { getStudentByUserID } from '../library/students/students';
 
 export let testsRouter = Router()
@@ -44,20 +44,22 @@ testsRouter.get('/available', async (request: Request, response: Response) => {
   }
 */
 testsRouter.post('/new', async (request: Request, response: Response) => {
-  const { classID, number, operator } = request.body
+  const { number, operator } = request.body // Temp: Use the given classID
 
   try {
     const user = await authorizeUser(request.headers.authorization, 'student')
 
     const student = await getStudentByUserID(user._id)
 
-    const cls = await getClassByID(classID)
+    const classes = await getClassesByStudentID(student._id) //Temp: grab the first class
+
+    const cls = classes[0]
 
     if (!cls.studentIDs.some((id) => id.equals(student._id))) {
       throw new Error('Student is not a part of the given class')
     }
 
-    const test = await newTest(classID, number, operator)
+    const test = await newTest(cls._id, number, operator)
 
     response.status(200).json({
       success: 'Test was created',
