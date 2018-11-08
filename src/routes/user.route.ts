@@ -67,7 +67,12 @@ userRouter.post('/signin', async (request: Request, response: Response) => {
   
       response.status(200).json({
         success: "Authenticated",
-        token: token
+        token: token,
+        user: {
+          name: user.displayName,
+          userType: user.userType,
+          email: user.email,
+        }
       })
   
     } else {
