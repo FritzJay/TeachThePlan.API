@@ -1,9 +1,41 @@
 import { Router, Request, Response } from 'express'
 import { getUserByID } from '../library/users/users'
-import { createToken, comparePasswords } from '../library/authentication/authentication'
-import { getStudentByEmail, createStudent } from '../library/students/students'
+import { createToken, comparePasswords, authorizeUser } from '../library/authentication/authentication'
+import { getStudentByEmail, createStudent, getStudentsByIDs } from '../library/students/students'
 
 export let studentRouter = Router()
+
+/*
+  Returns an array of students. One for each ID.
+
+  Authorization: teacher
+
+  Request.body {
+    studentIDs
+  }
+*/
+studentRouter.post('/getByIDs', async (request: Request, response: Response) => {
+  const { studentIDs } = request.body
+
+  try {
+    const { _id } = await authorizeUser(request.headers.authorization, 'teacher')
+
+    const students = await getStudentsByIDs(studentIDs, _id)
+
+    response.status(200).json({
+      success: 'Students were found',
+      students,
+    })
+
+  } catch (error) {
+
+    console.log('Error ocurred in students/getByIDs', error)
+    response.status(500).json({
+      error: error.toString()
+    })
+  }
+})
+
 
 /*
   Creates a new student

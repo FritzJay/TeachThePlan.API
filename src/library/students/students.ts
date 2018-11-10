@@ -1,10 +1,11 @@
 import { ITest } from '../tests/tests'
 import { Student, IStudentModel } from '../../models/student.model'
 import { IClassModel } from '../../models/class.model'
-import { addStudentToClass, getClassByClassCode } from '../classes/classes'
+import { addStudentToClass, getClassByClassCode, getClassesByTeacherID } from '../classes/classes'
 import { Types } from 'mongoose'
 import { getUserByEmail, IUser, createUser } from '../users/users'
 import { User } from '../../models/user.model';
+import { getTeacherByID, getTeacherByUserID } from '../teachers/teachers';
 
 export interface IStudent {
   userID: Types.ObjectId,
@@ -32,6 +33,20 @@ export const createStudent = async (userParams: IUser): Promise<IStudentModel> =
 
 export const getStudentByUserID = async (userID: string): Promise<IStudentModel> => {
   return await Student.findOne({ userID })
+}
+
+export const getStudentsByIDs = async (studentIDs: string[], userID: string): Promise<IStudentModel[]> => {
+  const { _id } = await getTeacherByUserID(userID)
+
+  const classes = await getClassesByTeacherID(_id)
+
+  const studentsFromClasses = classes.reduce((acc, cls) => acc.concat(cls.studentIDs), [])
+
+  if (!studentIDs.every((id) => studentsFromClasses.includes(id))) {
+    throw new Error ('Teacher does not contain a class that contains one of the given students')
+  }
+
+  return await Student.find({ _id: { $in: studentIDs }})
 }
 
 export const getStudentByDisplayNameAndClassCode = (displayName: string, classCode: string): Promise<IStudentModel> => {
