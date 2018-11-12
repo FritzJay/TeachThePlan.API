@@ -3,15 +3,6 @@ import * as graphqlHTTP from 'express-graphql'
 import { buildSchema } from 'graphql'
 import { urlencoded, json } from 'body-parser'
 import { connect } from 'mongoose'
-import { baseRouter } from './src/routes/base.route'
-import { userRouter } from './src/routes/user.route'
-import { testsRouter } from './src/routes/tests.route'
-import { schoolsRouter } from './src/routes/schools.route'
-import { teachersRouter } from './src/routes/teachers.route'
-import { classesRouter } from './src/routes/classes.route'
-import { studentRouter } from './src/routes/students.route'
-import { parentRouter } from './src/routes/parents.route';
-import { testParametersRoute } from './src/routes/testParameters.route';
 require('dotenv').config()
 
 const app = express()
