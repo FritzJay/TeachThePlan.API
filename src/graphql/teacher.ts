@@ -18,16 +18,18 @@ export const getTeacher = async ({ email, password }) => {
 /* CREATE TEACHER */
 export const createTeacher = async ({ email, password }) => {
   const user = await createUser(email, password)
-  const teacher = await new Teacher({
-    userID: user.model._id,
-    displayName: email,
-    classIDs: []
-  }).save()
-    .catch(async (error) => {
-      console.log('There was an error while creating the teacher. Removing new user.')
-      await user.model.remove()
-      throw error
-    })
+  let teacher
+  try {
+    teacher = await new Teacher({
+      userID: user.model._id,
+      displayName: email,
+      classIDs: []
+    }).save()
+  } catch (error) {
+    console.log('There was an error while creating the teacher. Removing new user.')
+    await user.model.remove()
+    throw error
+  }
   return {
     ...new FormattedTeacher(teacher).formatted,
     user: user.formatted,
