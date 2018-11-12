@@ -5,6 +5,7 @@ import { getTestParametersByClass, IFormattedTestParameters, createTestParameter
 import { ITeacherModel } from '../../models/teacher.model'
 import { getStudentsByClass, IFormattedStudent } from '../students/students'
 import { FormattedTeacher } from '../teachers/teachers'
+import { Types } from 'mongoose';
 
 export interface IFormattedClass {
   id: string
@@ -79,6 +80,34 @@ export const addClassToTeacher = async (cls: IClassModel, teacher: ITeacherModel
   teacher.classIDs.push(cls._id)
   teacher.save()
   return new FormattedTeacher(teacher)
+}
+
+export const removeClassFromTeacher = async (classID: string, teacher: ITeacherModel): Promise<IClassModel> => {
+  console.log('classID:', classID)
+  console.log('teacher.classIDs:', teacher.classIDs)
+  if (!teacher.classIDs.some((id) => id.equals(classID))) {
+    throw new Error('Unable to remove class. Invalid permission.')
+  }
+  
+  try {
+    teacher.classIDs = teacher.classIDs.filter((id) => id.toString() !== classID)
+    await teacher.save()
+  } catch (error) {
+    console.log(error)
+    throw new Error('There was an error while attempting remove the class from the teacher\'s list. Aborting.')
+  }
+
+  try {
+    return await removeClassByID(classID)
+  } catch (error) {
+    teacher.classIDs = teacher.classIDs.concat([new Types.ObjectId(classID)])
+    teacher.save()
+    throw error
+  }
+}
+
+export const removeClassByID = (classID: string): Promise<IClassModel> => {
+  return Class.findByIdAndRemove(classID).exec()
 }
 
 

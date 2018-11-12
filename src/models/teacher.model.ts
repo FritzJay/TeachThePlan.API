@@ -3,7 +3,7 @@ import { Document, Schema, Model, model, SchemaTypes, Types } from 'mongoose'
 export interface ITeacher {
   userID: Types.ObjectId
   displayName: string
-  classIDs: string[]
+  classIDs: Types.ObjectId[]
 }
 
 export interface ITeacherModel extends ITeacher, Document { }

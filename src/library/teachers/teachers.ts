@@ -2,8 +2,8 @@ import { Teacher, ITeacherModel } from '../../models/teacher.model'
 import { getUserIDFromToken } from '../authentication/authentication'
 
 interface IFormattedTeacher {
-  id: string,
-  name: string,
+  id: string
+  name: string
 }
 
 export class FormattedTeacher {
@@ -15,10 +15,12 @@ export class FormattedTeacher {
     this.formatted = this.formatTeacher(teacher)
   }
 
-  private formatTeacher = ({ _id, displayName }) => ({
-    id: _id.toString(),
-    name: displayName,
-  })
+  private formatTeacher = ({ _id, displayName }) => {
+    return {
+      id: _id.toString(),
+      name: displayName,
+    }
+  }
 }
 
 export const getTeacherFromUserID = async (userID: string): Promise<FormattedTeacher> => {

@@ -1,6 +1,6 @@
 import { buildSchema } from 'graphql'
 import { getTeacher, createTeacher } from "./teacher"
-import { addClass, updateClass } from "./class"
+import { addClass, updateClass, removeClass } from "./class"
 
 export const schema = buildSchema(`
   input ClassInput {
@@ -59,6 +59,7 @@ export const schema = buildSchema(`
     createTeacher(email: String!, password: String!): Teacher
     addClass(token: String!, grade: String!, name: String!): Class
     updateClass(token: String!, updates: ClassInput!): Class
+    removeClass(token: String!, id: String!): String
   }
 `)
 
@@ -67,4 +68,5 @@ export const root = {
   createTeacher,
   addClass,
   updateClass,
+  removeClass,
 }
