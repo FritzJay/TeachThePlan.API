@@ -1,5 +1,13 @@
-import { Document, Schema, Model, model, SchemaTypes } from 'mongoose'
-import { ITestParameters } from '../library/testParameters/testParameters'
+import { Document, Schema, Model, model, SchemaTypes, Types } from 'mongoose'
+
+export interface ITestParameters {
+  objectID: Types.ObjectId
+  duration: number
+  operators: string[]
+  numbers: number[]
+  questions: number
+  randomQuestions: number
+}
 
 export interface ITestParametersModel extends ITestParameters, Document { }
 export const TestParametersSchema: Schema = new Schema({

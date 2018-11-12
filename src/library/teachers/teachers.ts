@@ -1,6 +1,4 @@
 import { Teacher, ITeacherModel } from '../../models/teacher.model'
-import { getClassesByTeacherID } from '../classes/classes'
-import { IClassModel } from '../../models/class.model'
 
 interface IFormattedTeacher {
   id: string,
@@ -27,6 +25,8 @@ export const getTeacherByUserID = async (userID: string): Promise<FormattedTeach
   return new FormattedTeacher(teacher)
 }
 
+
+/*
 export const getTeacherByID = async (teacherID: string): Promise<ITeacherModel> => {
   console.log('Getting teacher by teacherID', teacherID)
 
@@ -51,3 +51,4 @@ export const addClassToTeacher = async (newClass: IClassModel, teacherID: string
   teacher.classIDs.push(newClass._id)
   return teacher.save()
 }
+*/

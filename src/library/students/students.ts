@@ -1,18 +1,36 @@
-import { ITest } from '../tests/tests'
 import { Student, IStudentModel } from '../../models/student.model'
 import { IClassModel } from '../../models/class.model'
-import { addStudentToClass, getClassByClassCode, getClassesByTeacherID } from '../classes/classes'
-import { Types } from 'mongoose'
-import { getUserByEmail, IUser, createUser } from '../users/users'
-import { User } from '../../models/user.model';
-import { getTeacherByID, getTeacherByUserID } from '../teachers/teachers';
 
-export interface IStudent {
-  userID: Types.ObjectId,
-  displayName: string,
-  tests?: ITest[],
+export interface IFormattedStudent {
+  id: string
+  name: string
 }
 
+export class FormattedStudent {
+  public model: IStudentModel
+  public formatted: IFormattedStudent
+
+  constructor(student: IStudentModel) {
+    this.model = student
+    this.formatted = this.formatStudent(student)
+  }
+
+  private formatStudent = ({ _id, displayName }) => ({
+    id: _id.toString(),
+    name: displayName,
+  })
+}
+
+export const getStudentsByClass = async (cls: IClassModel) => {
+  const students = await Student.find({ _id: { $in: cls.studentIDs } }).exec()
+  return students !== null
+    ? students.map((student) => new FormattedStudent(student))
+    : []
+}
+
+
+
+/*
 export const createStudent = async (userParams: IUser): Promise<IStudentModel> => {
   console.log('Creating a new student', userParams)
 
@@ -97,3 +115,4 @@ export const removeStudentByID = (studentID: Types.ObjectId): Promise<IStudentMo
     })
   })
 }
+*/

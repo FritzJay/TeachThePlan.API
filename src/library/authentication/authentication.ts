@@ -1,8 +1,8 @@
 import { compare } from 'bcrypt'
 import { sign, verify } from 'jsonwebtoken'
 import { IUserModel } from '../../models/user.model'
-import { getUserFromToken } from '../users/users'
 
+/*
 export const authorizeUser = async (token: string, userType: string): Promise<IUserModel> => {
   const user = await getUserFromToken(token)
   
@@ -13,6 +13,7 @@ export const authorizeUser = async (token: string, userType: string): Promise<IU
     throw Error('Invalid user type')
   }
 }
+*/
 
 export const createToken = async (user: IUserModel): Promise<string> => {
   const { email, _id, userType } = user

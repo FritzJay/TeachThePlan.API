@@ -1,19 +1,41 @@
-import { ITestParameters } from '../testParameters/testParameters'
-import { TestParameters, ITestParametersModel } from '../../models/testParameters.model'
-import { Types } from 'mongoose'
-import { getTeacherByUserID, getTeacherByID } from '../teachers/teachers';
-import { IUserModel } from '../../models/user.model';
-import { ITeacherModel } from '../../models/teacher.model';
+import { TestParameters, ITestParametersModel } from "../../models/testParameters.model"
+import { IClassModel } from "../../models/class.model"
 
-export interface ITestParameters {
-  objectID: string
+
+export interface IFormattedTestParameters {
+  id: string
   duration: number
-  operators: string[]
   numbers: number[]
+  operators: string[]
   questions: number
   randomQuestions: number
 }
 
+export class FormattedTestParameters {
+  public model: ITestParametersModel
+  public formatted: IFormattedTestParameters
+
+  constructor(testParameters: ITestParametersModel) {
+    this.model = testParameters
+    this.formatted = this.formatTestParameters(testParameters)
+  }
+
+  private formatTestParameters = ({ _id, duration, numbers, operators, questions, randomQuestions }) => ({
+    id: _id.toString(),
+    duration,
+    numbers,
+    operators,
+    questions,
+    randomQuestions,
+  })
+}
+
+export const getTestParametersByClass = async (cls: IClassModel): Promise<FormattedTestParameters> => {
+  const testParameters = await TestParameters.findOne({ objectID: cls._id }).exec()
+  return new FormattedTestParameters(testParameters)
+}
+
+/*
 export const addTestParametersToClass = async (classID: string) => {
   console.log('Adding test parameters to class', classID)
 
@@ -129,3 +151,4 @@ export const assertClassDoesNotHaveTestParameters = async (classID: string) => {
     throw new Error(`Test parameters already exist for the class with an ID of ${classID}`)
   }
 }
+*/

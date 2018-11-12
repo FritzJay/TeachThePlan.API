@@ -1,10 +1,57 @@
-import { generate } from 'shortid'
-import { IClass } from '../../models/class.model'
 import { Class, IClassModel } from '../../models/class.model'
-import { addClassToTeacher, getTeacherByUserID, getTeacherByID } from '../teachers/teachers'
-import { Types } from 'mongoose'
-import { addTestParametersToClass } from '../testParameters/testParameters';
+import { getTestParametersByClass, IFormattedTestParameters } from '../testParameters/testParameters'
+import { ITeacherModel } from '../../models/teacher.model'
+import { getStudentsByClass, IFormattedStudent } from '../students/students'
 
+export interface IFormattedClass {
+  id: string
+  name: string
+  code: string
+  grade: string
+  testParameters: IFormattedTestParameters
+  students: IFormattedStudent[]
+}
+
+export class FormattedClass {
+  public model: IClassModel
+  public formatted: IFormattedClass
+
+  constructor(cls: IClassModel) {
+    this.model = cls
+  }
+
+  public formatClass = async () => {
+    const cls = this.model
+    const testParameters = await getTestParametersByClass(cls)
+    const students = await getStudentsByClass(cls)
+
+    this.formatted = {
+      id: cls._id.toString(),
+      name: cls.name,
+      code: cls.classCode,
+      grade: cls.grade,
+      testParameters: testParameters.formatted,
+      students: students.map((student) => student.formatted),
+    }
+  }
+}
+
+export const getClassesFromTeacher = async (teacher: ITeacherModel): Promise<FormattedClass[]> => {
+  const classes = await Class.find({ _id: { $in: teacher.classIDs } }).exec()
+  if (classes === null) {
+    return []
+  }
+  return Promise.all(classes.map(async (cls) => {
+    const formattedClass = new FormattedClass(cls)
+    await formattedClass.formatClass()
+    return formattedClass
+  }))
+}
+
+
+
+
+/*
 export const createClass = async (classParams: IClass, userID: string): Promise<IClassModel> => {
   console.log('Creating a new class', classParams, userID)
 
@@ -175,3 +222,5 @@ export const removeClassByClassCode = (classCode: string): Promise<IClassModel> 
 export const removeClassByID = (classID: string): Promise<IClassModel> => {
   return Class.findByIdAndRemove(classID).exec()
 }
+
+*/
