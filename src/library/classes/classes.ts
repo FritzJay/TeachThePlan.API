@@ -1,7 +1,10 @@
+import { generate } from 'shortid'
+
 import { Class, IClassModel } from '../../models/class.model'
-import { getTestParametersByClass, IFormattedTestParameters } from '../testParameters/testParameters'
+import { getTestParametersByClass, IFormattedTestParameters, createTestParametersForNewClass } from '../testParameters/testParameters'
 import { ITeacherModel } from '../../models/teacher.model'
 import { getStudentsByClass, IFormattedStudent } from '../students/students'
+import { FormattedTeacher } from '../teachers/teachers'
 
 export interface IFormattedClass {
   id: string
@@ -48,6 +51,36 @@ export const getClassesFromTeacher = async (teacher: ITeacherModel): Promise<For
   }))
 }
 
+export const createClass = async (grade: string, name: string): Promise<FormattedClass> => {
+  const newClass = await new Class({
+    grade,
+    name,
+    studentIDs: [],
+    classCode: generate()
+  }).save()
+  await createTestParametersForNewClass(newClass._id)
+  const formattedClass = new FormattedClass(newClass)
+  await formattedClass.formatClass()
+  console.log('formattedClass:', formattedClass)
+  return formattedClass
+}
+
+export const addClassToTeacher = async (cls: IClassModel, teacher: ITeacherModel): Promise<FormattedTeacher> => {
+  const classes = await getClassesFromTeacher(teacher)
+
+  if (classes.some((c) => c.model._id === cls.id)) {
+    throw new Error(`Teacher already has a class with an _id of ${cls._id}`)
+  }
+
+  if (classes.some((c) => c.model.name === cls.name)) {
+    throw new Error(`Teacher already has a class with a name of ${cls.name}`)
+  }
+
+  teacher.classIDs.push(cls._id)
+  teacher.save()
+  return new FormattedTeacher(teacher)
+}
+
 
 
 
@@ -57,14 +90,9 @@ export const createClass = async (classParams: IClass, userID: string): Promise<
 
   const { grade, name } = classParams
 
-  const teacher = await getTeacherByUserID(userID)
+  const teacher = await getTeacherFromUserID(userID)
 
-  const newClass = await new Class({
-    grade,
-    name,
-    studentIDs: [],
-    classCode: generate()
-  }).save()
+  
 
   try {
     await addClassToTeacher(newClass, teacher._id)
@@ -85,7 +113,7 @@ export const updateClass = async (classID: string, updates: IClass, userID: stri
 
   const { grade, name } = updates
 
-  const teacher = await getTeacherByUserID(userID)
+  const teacher = await getTeacherFromUserID(userID)
   
   const cls = await getClassByID(classID)
 
@@ -116,7 +144,7 @@ export const updateClass = async (classID: string, updates: IClass, userID: stri
 export const deleteClass = async (classID: string, userID: string): Promise<IClassModel> => {
   console.log('Deleting class', classID, userID)
 
-  const teacher = await getTeacherByUserID(userID)
+  const teacher = await getTeacherFromUserID(userID)
 
   if (teacher.classIDs.some((id) => id.toString() === classID) === false) {
     console.log('Teacher does not contain the given classID', teacher, classID)
@@ -155,7 +183,7 @@ export const getClassesByTeacherID = async (teacherID: string): Promise<IClassMo
 }
 
 export const getClassesByUserID = async (userID: string): Promise<IClassModel[]> => {
-  const { _id } = await getTeacherByUserID(userID)
+  const { _id } = await getTeacherFromUserID(userID)
 
   return await getClassesByTeacherID(_id)
 }

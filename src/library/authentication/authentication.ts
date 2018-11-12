@@ -15,6 +15,11 @@ export const authorizeUser = async (token: string, userType: string): Promise<IU
 }
 */
 
+export const getUserIDFromToken = async (token: string): Promise<string> => {
+  const verifiedToken = await verifyToken(token)
+  return verifiedToken['_id']
+}
+
 export const createToken = async (user: IUserModel): Promise<string> => {
   const { email, _id, userType } = user
 

@@ -1,6 +1,6 @@
 import { TestParameters, ITestParametersModel } from "../../models/testParameters.model"
 import { IClassModel } from "../../models/class.model"
-
+import { Types } from "mongoose";
 
 export interface IFormattedTestParameters {
   id: string
@@ -32,6 +32,21 @@ export class FormattedTestParameters {
 
 export const getTestParametersByClass = async (cls: IClassModel): Promise<FormattedTestParameters> => {
   const testParameters = await TestParameters.findOne({ objectID: cls._id }).exec()
+  if (testParameters === null) {
+    throw new Error(`Could not find test parameters for the class: ${cls._id}`)
+  }
+  return new FormattedTestParameters(testParameters)
+}
+
+export const createTestParametersForNewClass = async (classID: string): Promise<FormattedTestParameters> => {
+  const testParameters = await TestParameters.create({
+    objectID: classID,
+    duration: 75,
+    numbers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    operators: ['+', '-', '*', '/'],
+    questions: 20,
+    randomQuestions: 5,
+  })
   return new FormattedTestParameters(testParameters)
 }
 
@@ -110,13 +125,13 @@ export const removeTestParametersByUserID = (userID: Types.ObjectId): Promise<IT
 }
 
 export const assertUserIsAuthorizedForGetTestParameters = async (user: IUserModel, classID: string) => {
-  const teacher = await getTeacherByUserID(user._id)
+  const teacher = await getTeacherFromUserID(user._id)
   
   await assertTeacherOwnsClass(teacher, classID)
 }
 
 export const assertUserIsAuthorizedForNewTestParameters = async (user: IUserModel, classID: string) => {
-  const teacher = await getTeacherByUserID(user._id)
+  const teacher = await getTeacherFromUserID(user._id)
   
   await assertTeacherOwnsClass(teacher, classID)
   
@@ -124,7 +139,7 @@ export const assertUserIsAuthorizedForNewTestParameters = async (user: IUserMode
 }
 
 export const assertUserIsAuthorizedForUpdateTestParameters = async (user: IUserModel, testParametersID: string) => {
-  const teacher = await getTeacherByUserID(user._id)
+  const teacher = await getTeacherFromUserID(user._id)
   
   await assertTeacherOwnsTestParameters(teacher, testParametersID)
 }

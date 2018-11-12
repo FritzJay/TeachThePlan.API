@@ -1,26 +1,19 @@
-/* CREATE CLASS */
+import { createClass, addClassToTeacher, IFormattedClass } from "../library/classes/classes"
+import { getTeacherFromToken } from "../library/teachers/teachers"
 
-/*
-export const addClass = (token: string, grade: string, name: string) => {
-  const teacher = await Teacher.findOne({ userID: user._id }).exec()
-  const formattedTeacher = formatTeacher(teacher)
-
-  const classes = await Class.find({ _id: { $in: teacher.classIDs } }).exec()
-  const formattedClasses = await formatClasses(classes)
-
-  const response = {
-    ...formattedTeacher,
-    classes: formattedClasses,
-    user: formattedUser
-  }
-
-  console.log(response)
-
-  return response
+/* ADD CLASS */
+export const addClass = async ({ token, grade, name }) => {
+  const teacher = await getTeacherFromToken(token)
+  const newClass = await createClass(grade, name)
+  await addClassToTeacher(newClass.model, teacher.model)
+    .catch(async (error) => {
+      await newClass.model.remove()
+      throw error
+    })
+  return newClass.formatted
 }
-*/
 
 /* UPDATE CLASS */
-export const updateClass = () => {
+export const updateClass = (token: string, updates: IFormattedClass) => {
   return
 }

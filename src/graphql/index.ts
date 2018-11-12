@@ -3,6 +3,25 @@ import { getTeacher, createTeacher } from "./teacher"
 import { addClass, updateClass } from "./class"
 
 export const schema = buildSchema(`
+  input ClassInput {
+    id: String!
+    name: String!
+    grade: String!
+    testParameters: TestParametersInput
+    students: [StudentInput]
+  },
+  input TestParametersInput {
+    id: String!
+    duration: Int!
+    numbers: [Int]!
+    operators: [String]!
+    questions: Int!
+    randomQuestions: Int!
+  },
+  input StudentInput {
+    id: String!
+    name: String!
+  },
   type Teacher {
     id: String!
     name: String!
@@ -38,6 +57,8 @@ export const schema = buildSchema(`
   },
   type Mutation {
     createTeacher(email: String!, password: String!): Teacher
+    addClass(token: String!, grade: String!, name: String!): Class
+    updateClass(token: String!, updates: ClassInput!): Class
   }
 `)
 

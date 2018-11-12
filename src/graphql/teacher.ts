@@ -1,13 +1,14 @@
 import { Teacher } from '../models/teacher.model'
 import { getUserByEmailPasswordAndType, createUser } from '../library/users/users'
-import { getTeacherByUserID, FormattedTeacher } from '../library/teachers/teachers'
+import { getTeacherFromUserID, FormattedTeacher } from '../library/teachers/teachers'
 import { getClassesFromTeacher } from '../library/classes/classes'
 
 /* GET TEACHER */
 export const getTeacher = async ({ email, password }) => {
   const user = await getUserByEmailPasswordAndType(email, password, 'teacher')
-  const teacher = await getTeacherByUserID(user.model._id)
+  const teacher = await getTeacherFromUserID(user.model._id)
   const classes = await getClassesFromTeacher(teacher.model)
+  console.log(classes)
   return {
     ...teacher.formatted,
     classes: classes.map((cls) => cls.formatted),

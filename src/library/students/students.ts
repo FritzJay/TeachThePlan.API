@@ -54,7 +54,7 @@ export const getStudentByUserID = async (userID: string): Promise<IStudentModel>
 }
 
 export const getStudentsByIDs = async (studentIDs: string[], userID: string): Promise<IStudentModel[]> => {
-  const { _id } = await getTeacherByUserID(userID)
+  const { _id } = await getTeacherFromUserID(userID)
 
   const classes = await getClassesByTeacherID(_id)
 
