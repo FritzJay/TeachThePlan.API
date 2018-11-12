@@ -1,59 +1,36 @@
 import { Teacher, ITeacherModel } from '../../models/teacher.model'
-import { Types } from 'mongoose'
-import { getUserByEmail, IUser, createUser } from '../users/users'
-import { getClassesByTeacherID, getClassByID } from '../classes/classes';
-import { IClassModel } from '../../models/class.model';
+import { getClassesByTeacherID } from '../classes/classes'
+import { IClassModel } from '../../models/class.model'
 
-export const createTeacher = async (userParams: IUser): Promise<ITeacherModel> => {
-  console.log('Creating a new teacher:', userParams)
-
-  const userType = [ 'teacher' ]
-  const { email, password } = userParams
-
-  const user = await createUser({ email, password, userType })
-
-  try {
-    return await new Teacher({ userID: user._id, displayName: email }).save()
-
-  } catch (error) {
-    console.log(`Unable to create a new teacher using _id ${user._id}`, error)
-    await user.remove()
-    console.log(`Removed user with _id ${user._id}`)
-  }
+interface IFormattedTeacher {
+  id: string,
+  name: string,
 }
 
+export class FormattedTeacher {
+  public model: ITeacherModel
+  public formatted: IFormattedTeacher
 
-export const getTeacherByEmail = async (email: string): Promise<ITeacherModel> => {
-  console.log('Getting teacher by email')
-  console.log(`email: ${email}`)
+  constructor(teacher: ITeacherModel) {
+    this.model = teacher
+    this.formatted = this.formatTeacher(teacher)
+  }
 
-  const user = await getUserByEmail(email)
-  return await Teacher.findOne({ userID: user._id })
+  private formatTeacher = ({ _id, displayName }) => ({
+    id: _id.toString(),
+    name: displayName,
+  })
+}
+
+export const getTeacherByUserID = async (userID: string): Promise<FormattedTeacher> => {
+  const teacher = await Teacher.findOne({ userID }).exec()
+  return new FormattedTeacher(teacher)
 }
 
 export const getTeacherByID = async (teacherID: string): Promise<ITeacherModel> => {
   console.log('Getting teacher by teacherID', teacherID)
 
   return Teacher.findById(teacherID).exec()
-}
-
-export const getTeacherByUserID = (userID: string): Promise<ITeacherModel> => {
-  console.log('Getting teacher by userID')
-  console.log(`UserID: ${userID}`)
-  return new Promise((resolve, reject) => {
-    Teacher.findOne({ userID: userID })
-    .exec()
-    .then((teacher: ITeacherModel) => {
-      if (teacher) {
-        resolve(teacher)
-      } else {
-        reject(new Error('Unable to find teacher'))
-      }
-    })
-    .catch((error) => {
-      reject(error)
-    })
-  })
 }
 
 export const addClassToTeacher = async (newClass: IClassModel, teacherID: string): Promise<ITeacherModel> => {
@@ -73,16 +50,4 @@ export const addClassToTeacher = async (newClass: IClassModel, teacherID: string
 
   teacher.classIDs.push(newClass._id)
   return teacher.save()
-}
-
-export const removeTeacherByID = (teacherID: Types.ObjectId): Promise<ITeacher> => {
-  return new Promise((resolve, reject) => {
-    Teacher.findByIdAndRemove(teacherID)
-    .then((teacher: ITeacherModel) => {
-      resolve(teacher)
-    })
-    .catch((error) => {
-      reject(error)
-    })
-  })
 }

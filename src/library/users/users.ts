@@ -1,25 +1,54 @@
 import { hash } from 'bcrypt'
-import { Types } from 'mongoose'
-import { User, IUserModel, IUser } from '../../models/user.model'
-import { verifyToken } from '../authentication/authentication'
+import { User, IUserModel } from '../../models/user.model'
+import { comparePasswords, createToken } from '../authentication/authentication'
 
-export const createUser = async (userParams: IUser): Promise<IUserModel> => {
-  console.log('Creating a new user:', userParams)
+export interface IFormattedUser {
+  email: string
+  token: string
+}
 
-  const { email, password, firstName, lastName, userType } = userParams
+export class FormattedUser {
+  public model: IUserModel
+  public formatted: IFormattedUser
 
-  const hashedPassword = await hash(password, 10)
+  constructor(user: IUserModel, token: string) {
+    this.model = user
+    this.formatted = this.formatUser(user, token)
+  }
 
+  private formatUser = ({ email, _id }, token): IFormattedUser => ({
+    email,
+    token,
+  })
+}
+
+export const getUserByEmailPasswordAndType = async (email: string, password: string, userType: string): Promise<FormattedUser> => {
+  const user = await User.findOne({ email }).exec()
+  if (user === null) {
+    throw new Error(`There is no user with the email ${email}`)
+  }
+  if (!user.userType.map((ut) => ut.toLowerCase()).includes(userType.toLowerCase())) {
+    throw new Error(`A user was found, but it is not of type ${userType}`)
+  }
+  const passwordsMatch = await comparePasswords(password, user.password)
+  if (!passwordsMatch) {
+    throw new Error('Invalid password')
+  }
+  const token = await createToken(user)
+  return new FormattedUser(user, token)
+}
+
+export const createUser = async (email: string, password: string): Promise<FormattedUser> => {
   await assertUserWithEmailDoesNotExist(email)
-
-  return await new User({
+  const hashedPassword = await hash(password, 10)
+  const user = await new User({
     email,
     password: hashedPassword,
-    firstName,
-    lastName,
-    userType,
+    userType: ['teacher'],
   })
   .save()
+  const token = await createToken(user)
+  return new FormattedUser(user, token)
 }
 
 const assertUserWithEmailDoesNotExist = async (email: string) => {
@@ -28,49 +57,4 @@ const assertUserWithEmailDoesNotExist = async (email: string) => {
   if (user !== null) {
     throw new Error(`User with an email of ${email} already exists`)
   }
-}
-
-export const getUserFromToken = async (token: string): Promise<IUserModel> => {
-  console.log('Getting user from token')
-  console.log(`token: ${token}`)
-
-  const decodedToken = await verifyToken(token)
-  const email = decodedToken['email']
-
-  return getUserByEmail(email)
-}
-
-export const getUserByEmail = async (email: string): Promise<IUserModel> => {
-  console.log('Getting user by email')
-  console.log(`email: ${email}`)
-
-  const user = await User.findOne({ email }).exec()
-
-  if (user !== undefined && user !== null) {
-    return user
-  } else {
-    console.log(`Could not find the user with an email of ${email}`)
-    throw new Error(`Could not find the user with an email of ${email}`)
-  }
-}
-
-export const getUserByID = async (id: Types.ObjectId): Promise<IUserModel> => {
-  console.log('Getting user by userID')
-  console.log(`userID: ${id}`)
-
-  const user = await User.findById(id).exec()
-
-  if (user !== undefined && user !== null) {
-    return user
-  } else {
-    console.log(`Could not find the user with an id of ${id}`)
-    throw new Error(`Could not find the user with an id of ${id}`)
-  }
-}
-
-export const removeUserByID = async (id: Types.ObjectId): Promise<IUserModel> => {
-  console.log('Removing user by userID')
-  console.log(`userID: ${id}`)
-
-  return User.findByIdAndRemove(id)
 }

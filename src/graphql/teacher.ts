@@ -1,83 +1,26 @@
-import { buildSchema } from 'graphql'
 import { Teacher } from '../models/teacher.model';
-import { comparePasswords, createToken } from '../library/authentication/authentication';
-import { User } from '../models/user.model';
 import { Class } from '../models/class.model';
 import { TestParameters } from '../models/testParameters.model';
 import { Student } from '../models/student.model';
+import { getUserByEmailPasswordAndType, createUser } from '../library/users/users';
+import { getTeacherByUserID, FormattedTeacher } from '../library/teachers/teachers';
 
-interface ITeacherArgs {
-  email: string
-  password: string
-}
+/* GET TEACHER */
+export const getTeacher = async ({ email, password }) => {
+  const user = await getUserByEmailPasswordAndType(email, password, 'teacher')
+  const teacher = await getTeacherByUserID(user.model._id)
 
-export const schema = buildSchema(`
-  type Query {
-    teacher(email: String!, password: String!): Teacher
-  },
-  type Teacher {
-    id: String!
-    name: String!
-    classes: [Class]!
-    user: User!
-  },
-  type User {
-    email: String!
-    token: String!
-  },
-  type Class {
-    id: String!
-    name: String!
-    code: String!
-    grade: String!
-    testParameters: TestParameters!
-    students: [Student]
-  },
-  type Student {
-    id: String!
-    name: String!
-  },
-  type TestParameters {
-    id: String!
-    duration: Int!
-    numbers: [Int]!
-    operators: [String]!
-    questions: Int!
-    randomQuestions: Int!
-  }
-`)
-
-const getTeacher = async ({ email, password }: ITeacherArgs) => {
-  const user = await User.findOne({ email }).exec()
-  const passwordsMatch = await comparePasswords(password, user.password)
-  if (!passwordsMatch) {
-    throw new Error('Invalid password')
-  }
-  const token = await createToken(user)
-  const formattedUser = formatUser(user, token)
-
-  const teacher = await Teacher.findOne({ userID: user._id }).exec()
-  const formattedTeacher = formatTeacher(teacher)
-
-  const classes = await Class.find({ _id: { $in: teacher.classIDs } }).exec()
+  const classes = await Class.find({ _id: { $in: teacher.model.classIDs } }).exec()
   const formattedClasses = await formatClasses(classes)
 
-  return {
-    ...formattedTeacher,
+  const response = {
+    ...teacher.formatted,
     classes: formattedClasses,
-    user: formattedUser
+    user: user.formatted
   }
+
+  return response
 }
-
-const formatTeacher = ({ _id, displayName }) => ({
-  id: _id.toString(),
-  name: displayName,
-})
-
-const formatUser = ({ email }, token) => ({
-  email,
-  token,
-})
 
 const formatClasses = async (classes) => {
   return await classes.map(async (cls) => {
@@ -114,6 +57,22 @@ const formatStudents = (students) => (
   }))
 )
 
-export const root = {
-  teacher: getTeacher,
+/* CREATE TEACHER */
+export const createTeacher = async ({ email, password }) => {
+  const user = await createUser(email, password)
+  const teacher = await new Teacher({
+    userID: user.model._id,
+    displayName: email,
+    classIDs: []
+  }).save()
+    .catch(async (error) => {
+      console.log('There was an error while creating the teacher. Removing new user.')
+      await user.model.remove()
+      throw error
+    })
+  return {
+    ...new FormattedTeacher(teacher).formatted,
+    user: user.formatted,
+    classes: [],
+  }
 }
