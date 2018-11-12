@@ -38,13 +38,13 @@ export const getUserByEmailPasswordAndType = async (email: string, password: str
   return new FormattedUser(user, token)
 }
 
-export const createUser = async (email: string, password: string): Promise<FormattedUser> => {
+export const createUser = async (email: string, password: string, userType: string[]): Promise<FormattedUser> => {
   await assertUserWithEmailDoesNotExist(email)
   const hashedPassword = await hash(password, 10)
   const user = await new User({
     email,
     password: hashedPassword,
-    userType: ['teacher'],
+    userType,
   })
   .save()
   const token = await createToken(user)
