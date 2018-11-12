@@ -1,5 +1,11 @@
-import { Document, Schema, Model, SchemaTypes, model } from 'mongoose'
-import { IClass } from '../library/classes/classes'
+import { Document, Schema, Model, SchemaTypes, model, Types } from 'mongoose'
+
+export interface IClass {
+  classCode?: string,
+  grade: string,
+  name: string,
+  studentIDs?: Types.ObjectId[],
+}
 
 export interface IClassModel extends IClass, Document { }
 export const ClassSchema: Schema = new Schema({

@@ -1,15 +1,7 @@
 import { hash } from 'bcrypt'
 import { Types } from 'mongoose'
-import { User, IUserModel } from '../../models/user.model'
+import { User, IUserModel, IUser } from '../../models/user.model'
 import { verifyToken } from '../authentication/authentication'
-
-export interface IUser {
-  email?: string
-  password?: string
-  firstName?: string
-  lastName?: string
-  userType?: string[]
-}
 
 export const createUser = async (userParams: IUser): Promise<IUserModel> => {
   console.log('Creating a new user:', userParams)

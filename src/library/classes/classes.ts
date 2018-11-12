@@ -1,16 +1,9 @@
 import { generate } from 'shortid'
-import { IClass } from '../classes/classes'
+import { IClass } from '../../models/class.model'
 import { Class, IClassModel } from '../../models/class.model'
 import { addClassToTeacher, getTeacherByUserID, getTeacherByID } from '../teachers/teachers'
 import { Types } from 'mongoose'
 import { addTestParametersToClass } from '../testParameters/testParameters';
-
-export interface IClass {
-  classCode?: string,
-  grade: string,
-  name: string,
-  studentIDs?: Types.ObjectId[],
-}
 
 export const createClass = async (classParams: IClass, userID: string): Promise<IClassModel> => {
   console.log('Creating a new class', classParams, userID)

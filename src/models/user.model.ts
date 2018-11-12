@@ -1,7 +1,15 @@
 import { Document, Schema, Model, model } from "mongoose"
-import { IUser } from "../library/users/users"
+
+export interface IUser {
+  email: string
+  password?: string
+  firstName?: string
+  lastName?: string
+  userType?: string[]
+}
 
 export interface IUserModel extends IUser, Document {
+  email: string
   displayName: string
   userType: string[]
 }

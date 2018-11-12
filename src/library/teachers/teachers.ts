@@ -4,12 +4,6 @@ import { getUserByEmail, IUser, createUser } from '../users/users'
 import { getClassesByTeacherID, getClassByID } from '../classes/classes';
 import { IClassModel } from '../../models/class.model';
 
-export interface ITeacher {
-  userID: Types.ObjectId,
-  displayName: string,
-  classIDs: string[],
-}
-
 export const createTeacher = async (userParams: IUser): Promise<ITeacherModel> => {
   console.log('Creating a new teacher:', userParams)
 
