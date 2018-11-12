@@ -62,7 +62,6 @@ export const createClass = async (grade: string, name: string): Promise<Formatte
   await createTestParametersForNewClass(newClass._id)
   const formattedClass = new FormattedClass(newClass)
   await formattedClass.formatClass()
-  console.log('formattedClass:', formattedClass)
   return formattedClass
 }
 
@@ -83,8 +82,6 @@ export const addClassToTeacher = async (cls: IClassModel, teacher: ITeacherModel
 }
 
 export const removeClassFromTeacher = async (classID: string, teacher: ITeacherModel): Promise<IClassModel> => {
-  console.log('classID:', classID)
-  console.log('teacher.classIDs:', teacher.classIDs)
   if (!teacher.classIDs.some((id) => id.equals(classID))) {
     throw new Error('Unable to remove class. Invalid permission.')
   }
