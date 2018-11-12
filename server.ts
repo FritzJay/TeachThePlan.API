@@ -1,5 +1,6 @@
 import * as express from 'express'
-var app = express()
+import * as graphqlHTTP from 'express-graphql'
+import { buildSchema } from 'graphql'
 import { urlencoded, json } from 'body-parser'
 import { connect } from 'mongoose'
 import { baseRouter } from './src/routes/base.route'
@@ -12,6 +13,8 @@ import { studentRouter } from './src/routes/students.route'
 import { parentRouter } from './src/routes/parents.route';
 import { testParametersRoute } from './src/routes/testParameters.route';
 require('dotenv').config()
+
+const app = express()
 
 const PORT: number = parseInt(process.env.PORT, 10) || 3000
 
@@ -36,18 +39,29 @@ connect(`mongodb://factfluency:${process.env.MONGODB_PASSWORD}@factfluency-shard
   useNewUrlParser: true,
 })
 
+// TEMPORARY GRAPHQL
+const schema = buildSchema(`
+  type Query {
+    hello: String
+  }
+`)
+
+const root = {
+  hello: () => {
+    return 'Hello world!'
+  }
+}
+
+
+// END TEMPORARY GRAPHQL
+
 app.use(urlencoded({ extended: false }))
 app.use(json())
-app.use(allowCrossDomain)
-app.use('/', baseRouter)
-app.use('/user', userRouter)
-app.use('/tests', testsRouter)
-app.use('/schools', schoolsRouter)
-app.use('/teachers', teachersRouter)
-app.use('/classes', classesRouter)
-app.use('/students', studentRouter)
-app.use('/parents', parentRouter)
-app.use('/test-parameters', testParametersRoute)
+app.use('/graphql', graphqlHTTP({
+  schema,
+  rootValue: root,
+  graphiql: true,
+}))
 
 app.listen(PORT, () => {
   console.log(`Listening for api requests on ${PORT}`)
