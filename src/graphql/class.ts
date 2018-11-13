@@ -20,7 +20,6 @@ export const getClass = async ({token, id}: { token: string, id: string}): Promi
     throw new Error('You are not authorized to update this class')
   }
   const cls = await getClassFromID(id)
-  console.log(cls)
   if (cls === null) {
     throw new Error('Unable to find class')
   }

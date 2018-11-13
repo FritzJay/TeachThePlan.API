@@ -8,7 +8,6 @@ export const getTeacher = async ({ email, password }) => {
   const user = await getUserByEmailPasswordAndType(email, password, 'teacher')
   const teacher = await getTeacherFromUserID(user.model._id)
   const classes = await getClassesFromTeacher(teacher.model)
-  console.log(classes)
   return {
     ...teacher.formatted,
     classes: classes.map((cls) => cls.formatted),
