@@ -21,11 +21,16 @@ export class FormattedStudent {
   })
 }
 
-export const getStudentsByClass = async (cls: IClassModel) => {
+export const getStudentsByClass = async (cls: IClassModel): Promise<FormattedStudent[]> => {
   const students = await Student.find({ _id: { $in: cls.studentIDs } }).exec()
   return students !== null
     ? students.map((student) => new FormattedStudent(student))
     : []
+}
+
+export const getStudentFromUserID = async (userID: string): Promise<FormattedStudent> => {
+  const student = await Student.findOne({ userID }).exec()
+  return new FormattedStudent(student)
 }
 
 

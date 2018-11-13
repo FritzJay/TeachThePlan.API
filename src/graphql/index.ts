@@ -1,7 +1,8 @@
 import { buildSchema } from 'graphql'
-import { getTeacher, createTeacher } from "./teacher"
+import { createTeacher, signInTeacher } from "./teacher"
 import { addClass, changeClass, removeClass, getClass } from "./class"
 import { getTestParameters, changeTestParameters } from './testParameters'
+import { signInStudent } from './student'
 
 export const schema = buildSchema(`
   input ClassInput {
@@ -21,11 +22,26 @@ export const schema = buildSchema(`
     id: String!
     name: String!
   },
-  type Teacher {
+
+  type SignInTeacher {
     id: String!
     name: String!
     classes: [Class]!
     user: User!
+  },
+  type Teacher {
+    id: String!
+    name: String!
+  },
+  type SignInStudent {
+    id: String!
+    name: String!
+    classes: [Class]!
+    user: User!
+  },
+  type Student {
+    id: String!
+    name: String!
   },
   type User {
     email: String!
@@ -39,10 +55,6 @@ export const schema = buildSchema(`
     testParameters: TestParameters!
     students: [Student]
   },
-  type Student {
-    id: String!
-    name: String!
-  },
   type TestParameters {
     id: String!
     duration: Int!
@@ -52,7 +64,8 @@ export const schema = buildSchema(`
     randomQuestions: Int!
   },
   type Query {
-    getTeacher(email: String!, password: String!): Teacher
+    signInTeacher(email: String!, password: String!): SignInTeacher
+    signInStudent(email: String!, password: String!): SignInStudent
     getClass(token: String!, id: String!): Class
     getTestParameters(token: String!, id: String!): TestParameters
   },
@@ -66,7 +79,8 @@ export const schema = buildSchema(`
 `)
 
 export const root = {
-  getTeacher,
+  signInTeacher,
+  signInStudent,
   getClass,
   getTestParameters,
   createTeacher,

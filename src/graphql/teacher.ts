@@ -4,7 +4,7 @@ import { getTeacherFromUserID, FormattedTeacher } from '../library/teachers/teac
 import { getClassesFromTeacher } from '../library/classes/classes'
 
 /* GET TEACHER */
-export const getTeacher = async ({ email, password }) => {
+export const signInTeacher = async ({ email, password }) => {
   const user = await getUserByEmailPasswordAndType(email, password, 'teacher')
   const teacher = await getTeacherFromUserID(user.model._id)
   const classes = await getClassesFromTeacher(teacher.model)

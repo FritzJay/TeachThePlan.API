@@ -5,7 +5,7 @@ import { getTestParametersForClass, IFormattedTestParameters, createTestParamete
 import { ITeacherModel } from '../../models/teacher.model'
 import { getStudentsByClass, IFormattedStudent } from '../students/students'
 import { FormattedTeacher } from '../teachers/teachers'
-import { Types } from 'mongoose';
+import { IStudentModel } from '../../models/student.model'
 
 export interface IFormattedClass {
   id: string
@@ -49,6 +49,19 @@ export const getClassFromID = async (classID: string): Promise<FormattedClass> =
 
 export const getClassesFromTeacher = async (teacher: ITeacherModel): Promise<FormattedClass[]> => {
   const classes = await Class.find({ _id: { $in: teacher.classIDs } }).exec()
+  if (classes === null) {
+    return []
+  }
+  return Promise.all(classes.map(async (cls) => {
+    const formattedClass = new FormattedClass(cls)
+    await formattedClass.formatClass()
+    return formattedClass
+  }))
+}
+
+export const getClassesFromStudent = async (student: IStudentModel): Promise<FormattedClass[]> => {
+  const classes = await Class.find({ studentIDs: student._id })
+  console.log(classes)
   if (classes === null) {
     return []
   }
