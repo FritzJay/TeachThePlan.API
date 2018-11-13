@@ -30,6 +30,11 @@ export class FormattedTestParameters {
   })
 }
 
+export const getTestParametersFromID = async (testParametersID: string): Promise<FormattedTestParameters> => {
+  const testParameters = await TestParameters.findById(testParametersID).exec()
+  return new FormattedTestParameters(testParameters)
+}
+
 export const getTestParametersForClass = async (cls: IClassModel): Promise<FormattedTestParameters> => {
   const testParameters = await TestParameters.findOne({ objectID: cls._id }).exec()
   if (testParameters === null) {
@@ -52,6 +57,18 @@ export const createTestParametersForNewClass = async (classID: string): Promise<
 
 export const removeTestParametersFromClass = (classID: string): Promise<ITestParametersModel> => {
   return TestParameters.findOneAndDelete({ objectID: classID }).exec()
+}
+
+export const updateTestParameters = (testParameters: FormattedTestParameters, updates: IFormattedTestParameters) => {
+  const { id, ...remainingUpdates } = updates
+  testParameters.formatted = {
+    ...testParameters.formatted,
+    ...remainingUpdates,
+  }
+  testParameters.model.update({
+    ...remainingUpdates
+  }).exec()
+  return testParameters
 }
 
 /*
