@@ -30,7 +30,7 @@ export class FormattedTestParameters {
   })
 }
 
-export const getTestParametersByClass = async (cls: IClassModel): Promise<FormattedTestParameters> => {
+export const getTestParametersForClass = async (cls: IClassModel): Promise<FormattedTestParameters> => {
   const testParameters = await TestParameters.findOne({ objectID: cls._id }).exec()
   if (testParameters === null) {
     throw new Error(`Could not find test parameters for the class: ${cls._id}`)
@@ -48,6 +48,10 @@ export const createTestParametersForNewClass = async (classID: string): Promise<
     randomQuestions: 5,
   })
   return new FormattedTestParameters(testParameters)
+}
+
+export const removeTestParametersFromClass = (classID: string): Promise<ITestParametersModel> => {
+  return TestParameters.findOneAndDelete({ objectID: classID }).exec()
 }
 
 /*

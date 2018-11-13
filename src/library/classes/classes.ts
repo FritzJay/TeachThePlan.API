@@ -1,7 +1,7 @@
 import { generate } from 'shortid'
 
 import { Class, IClassModel } from '../../models/class.model'
-import { getTestParametersByClass, IFormattedTestParameters, createTestParametersForNewClass } from '../testParameters/testParameters'
+import { getTestParametersForClass, IFormattedTestParameters, createTestParametersForNewClass, removeTestParametersFromClass } from '../testParameters/testParameters'
 import { ITeacherModel } from '../../models/teacher.model'
 import { getStudentsByClass, IFormattedStudent } from '../students/students'
 import { FormattedTeacher } from '../teachers/teachers'
@@ -26,7 +26,7 @@ export class FormattedClass {
 
   public formatClass = async () => {
     const cls = this.model
-    const testParameters = await getTestParametersByClass(cls)
+    const testParameters = await getTestParametersForClass(cls)
     const students = await getStudentsByClass(cls)
 
     this.formatted = {
@@ -38,6 +38,13 @@ export class FormattedClass {
       students: students.map((student) => student.formatted),
     }
   }
+}
+
+export const getClassFromID = async (classID: string): Promise<FormattedClass> => {
+  const cls = await Class.findById(classID).exec()
+  const formattedClass = new FormattedClass(cls)
+  await formattedClass.formatClass()
+  return formattedClass
 }
 
 export const getClassesFromTeacher = async (teacher: ITeacherModel): Promise<FormattedClass[]> => {
@@ -85,26 +92,21 @@ export const removeClassFromTeacher = async (classID: string, teacher: ITeacherM
   if (!teacher.classIDs.some((id) => id.equals(classID))) {
     throw new Error('Unable to remove class. Invalid permission.')
   }
-  
-  try {
-    teacher.classIDs = teacher.classIDs.filter((id) => id.toString() !== classID)
-    await teacher.save()
-  } catch (error) {
-    console.log(error)
-    throw new Error('There was an error while attempting remove the class from the teacher\'s list. Aborting.')
-  }
-
-  try {
-    return await removeClassByID(classID)
-  } catch (error) {
-    teacher.classIDs = teacher.classIDs.concat([new Types.ObjectId(classID)])
-    teacher.save()
-    throw error
-  }
+  await removeTestParametersFromClass(classID)
+  teacher.classIDs = teacher.classIDs.filter((id) => id.toString() !== classID)
+  await teacher.save()
+  return await removeClassByID(classID)
 }
 
 export const removeClassByID = (classID: string): Promise<IClassModel> => {
   return Class.findByIdAndRemove(classID).exec()
+}
+
+export const updateClass = async (classID: string, updates: IFormattedClass): Promise<FormattedClass> => {
+  const cls = await Class.findOneAndUpdate({ _id: classID }, updates).exec()
+  const formattedClass = new FormattedClass(cls)
+  await formattedClass.formatClass()
+  return formattedClass
 }
 
 

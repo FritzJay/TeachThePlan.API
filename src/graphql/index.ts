@@ -1,14 +1,12 @@
 import { buildSchema } from 'graphql'
 import { getTeacher, createTeacher } from "./teacher"
-import { addClass, updateClass, removeClass } from "./class"
+import { addClass, changeClass, removeClass, getClass } from "./class"
 
 export const schema = buildSchema(`
   input ClassInput {
     id: String!
     name: String!
     grade: String!
-    testParameters: TestParametersInput
-    students: [StudentInput]
   },
   input TestParametersInput {
     id: String!
@@ -54,19 +52,21 @@ export const schema = buildSchema(`
   },
   type Query {
     getTeacher(email: String!, password: String!): Teacher
+    getClass(token: String!, id: String!): Class
   },
   type Mutation {
     createTeacher(email: String!, password: String!): Teacher
     addClass(token: String!, grade: String!, name: String!): Class
-    updateClass(token: String!, updates: ClassInput!): Class
+    changeClass(token: String!, updates: ClassInput!): Class
     removeClass(token: String!, id: String!): String
   }
 `)
 
 export const root = {
   getTeacher,
+  getClass,
   createTeacher,
   addClass,
-  updateClass,
+  changeClass,
   removeClass,
 }
