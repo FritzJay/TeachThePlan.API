@@ -15,8 +15,8 @@ export const signInTeacher = async ({ email, password }) => {
   }
 }
 
-/* CREATE TEACHER */
-export const createTeacher = async ({ email, password }) => {
+/* SIGN UP TEACHER */
+export const signUpTeacher = async ({ email, password }) => {
   const user = await createUser(email, password, ['teacher'])
   let teacher
   try {

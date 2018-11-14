@@ -1,8 +1,8 @@
 import { buildSchema } from 'graphql'
-import { createTeacher, signInTeacher } from "./teacher"
+import { signUpTeacher, signInTeacher } from "./teacher"
+import { signInStudent, signUpStudent } from './student'
 import { addClass, changeClass, removeClass, getClass } from "./class"
 import { getTestParameters, changeTestParameters } from './testParameters'
-import { signInStudent } from './student'
 
 export const schema = buildSchema(`
   input ClassInput {
@@ -23,7 +23,7 @@ export const schema = buildSchema(`
     name: String!
   },
 
-  type SignInTeacher {
+  type TeacherUser {
     id: String!
     name: String!
     classes: [Class]!
@@ -33,7 +33,7 @@ export const schema = buildSchema(`
     id: String!
     name: String!
   },
-  type SignInStudent {
+  type StudentUser {
     id: String!
     name: String!
     classes: [Class]!
@@ -64,13 +64,14 @@ export const schema = buildSchema(`
     randomQuestions: Int!
   },
   type Query {
-    signInTeacher(email: String!, password: String!): SignInTeacher
-    signInStudent(email: String!, password: String!): SignInStudent
+    signInTeacher(email: String!, password: String!): TeacherUser
+    signInStudent(email: String!, password: String!): StudentUser
     getClass(token: String!, id: String!): Class
     getTestParameters(token: String!, id: String!): TestParameters
   },
   type Mutation {
-    createTeacher(email: String!, password: String!): Teacher
+    signUpTeacher(email: String!, password: String!): TeacherUser
+    signUpStudent(email: String!, password: String!): StudentUser
     addClass(token: String!, grade: String!, name: String!): Class
     changeClass(token: String!, updates: ClassInput!): Class
     removeClass(token: String!, id: String!): String
@@ -80,10 +81,11 @@ export const schema = buildSchema(`
 
 export const root = {
   signInTeacher,
+  signUpTeacher,
   signInStudent,
+  signUpStudent,
   getClass,
   getTestParameters,
-  createTeacher,
   addClass,
   changeClass,
   removeClass,

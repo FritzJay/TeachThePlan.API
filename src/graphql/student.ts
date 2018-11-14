@@ -15,8 +15,8 @@ export const signInStudent = async ({ email, password }) => {
   }
 }
 
-/* CREATE STUDENT */
-export const createStudent = async ({ email, password }) => {
+/* SIGN UP STUDENT */
+export const signUpStudent = async ({ email, password }) => {
   const user = await createUser(email, password, ['student'])
   let student
   try {
