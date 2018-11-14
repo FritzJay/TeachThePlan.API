@@ -1,5 +1,6 @@
 import { Student, IStudentModel } from '../../models/student.model'
 import { IClassModel } from '../../models/class.model'
+import { getUserIDFromToken } from '../authentication/authentication';
 
 export interface IFormattedStudent {
   id: string
@@ -33,7 +34,10 @@ export const getStudentFromUserID = async (userID: string): Promise<FormattedStu
   return new FormattedStudent(student)
 }
 
-
+export const getStudentFromToken = async (token: string): Promise<FormattedStudent> => {
+  const userID = await getUserIDFromToken(token)
+  return await getStudentFromUserID(userID)
+}
 
 /*
 export const createStudent = async (userParams: IUser): Promise<IStudentModel> => {

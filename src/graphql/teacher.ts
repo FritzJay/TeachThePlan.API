@@ -4,7 +4,7 @@ import { getTeacherFromUserID, FormattedTeacher } from '../library/teachers/teac
 import { getClassesFromTeacher } from '../library/classes/classes'
 
 /* GET TEACHER */
-export const signInTeacher = async ({ email, password }) => {
+export const signInTeacher = async (rootValue, { email, password }) => {
   const user = await getUserByEmailPasswordAndType(email, password, 'teacher')
   const teacher = await getTeacherFromUserID(user.model._id)
   const classes = await getClassesFromTeacher(teacher.model)
@@ -16,7 +16,7 @@ export const signInTeacher = async ({ email, password }) => {
 }
 
 /* SIGN UP TEACHER */
-export const signUpTeacher = async ({ email, password }) => {
+export const signUpTeacher = async (rootValue, { email, password }) => {
   const user = await createUser(email, password, ['teacher'])
   let teacher
   try {

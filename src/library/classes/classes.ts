@@ -61,7 +61,6 @@ export const getClassesFromTeacher = async (teacher: ITeacherModel): Promise<For
 
 export const getClassesFromStudent = async (student: IStudentModel): Promise<FormattedClass[]> => {
   const classes = await Class.find({ studentIDs: student._id })
-  console.log(classes)
   if (classes === null) {
     return []
   }

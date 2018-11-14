@@ -5,7 +5,7 @@ import { connect } from 'mongoose'
 import * as cors from 'cors'
 require('dotenv').config()
 
-import { schema, root } from './src/graphql'
+import schema from './src/graphql'
 
 const app = express()
 
@@ -25,7 +25,6 @@ app.use(json())
 app.use(cors(corsOptions))
 app.use('/graphql', graphqlHTTP({
   schema,
-  rootValue: root,
   graphiql: true,
 }))
 

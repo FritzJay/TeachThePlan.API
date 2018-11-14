@@ -1,5 +1,13 @@
-import { Document, Schema, SchemaTypes, Model, model } from 'mongoose'
-import { ITest, IQuestion } from '../library/tests/tests'
+import { Document, Schema, SchemaTypes, Model, model, Types } from 'mongoose'
+import { IQuestion } from '../library/tests/tests'
+
+export interface ITest {
+  userID?: Types.ObjectId
+  duration?: number
+  start?: Date
+  end?: Date
+  questions: IQuestion[]
+}
 
 export interface IQuestionModel extends IQuestion, Document { }
 const QuestionSchema: Schema = new Schema({

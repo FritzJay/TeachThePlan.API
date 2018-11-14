@@ -4,7 +4,7 @@ import { FormattedStudent, getStudentFromUserID } from "../library/students/stud
 import { getClassesFromStudent } from "../library/classes/classes";
 
 /* GET STUDENT */
-export const signInStudent = async ({ email, password }) => {
+export const signInStudent = async (rootValue, { email, password }) => {
   const user = await getUserByEmailPasswordAndType(email, password, 'student')
   const student = await getStudentFromUserID(user.model._id)
   const classes = await getClassesFromStudent(student.model)
@@ -16,7 +16,7 @@ export const signInStudent = async ({ email, password }) => {
 }
 
 /* SIGN UP STUDENT */
-export const signUpStudent = async ({ email, password }) => {
+export const signUpStudent = async (rootValue, { email, password }) => {
   const user = await createUser(email, password, ['student'])
   let student
   try {
