@@ -1,5 +1,9 @@
-import { AuthenticationError } from "apollo-server-express";
 import { generate } from 'shortid'
+
+import {
+  assertAuthenticatedUserIsAuthorizedToUpdateCourse,
+  assertAuthenticatedUserIsAuthorizedToRemoveCourse,
+} from '../authorization/Course'
 
 const resolvers = {
   Course: {
@@ -50,9 +54,7 @@ const resolvers = {
     async updateCourse(root, { id: courseId, input }, { authedUser, Course, Teacher }) {
       const { _id: teacherId } = await Teacher.findOneByUserId(authedUser.userId);
       const course = await Course.findOneById(courseId);
-      if (!course.teacherId.equals(teacherId)) {
-        throw new AuthenticationError('You are not authorized to update this course');
-      }
+      await assertAuthenticatedUserIsAuthorizedToUpdateCourse(teacherId, course)
       await Course.updateById(courseId, input);
       return Course.findOneById(courseId);
     },
@@ -60,9 +62,7 @@ const resolvers = {
     async removeCourse(root, { id: courseId }, { authedUser, Course, Teacher, TestParameters }) {
       const { _id: teacherId } = await Teacher.findOneByUserId(authedUser.userId);
       const course = await Course.findOneById(courseId);
-      if (!course.teacherId.equals(teacherId)) {
-        throw new AuthenticationError('You are not authorized to update this course');
-      }
+      await assertAuthenticatedUserIsAuthorizedToRemoveCourse(teacherId, course)
       const testParametersRemoved = TestParameters.removeById(course.testParametersId);
       const courseRemoved = Course.removeById(courseId);
       return testParametersRemoved && courseRemoved;
