@@ -72,11 +72,14 @@ export default class Test {
     const questions = await Promise.all(
       test.questions.map(async ({ id, start, end, studentAnswer }) => {
         const question = await this.context.Question.findOneById(id);
+        const correctAnswer = math.eval(question.question)
         await this.context.Question.updateById(id, {
           start,
           end,
           studentAnswer,
-          correctAnswer: math.eval(question.question)
+          correctAnswer: isNaN(correctAnswer)
+            ? 0
+            : correctAnswer
         });
         return this.context.Question.findOneById(id);
       })
