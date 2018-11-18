@@ -1,0 +1,38 @@
+type Question {
+  id: ObjID!
+  question: String!
+  studentAnswer: String
+  correctAnswer: String
+  start: Float
+  end: Float
+  test: Test
+  createdAt: Float!
+  updatedAt: Float!
+}
+
+extend type Query {
+  questions(lastCreatedAt: Float, limit: Int): [Question!]
+  question(id: ObjID!): Question
+}
+
+input CreateQuestionInput {
+  question: String!
+  studentAnswer: String!
+  correctAnswer: String!
+  start: Float
+  end: Float
+  testId: ObjID
+}
+
+input UpdateQuestionInput {
+  id: ObjID!
+  studentAnswer: Int
+  start: Float
+  end: Float
+}
+
+extend type Mutation {
+  createQuestion(input: CreateQuestionInput!): Question
+  updateQuestion(id: ObjID!, input: UpdateQuestionInput!): Question
+  removeQuestion(id: ObjID!): Boolean
+}

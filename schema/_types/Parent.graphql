@@ -1,0 +1,5 @@
+type Parent {
+  name: String!
+  children: [Student] @hasMany
+  user: User! @hasOne
+}

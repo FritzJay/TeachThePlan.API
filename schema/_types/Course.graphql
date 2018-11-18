@@ -1,0 +1,8 @@
+type Course {
+  code: String!
+  grade: String!
+  name: String!
+  students: [Student] @hasMany
+  teacher: [Teacher] @belongsTo
+  testParameters: TestParameters @hasOne
+}

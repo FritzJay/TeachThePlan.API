@@ -1,0 +1,29 @@
+type Teacher {
+  id: ObjID!
+  name: String!
+  courses(lastCreatedAt: Float, limit: Int): [Course]
+  user: User!
+  createdAt: Float!
+  updatedAt: Float!
+}
+
+extend type Query {
+  teachers(lastCreatedAt: Float, limit: Int): [Teacher!]
+  teacher(id: ObjID): Teacher
+}
+
+input CreateTeacherInput {
+  name: String
+  user: CreateUserInput!
+}
+
+input UpdateTeacherInput {
+  name: String
+  user: UpdateUserInput
+}
+
+extend type Mutation {
+  createTeacher(input: CreateTeacherInput!): Teacher
+  updateTeacher(id: ObjID!, input: UpdateTeacherInput!): Teacher
+  removeTeacher(id: ObjID!): Boolean
+}

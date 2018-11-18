@@ -1,0 +1,39 @@
+type Test {
+  id: ObjID!
+  duration: Int!
+  number: Int!
+  operator: String!
+  randomQuestions: Int!
+  start: Float
+  end: Float
+  student: Student!
+  course: Course!
+  questions(lastCreatedAt: Float, limit: Int, lastCreatedAt: Float, limit: Int): [Question!]
+  testResults: TestResults
+  createdAt: Float!
+  updatedAt: Float!
+}
+
+extend type Query {
+  tests(lastCreatedAt: Float, limit: Int): [Test!]
+  test(id: ObjID!): Test
+}
+
+input CreateTestInput {
+  number: Int!
+  operator: String!
+  studentId: ObjID!
+  courseId: ObjID!
+}
+
+input GradeTestInput {
+  start: Float!
+  end: Float
+  questions: [UpdateQuestionInput!]
+}
+
+extend type Mutation {
+  createTest(input: CreateTestInput!): Test
+  gradeTest(id: ObjID!, input: GradeTestInput!): Test
+  removeTest(id: ObjID!): Boolean
+}

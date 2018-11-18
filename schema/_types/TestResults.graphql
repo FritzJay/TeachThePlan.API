@@ -1,0 +1,8 @@
+type TestResults {
+  total: Int!
+  needed: Int!
+  correct: Int!
+  incorrect: Question!
+  quickest: Question!
+  test: Test! @belongsTo
+}

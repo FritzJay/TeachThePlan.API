@@ -1,0 +1,8 @@
+type Question {
+  question: String!
+  studentAnswer: String!
+  correctAnswer: String!
+  start: Float
+  end: Float
+  test: Test @belongsTo
+}

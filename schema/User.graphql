@@ -1,0 +1,33 @@
+type User {
+  id: ObjID!
+  email: String!
+  firstName: String
+  lastName: String
+  title: String
+  role: String!
+  createdAt: Float!
+  updatedAt: Float!
+}
+
+extend type Query {
+  users(lastCreatedAt: Float, limit: Int): [User!]
+  user(id: ObjID!): User
+}
+
+input CreateUserInput {
+  email: String!
+  password: String!
+  firstName: String
+  lastName: String
+  title: String
+  role: String
+}
+
+input UpdateUserInput {
+  email: String!
+  password: String
+  firstName: String
+  lastName: String
+  title: String
+  role: String
+}

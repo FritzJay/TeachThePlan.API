@@ -1,0 +1,5 @@
+type Teacher {
+  name: String!
+  courses: [Course] @hasMany
+  user: User! @hasOne
+}

@@ -1,0 +1,16 @@
+type TestResults {
+  id: ObjID!
+  total: Int!
+  needed: Int!
+  correct: Int!
+  incorrect: Question
+  quickest: Question
+  test: Test!
+  createdAt: Float!
+  updatedAt: Float!
+}
+
+extend type Query {
+  multipleTestResults(lastCreatedAt: Float, limit: Int): [TestResults!]
+  testResults(id: ObjID!): TestResults
+}

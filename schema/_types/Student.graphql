@@ -1,0 +1,7 @@
+type Student {
+  name: String!
+  courses: [Course] @belongsToMany
+  tests: [Test] @hasMany
+  user: User! @hasOne
+  parent: Parent @belongsTo
+}

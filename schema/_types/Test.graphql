@@ -1,0 +1,8 @@
+type Test {
+  duration: Int!
+  start: Float
+  end: Float
+  student: Student @belongsTo
+  questions: [Question!] @hasMany @enum
+  testParameters: TestParameters @hasOne
+}

@@ -1,0 +1,28 @@
+type TestParameters {
+  id: ObjID!
+  duration: Int!
+  numbers: [Int!]
+  operators: [String!]
+  questions: Int!
+  randomQuestions: Int!
+  course: Course!
+  createdAt: Float!
+  updatedAt: Float!
+}
+
+extend type Query {
+  multipleTestParameters(lastCreatedAt: Float, limit: Int): [TestParameters!]
+  testParameters(id: ObjID!): TestParameters
+}
+
+input UpdateTestParametersInput {
+  duration: Int
+  numbers: [Int]
+  operators: [String]
+  questions: Int
+  randomQuestions: Int
+}
+
+extend type Mutation {
+  updateTestParameters(id: ObjID!, input: UpdateTestParametersInput!): TestParameters
+}

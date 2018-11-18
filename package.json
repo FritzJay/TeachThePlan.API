@@ -1,65 +1,58 @@
 {
-  "name": "express_api",
+  "name": "~name~",
   "version": "1.0.0",
-  "description": "Teacher Hub API",
-  "main": "index.js",
+  "description": "~name~ GraphQL Server",
   "scripts": {
-    "start-dev": "nodemon --exec ./node_modules/.bin/ts-node -- ./server.ts",
-    "start": "node dist/server.js",
-    "postinstall": "tsc",
-    "test": "jest"
+    "start": "SET MONGO_URL=mongodb://localhost:27017 && babel-node index.js"
   },
-  "author": "Fritz Jay",
-  "license": "ISC",
-  "engines": {
-    "node": "8.11.3",
-    "npm": "6.2.0"
+  "private": true,
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "6.26.0",
+    "babel-core": "6.26.3",
+    "babel-eslint": "10.0.1",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "6.24.1",
+    "babel-preset-stage-2": "6.24.1",
+    "babel-register": "6.26.0",
+    "chai": "^4.2.0",
+    "eslint": "5.9.0",
+    "eslint-config-react-app": "^3.0.5",
+    "eslint-plugin-babel": "5.2.1",
+    "eslint-plugin-flowtype": "3.2.0",
+    "eslint-plugin-import": "2.14.0",
+    "eslint-plugin-jsx-a11y": "6.1.2",
+    "eslint-plugin-react": "7.11.1",
+    "mocha": "^5.2.0",
+    "mongodb-prebuilt": "^6.3.6",
+    "node-fetch": "^2.3.0",
+    "nodemon": "1.18.6"
   },
   "dependencies": {
-    "@types/bcrypt": "^2.0.0",
-    "@types/express": "^4.16.0",
-    "@types/graphql": "^14.0.3",
-    "@types/graphql-iso-date": "^3.3.1",
-    "@types/jest": "^23.3.9",
-    "@types/jsonwebtoken": "^7.2.8",
-    "@types/mathjs": "^4.4.2",
-    "@types/mongodb": "^3.1.14",
-    "@types/mongoose": "^5.3.0",
-    "@types/node": "^10.12.2",
+    "apollo-server-express": "^2.2.2",
     "bcrypt": "^3.0.2",
-    "body-parser": "^1.18.3",
+    "body-parser": "1.18.3",
     "cors": "^2.8.5",
-    "dotenv": "^6.1.0",
-    "express": "^4.16.4",
-    "express-graphql": "^0.7.1",
-    "graphql": "^14.0.2",
-    "graphql-iso-date": "^3.6.1",
-    "jsonwebtoken": "^8.3.0",
+    "dataloader": "^1.4.0",
+    "denodeify": "^1.2.1",
+    "dotenv": "6.1.0",
+    "express": "4.16.4",
+    "express-session": "1.15.6",
+    "graphql": "14.0.2",
+    "graphql-server": "^0.3.2",
+    "graphql-subscriptions": "1.0.0",
+    "graphql-tools": "^4.0.3",
+    "jwt-simple": "^0.5.5",
+    "lodash": "4.17.11",
+    "math.js": "^1.1.43",
     "mathjs": "^5.2.3",
-    "mongoose": "^5.3.8",
-    "shortid": "^2.2.13",
-    "ts-node": "^7.0.1",
-    "typescript": "^2.9.2"
-  },
-  "devDependencies": {
-    "jest": "^23.6.0",
-    "nodemon": "^1.18.5",
-    "ts-jest": "^22.4.6"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ],
-    "transform": {
-      "^.+\\.(ts|tsx)$": "./node_modules/ts-jest/preprocessor.js"
-    },
-    "testPathIgnorePatterns": [
-      "/node modules/",
-      "dist"
-    ],
-    "testRegex": ".*spec.*.(js|ts|tsx)$$",
-    "testURL": "https://localhost/"
+    "mongo-find-by-ids": "^1.0.0",
+    "mongodb": "^3.1.9",
+    "nodeify": "^1.0.1",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "shortid": "^2.2.14",
+    "subscriptions-transport-ws": "0.9.15"
   }
 }

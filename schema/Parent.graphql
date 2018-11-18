@@ -1,0 +1,29 @@
+type Parent {
+  id: ObjID!
+  name: String!
+  children(lastCreatedAt: Float, limit: Int): [Student]
+  user: User!
+  createdAt: Float!
+  updatedAt: Float!
+}
+
+extend type Query {
+  parents(lastCreatedAt: Float, limit: Int): [Parent!]
+  parent(id: ObjID!): Parent
+}
+
+input CreateParentInput {
+  name: String!
+  userId: ObjID!
+}
+
+input UpdateParentInput {
+  name: String!
+  userId: ObjID!
+}
+
+extend type Mutation {
+  createParent(input: CreateParentInput!): Parent
+  updateParent(id: ObjID!, input: UpdateParentInput!): Parent
+  removeParent(id: ObjID!): Boolean
+}

@@ -1,4 +1,6 @@
 /node_modules
+/db
+/input
 package-lock.json
-/dist
+yarn.lock
 .env

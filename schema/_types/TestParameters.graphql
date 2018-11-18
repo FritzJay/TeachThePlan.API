@@ -1,0 +1,8 @@
+type TestParameters {
+  duration: Int!
+  numbers: [Int!]
+  operators: [String!]
+  questions: Int!
+  randomQuestions: Int!
+  course: [Course!] @belongsToMany
+}

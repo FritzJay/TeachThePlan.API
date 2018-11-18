@@ -1,0 +1,7 @@
+type User {
+  email: String!
+  firstName: String
+  lastName: String
+  title: String
+  role: String!
+}
