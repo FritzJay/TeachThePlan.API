@@ -51,7 +51,7 @@ export default class Test {
       updatedAt: Date.now(),
     });
     const testId = (await this.collection.insertOne(docToInsert)).insertedId;
-    const newQuestions = await createQuestions(operator, number, questions, randomQuestions, testId, this.context.Question);
+    const newQuestions = await createQuestions(operator, number, questions, randomQuestions);
     const questionIds = await Promise.all(
       newQuestions.map(async ({ question }) => await this.context.Question.insert({
         question,
@@ -77,7 +77,7 @@ export default class Test {
           start,
           end,
           studentAnswer,
-          correctAnswer: isNaN(correctAnswer)
+          correctAnswer: isNaN(correctAnswer) || correctAnswer === Infinity
             ? 0
             : correctAnswer
         });
@@ -124,7 +124,7 @@ export const NUMBERS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 export const MAX_NUMBER = 12;
 export const PASSING_PERCENTAGE = 0.9;
 
-export const createQuestions = async (operator, number, questions, randomQuestions, testId, Question) => {
+export const createQuestions = async (operator, number, questions, randomQuestions) => {
   let formattedQuestions = [];
 
   while (formattedQuestions.length < questions) {
@@ -145,7 +145,7 @@ export const createQuestions = async (operator, number, questions, randomQuestio
 export const createFormattedQuestion = (operator, firstNumber, secondNumber) => {
   const numbers = [firstNumber, secondNumber];
 
-  if (operator === '/') {
+  if (operator === '/' && !numbers.includes(0)) {
     numbers[1] = secondNumber * firstNumber;
   }
 
