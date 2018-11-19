@@ -61,6 +61,9 @@ const resolvers = {
       const { _id: teacherId } = await Teacher.findOneByUserId(authedUser.userId);
       const course = await Course.findOneById(courseId);
       await assertAuthenticatedUserIsAuthorizedToUpdateCourse(teacherId, course);
+      if (input.name !== undefined && input.name.toLowerCase() !== course.name.toLowerCase()) {
+        await assertClassWithNameDoesNotExist(teacherId, input.name, Course);
+      }
       await Course.updateById(courseId, input);
       return Course.findOneById(courseId);
     },
