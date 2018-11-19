@@ -3,6 +3,7 @@ import { generate } from 'shortid';
 import {
   assertAuthenticatedUserIsAuthorizedToUpdateCourse,
   assertAuthenticatedUserIsAuthorizedToRemoveCourse,
+  assertClassWithNameDoesNotExist
 } from '../authorization/Course';
 
 const resolvers = {
@@ -39,6 +40,7 @@ const resolvers = {
   Mutation: {
     async createCourse(root, { input }, { authedUser, Course, Teacher, TestParameters }) {
       const { _id: teacherId } = await Teacher.findOneByUserId(authedUser.userId);
+      await assertClassWithNameDoesNotExist(teacherId, input.name, Course);
       const testParametersId = await TestParameters.insert({
         duration: 75,
         numbers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
@@ -71,7 +73,7 @@ const resolvers = {
       const courseRemoved = await Course.removeById(courseId);
       const studentAssociationsRemoved = await Student.removeCourseAssociations(courseId);
       const courseInvitationsRemoved = await CourseInvitation.removeByCourseId(courseId);
-      return testParametersRemoved && courseRemoved && studentAssociationsRemoved;
+      return testParametersRemoved && courseRemoved && studentAssociationsRemoved && courseInvitationsRemoved;
     },
   }
 };

@@ -15,8 +15,14 @@ export default class User {
     return this.loader.load(id);
   }
 
-  findOneByEmail(email) {
-    return this.collection.findOne({ email });
+  async findOneByEmail(email) {
+    const user = await this.collection.find({ email })
+      .collation({ locale: "en_US", strength: 1 })
+      .limit(1)
+      .toArray();
+    return user && user.length > 0
+      ? user[0]
+      : null
   }
 
   all({ lastCreatedAt = 0, limit = 10 }) {

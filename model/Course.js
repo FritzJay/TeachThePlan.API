@@ -12,6 +12,12 @@ export default class Course {
     return this.loader.load(id);
   }
 
+  findManyByNameAndTeacherId(name, id) {
+    return this.collection.find({ name, teacherId: id })
+      .collation({ locale: "en_US", strength: 1 })
+      .toArray();
+  }
+
   all({ lastCreatedAt = 0, limit = 10 }) {
     return this.collection.find({
       createdAt: { $gt: lastCreatedAt },

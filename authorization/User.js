@@ -6,4 +6,3 @@ export const assertUserWithEmailDoesNotExist = async (email, User) => {
     throw new UserInputError(`A user with the email "${email}" already exists`)
   }
 }
-

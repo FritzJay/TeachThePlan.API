@@ -1,4 +1,4 @@
-import { assertUserWithEmailDoesNotExist } from './utils';
+import { assertUserWithEmailDoesNotExist } from '../authorization/User';
 import {
   assertAuthenticatedUserIsAuthorizedToUpdateStudent,
   assertAuthenticatedUserIsAuthorizedToRemoveStudent,

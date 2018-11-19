@@ -42,9 +42,9 @@ export default function addPassport(app, db) {
       return next();
     }
     
-    const user = await context.User.collection.findOne({ email, role });
-    if (!user || !(await bcrypt.compare(password, user.hash))) {
-      res.json({ error: 'User not found matching email/password combination' });
+    const user = await context.User.findOneByEmail(email);
+    if (!user || !user.role === role || !(await bcrypt.compare(password, user.hash))) {
+      res.json({ error: 'Invalid email or password'})
       return next();
     }
 
