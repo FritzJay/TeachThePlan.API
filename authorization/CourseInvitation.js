@@ -6,7 +6,8 @@ export const assertAuthenticatedUserIsAuthorizedToUpdateCourseInvitation = async
   }
 }
 
-export const assertAuthenticatedUserIsAuthorizedToRemoveCourseInvitation = async (teacherId, course)  => {
+export const assertAuthenticatedUserIsAuthorizedToRemoveCourseInvitation = async (teacherId, courseId, Course)  => {
+  const course = await Course.findOneById(courseId)
   if (!course.teacherId.equals(teacherId)) {
     throw new AuthenticationError('You are not authorized to remove this course');
   }

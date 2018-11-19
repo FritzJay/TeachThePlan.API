@@ -1,7 +1,8 @@
 import {
   assertAuthenticatedUserIsAuthorizedToRemoveCourseInvitation,
   assertCourseDoesNotContainInvitation,
-} from '../authorization/CourseInvitation';
+  assertDocumentExists,
+} from '../authorization';
 
 import { assertAuthenticatedUserIsAuthorizedToUpdateCourse } from '../authorization/Course'
 
@@ -41,9 +42,11 @@ const resolvers = {
       return await CourseInvitation.findOneById(courseInvitationId);
     },
 
-    async removeCourseInvitation(root, { id: courseInvitationId }, { authedUser, CourseInvitation, Teacher }) {
+    async removeCourseInvitation(root, { id: courseInvitationId }, { authedUser, CourseInvitation, Teacher, Course }) {
+      const { courseId } = await CourseInvitation.findOneById(courseInvitationId);
+      await assertDocumentExists(courseId, 'CourseInvitation');
       const { _id: teacherId } = await Teacher.findOneByUserId(authedUser.userId);
-      await assertAuthenticatedUserIsAuthorizedToRemoveCourseInvitation(teacherId, courseInvitationId);
+      await assertAuthenticatedUserIsAuthorizedToRemoveCourseInvitation(teacherId, courseId, Course);
       return CourseInvitation.removeById(courseInvitationId);
     }
   },
