@@ -53,6 +53,4 @@ merge(resolvers, courseResolvers);
 
 merge(resolvers, testResultsResolvers);
 
-merge(resolvers, testResultsResolvers);
-
 merge(resolvers, courseInvitationResolvers);

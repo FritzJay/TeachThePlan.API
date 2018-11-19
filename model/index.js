@@ -37,6 +37,4 @@ models.Course = Course;
 
 models.TestResults = TestResults;
 
-models.TestResults = TestResults;
-
 models.CourseInvitation = CourseInvitation;

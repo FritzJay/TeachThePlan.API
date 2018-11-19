@@ -15,7 +15,7 @@ const resolvers = {
       return Course.students(course, { lastCreatedAt, limit });
     },
 
-    async teacher(course, args, { Course }) {
+    teacher(course, args, { Course }) {
       return Course.teacher(course);
     },
 

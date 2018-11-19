@@ -23,11 +23,11 @@ export default class CourseInvitation {
   }
 
   student(courseInvitation) {
-    return this.context.Student.collection.findOneById(courseInvitation.studentId);
+    return this.context.Student.findOneById(courseInvitation.studentId);
   }
 
   course(courseInvitation) {
-    return this.context.Course.collection.findOneById(courseInvitation.courseId);
+    return this.context.Course.findOneById(courseInvitation.courseId);
   }
 
   async insert(doc) {

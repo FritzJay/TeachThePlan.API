@@ -11,11 +11,11 @@ const resolvers = {
       return courseInvitation._id;
     },
 
-    student(courseInvitation, { CourseInvitation }) {
+    student(courseInvitation, args, { CourseInvitation }) {
       return CourseInvitation.student(courseInvitation);
     },
 
-    course(courseInvitation, { CourseInvitation }) {
+    course(courseInvitation, args, { CourseInvitation }) {
       return CourseInvitation.course(courseInvitation);
     }
   },
@@ -38,9 +38,7 @@ const resolvers = {
       const { _id: studentId } = await Student.findOneByUserId(userId);
       await assertCourseDoesNotContainInvitation(courseId, studentId, CourseInvitation);
       const courseInvitationId = await CourseInvitation.insert({ courseId, studentId });
-      const newCourseInvitation = await CourseInvitation.findOneById(courseInvitationId);
-      console.log(newCourseInvitation)
-      return newCourseInvitation
+      return await CourseInvitation.findOneById(courseInvitationId);
     },
 
     async removeCourseInvitation(root, { id: courseInvitationId }, { authedUser, CourseInvitation, Teacher }) {
