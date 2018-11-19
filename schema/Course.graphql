@@ -24,7 +24,7 @@ input CreateCourseInput {
 
 input CreateCourseInvitationInput {
   courseId: ObjID!
-  studentId: ObjID!
+  email: String!
 }
 
 input UpdateCourseInput {

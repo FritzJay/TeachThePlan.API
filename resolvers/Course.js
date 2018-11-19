@@ -73,11 +73,13 @@ const resolvers = {
       return testParametersRemoved && courseRemoved;
     },
 
-    async createCourseInvitation(root, { input }, { authedUser, Course, Student, Teacher }) {
-      const { courseId, studentId } = input
+    async createCourseInvitation(root, { input }, { authedUser, Course, Student, Teacher, User }) {
+      const { courseId, email } = input
       const { _id: teacherId } = await Teacher.findOneByUserId(authedUser.userId);
       const course = await Course.findOneById(courseId);
       await assertAuthenticatedUserIsAuthorizedToUpdateCourse(teacherId, course);
+      const { _id: userId } = await User.findOneByEmail(email)
+      const { _id: studentId } = await Student.findOneByUserId(userId);
       await assertCourseDoesNotContainInvitation(course, studentId);
       await Course.updateById(courseId, {
         invitations: course.invitations
