@@ -25,6 +25,10 @@ const resolvers = {
     parent(student, args, { Student }) {
       return Student.parent(student);
     },
+
+    courseInvitations(student, { lastCreatedAt, limit }, { Student }) {
+      return Student.courseInvitations(student, { lastCreatedAt, limit })
+    }
   },
   Query: {
     students(root, { lastCreatedAt, limit }, { Student }) {

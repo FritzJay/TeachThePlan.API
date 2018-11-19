@@ -45,6 +45,13 @@ export default class Student {
     return this.context.Parent.findOneById(student.parentId);
   }
 
+  courseInvitations(student, { lastCreatedAt = 0, limit = 10 }) {
+    return this.context.CourseInvitation.collection.find({
+      studentId: student._id,
+      createdAt: { $gt: lastCreatedAt },
+    }).sort({ createdAt: 1 }).limit(limit).toArray();
+  }
+
   async insert(doc) {
     const docToInsert = Object.assign({}, doc, {
       createdAt: Date.now(),
