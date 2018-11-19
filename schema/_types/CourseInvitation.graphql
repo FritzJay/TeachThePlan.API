@@ -1,0 +1,4 @@
+type CourseInvitation {
+  student: Student!
+  course: Course!
+}

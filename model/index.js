@@ -7,6 +7,7 @@ import Test from './Test';
 import TestParameters from './TestParameters';
 import User from './User';
 import TestResults from './TestResults';
+import CourseInvitation from './CourseInvitation';
 
 const models = {};
 
@@ -37,3 +38,5 @@ models.Course = Course;
 models.TestResults = TestResults;
 
 models.TestResults = TestResults;
+
+models.CourseInvitation = CourseInvitation;

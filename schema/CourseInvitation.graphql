@@ -1,0 +1,22 @@
+type CourseInvitation {
+  id: ObjID!
+  student: Student
+  course: Course
+  createdAt: Float!
+  updatedAt: Float!
+}
+
+extend type Query {
+  courseInvitations(lastCreatedAt: Float, limit: Int): [CourseInvitation!]
+  courseInvitation(id: ObjID!): CourseInvitation
+}
+
+input CreateCourseInvitationInput {
+  courseId: ObjID!
+  email: String!
+}
+
+extend type Mutation {
+  createCourseInvitation(input: CreateCourseInvitationInput!): CourseInvitation
+  removeCourseInvitation(id: ObjID!): Boolean
+}

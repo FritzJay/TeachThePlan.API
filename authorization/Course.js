@@ -11,9 +11,3 @@ export const assertAuthenticatedUserIsAuthorizedToRemoveCourse = async (teacherI
     throw new AuthenticationError('You are not authorized to remove this course');
   }
 }
-
-export const assertCourseDoesNotContainInvitation = async (course, studentId) => {
-  if (course.invitations && course.invitations.some((id) => id.equals(studentId))) {
-    throw new AuthenticationError('This course already contains an invitation for the given student')
-  }
-}

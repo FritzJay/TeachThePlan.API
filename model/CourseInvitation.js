@@ -1,15 +1,19 @@
 import DataLoader from 'dataloader';
 import findByIds from 'mongo-find-by-ids';
 
-export default class Course {
+export default class CourseInvitation {
   constructor(context) {
     this.context = context;
-    this.collection = context.db.collection('course');
+    this.collection = context.db.collection('courseInvitation');
     this.loader = new DataLoader(ids => findByIds(this.collection, ids));
   }
 
   findOneById(id) {
     return this.loader.load(id);
+  }
+  
+  findOneByCourseIdAndStudentId(courseId, studentId) {
+    return this.collection.findOne({ courseId, studentId });
   }
 
   all({ lastCreatedAt = 0, limit = 10 }) {
@@ -18,19 +22,12 @@ export default class Course {
     }).sort({ createdAt: 1 }).limit(limit).toArray();
   }
 
-  students(course, { lastCreatedAt = 0, limit = 10 }) {
-    return this.context.Student.collection.find({
-      coursesIds: course._id,
-      createdAt: { $gt: lastCreatedAt },
-    }).sort({ createdAt: 1 }).limit(limit).toArray();
+  student(courseInvitation) {
+    return this.context.Student.collection.findOneById(courseInvitation.studentId);
   }
 
-  teacher(course) {
-    return this.context.Teacher.findOneById(course.teacherId);
-  }
-
-  testParameters(course) {
-    return this.context.TestParameters.findOneById(course.testParametersId);
+  course(courseInvitation) {
+    return this.context.Course.collection.findOneById(courseInvitation.courseId);
   }
 
   async insert(doc) {

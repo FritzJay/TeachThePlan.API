@@ -1,10 +1,9 @@
-import { generate } from 'shortid'
+import { generate } from 'shortid';
 
 import {
   assertAuthenticatedUserIsAuthorizedToUpdateCourse,
   assertAuthenticatedUserIsAuthorizedToRemoveCourse,
-  assertCourseDoesNotContainInvitation,
-} from '../authorization/Course'
+} from '../authorization/Course';
 
 const resolvers = {
   Course: {
@@ -22,10 +21,6 @@ const resolvers = {
 
     testParameters(course, args, { Course }) {
       return Course.testParameters(course);
-    },
-
-    invitations(course, { limit }, { Course }) {
-      return Course.invitations(course, { limit })
     }
   },
   Query: {
@@ -72,23 +67,7 @@ const resolvers = {
       const courseRemoved = await Course.removeById(courseId);
       return testParametersRemoved && courseRemoved;
     },
-
-    async createCourseInvitation(root, { input }, { authedUser, Course, Student, Teacher, User }) {
-      const { courseId, email } = input
-      const { _id: teacherId } = await Teacher.findOneByUserId(authedUser.userId);
-      const course = await Course.findOneById(courseId);
-      await assertAuthenticatedUserIsAuthorizedToUpdateCourse(teacherId, course);
-      const { _id: userId } = await User.findOneByEmail(email)
-      const { _id: studentId } = await Student.findOneByUserId(userId);
-      await assertCourseDoesNotContainInvitation(course, studentId);
-      await Course.updateById(courseId, {
-        invitations: course.invitations
-          ? course.invitations.concat(studentId)
-          : [studentId]
-      });
-      return await Course.findOneById(courseId);
-    }
-  },
+  }
 };
 
 export default resolvers;
