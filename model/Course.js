@@ -33,6 +33,13 @@ export default class Course {
     return this.context.TestParameters.findOneById(course.testParametersId);
   }
 
+  courseInvitations(course, { lastCreatedAt = 0, limit = 10 }) {
+    return this.context.CourseInvitation.collection.find({
+      courseId: course._id,
+      createdAt: { $gt: lastCreatedAt },
+    }).sort({ createdAt: 1 }).limit(limit).toArray();
+  }
+
   async insert(doc) {
     const docToInsert = Object.assign({}, doc, {
       createdAt: Date.now(),

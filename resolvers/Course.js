@@ -21,6 +21,10 @@ const resolvers = {
 
     testParameters(course, args, { Course }) {
       return Course.testParameters(course);
+    },
+
+    courseInvitations(course, { lastCreatedAt, limit }, { Course }) {
+      return Course.courseInvitations(course, { lastCreatedAt, limit })
     }
   },
   Query: {

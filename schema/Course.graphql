@@ -5,6 +5,7 @@ type Course {
   name: String!
   students(lastCreatedAt: Float, limit: Int): [Student]
   tests(lastCreatedAt: Float, limit: Int): [Test]
+  courseInvitations(lastCreatedAt: Float, limit: Int): [CourseInvitation]
   teacher: Teacher
   testParameters: TestParameters
   createdAt: Float!
