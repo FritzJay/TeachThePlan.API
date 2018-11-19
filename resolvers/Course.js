@@ -63,13 +63,15 @@ const resolvers = {
       return Course.findOneById(courseId);
     },
 
-    async removeCourse(root, { id: courseId }, { authedUser, Course, Teacher, TestParameters }) {
+    async removeCourse(root, { id: courseId }, { authedUser, Course, Teacher, TestParameters, Student, CourseInvitation }) {
       const { _id: teacherId } = await Teacher.findOneByUserId(authedUser.userId);
       const course = await Course.findOneById(courseId);
       await assertAuthenticatedUserIsAuthorizedToRemoveCourse(teacherId, course);
       const testParametersRemoved = await TestParameters.removeById(course.testParametersId);
       const courseRemoved = await Course.removeById(courseId);
-      return testParametersRemoved && courseRemoved;
+      const studentAssociationsRemoved = await Student.removeCourseAssociations(courseId);
+      const courseInvitationsRemoved = await CourseInvitation.removeByCourseId(courseId);
+      return testParametersRemoved && courseRemoved && studentAssociationsRemoved;
     },
   }
 };

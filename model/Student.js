@@ -76,4 +76,12 @@ export default class Student {
     this.loader.clear(id);
     return deletedCount === 1;
   }
+
+  async removeCourseAssociations(courseId) {
+    const { result } = await this.collection.updateMany(
+      { coursesIds: ObjectId(courseId) },
+      { $pull: { coursesIds: ObjectId(courseId) }
+    });
+    return result.ok === 1
+  }
 }

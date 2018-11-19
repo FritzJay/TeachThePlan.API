@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader';
 import findByIds from 'mongo-find-by-ids';
+import { ObjectId } from 'mongodb';
 
 export default class CourseInvitation {
   constructor(context) {
@@ -53,5 +54,10 @@ export default class CourseInvitation {
     const { deletedCount } = await this.collection.deleteOne({ _id: id });
     this.loader.clear(id);
     return deletedCount === 1;
+  }
+
+  async removeByCourseId(id) {
+    const { result } = await this.collection.deleteMany({ courseId: ObjectId(id) })
+    return result.ok === 1
   }
 }
