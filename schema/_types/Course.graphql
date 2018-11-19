@@ -5,4 +5,5 @@ type Course {
   students: [Student] @hasMany
   teacher: [Teacher] @belongsTo
   testParameters: TestParameters @hasOne
+  invitations: [Student] @hasMany
 }

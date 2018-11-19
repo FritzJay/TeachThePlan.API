@@ -7,6 +7,7 @@ type Course {
   tests(lastCreatedAt: Float, limit: Int): [Test]
   teacher: [Teacher]
   testParameters: TestParameters
+  invitations(lastCreatedAt: Float, limit: Int): [Student]
   createdAt: Float!
   updatedAt: Float!
 }
@@ -21,6 +22,11 @@ input CreateCourseInput {
   name: String!
 }
 
+input CreateCourseInvitationInput {
+  courseId: ObjID!
+  studentId: ObjID!
+}
+
 input UpdateCourseInput {
   grade: String!
   name: String!
@@ -30,4 +36,5 @@ extend type Mutation {
   createCourse(input: CreateCourseInput!): Course
   updateCourse(id: ObjID!, input: UpdateCourseInput!): Course
   removeCourse(id: ObjID!): Boolean
+  createCourseInvitation(input: CreateCourseInvitationInput!): Course
 }
