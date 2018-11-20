@@ -1,6 +1,7 @@
 import {
   assertTeacherIsAuthorizedToRemoveCourseInvitation,
   assertStudentIsAuthorizedToRemoveCourseInvitation,
+  assertStudentIsAuthorizedToAcceptCourseInvitation,
   assertCourseDoesNotContainInvitation,
   assertDocumentExists,
 } from '../authorization';
@@ -57,8 +58,22 @@ const resolvers = {
         throw new AuthenticationError('You are not authorized to remove this course invitation')
       }
       return CourseInvitation.removeById(courseInvitationId);
-    }
+    },
+
+    async acceptCourseInvitation(root, { id }, { authedUser, CourseInvitation, Student, Course }) {
+      const courseInvitation = await CourseInvitation.findOneById(id);
+      await assertDocumentExists(courseInvitation, 'CourseInvitation');
+      const student = await Student.findOneByUserId(authedUser.userId);
+      await assertStudentIsAuthorizedToAcceptCourseInvitation(student, courseInvitation);
+      await Student.updateById(student._id, {
+        ...student,
+        coursesIds: student.coursesIds.concat([courseInvitation.courseId])
+      })
+      await CourseInvitation.removeById(id);
+      return Course.findOneById(courseInvitation.courseId)
+    },
   },
+
 };
 
 export default resolvers;

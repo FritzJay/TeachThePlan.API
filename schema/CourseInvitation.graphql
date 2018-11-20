@@ -19,4 +19,5 @@ input CreateCourseInvitationInput {
 extend type Mutation {
   createCourseInvitation(input: CreateCourseInvitationInput!): CourseInvitation
   removeCourseInvitation(id: ObjID!): Boolean
+  acceptCourseInvitation(id: ObjID!): Course
 }
