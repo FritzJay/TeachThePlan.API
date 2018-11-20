@@ -2,6 +2,7 @@ import {
   assertTeacherIsAuthorizedToRemoveCourseInvitation,
   assertStudentIsAuthorizedToRemoveCourseInvitation,
   assertStudentIsAuthorizedToAcceptCourseInvitation,
+  assertStudentIsNotPartOfTheClass,
   assertCourseDoesNotContainInvitation,
   assertDocumentExists,
 } from '../authorization';
@@ -39,9 +40,10 @@ const resolvers = {
       const course = await Course.findOneById(courseId);
       await assertAuthenticatedUserIsAuthorizedToUpdateCourse(teacherId, course);
       const { _id: userId } = await User.findOneByEmail(email)
-      const { _id: studentId } = await Student.findOneByUserId(userId);
-      await assertCourseDoesNotContainInvitation(courseId, studentId, CourseInvitation);
-      const courseInvitationId = await CourseInvitation.insert({ courseId, studentId });
+      const student = await Student.findOneByUserId(userId);
+      await assertCourseDoesNotContainInvitation(courseId, student._id, CourseInvitation);
+      await assertStudentIsNotPartOfTheClass(student, courseId)
+      const courseInvitationId = await CourseInvitation.insert({ courseId, studentId: student._id });
       return await CourseInvitation.findOneById(courseInvitationId);
     },
 
