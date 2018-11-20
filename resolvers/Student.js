@@ -1,8 +1,13 @@
+import { ObjectId } from 'mongodb';
 import { assertUserWithEmailDoesNotExist } from '../authorization/User';
 import {
   assertAuthenticatedUserIsAuthorizedToUpdateStudent,
   assertAuthenticatedUserIsAuthorizedToRemoveStudent,
 } from '../authorization/Student';
+
+import { assertAuthenticatedUserIsAuthorizedToUpdateCourse } from '../authorization/Course';
+
+import { createUniqueUsernameForNewStudent } from '../src/library/User';
 
 const resolvers = {
   Student: {
@@ -76,6 +81,26 @@ const resolvers = {
       const studentRemoved = await Student.removeById(studentId);
       return userRemoved && studentRemoved;
     },
+
+    async createAccountForStudent(root, { input }, context) {
+      const { authedUser, Teacher, Course, User } = context
+      const { name, courseId, user } = input;
+      const { email, ...rest } = user
+      const { _id: teacherId } = await Teacher.findOneByUserId(authedUser.userId);
+      const course = await Course.findOneById(ObjectId(courseId));
+      await assertAuthenticatedUserIsAuthorizedToUpdateCourse(teacherId, course);
+      const username = await createUniqueUsernameForNewStudent(user.firstName, user.lastName, course.name, User);
+      return resolvers.Mutation.createStudent(root, {
+        input: {
+          name,
+          coursesIds: [ObjectId(courseId)],
+          user: {
+            email: username,
+            ...rest,
+          },
+        }
+      }, context);
+    }
   },
 };
 

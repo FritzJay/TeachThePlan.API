@@ -21,6 +21,12 @@ input CreateStudentInput {
   user: CreateUserInput!
 }
 
+input CreateAccountForStudentInput {
+  name: String!
+  courseId: String!
+  user: CreateUserInput!
+}
+
 input UpdateStudentInput {
   name: String
   parentId: ObjID
@@ -29,6 +35,7 @@ input UpdateStudentInput {
 
 extend type Mutation {
   createStudent(input: CreateStudentInput!): Student
+  createAccountForStudent(input: CreateAccountForStudentInput!): Student
   updateStudent(id: ObjID!, input: UpdateStudentInput!): Student
   removeStudent(id: ObjID!): Boolean
 }
