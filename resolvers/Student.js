@@ -98,6 +98,7 @@ const resolvers = {
             email: username,
             ...rest,
           },
+          changePasswordRequired: true,
         }
       }, context);
     },
