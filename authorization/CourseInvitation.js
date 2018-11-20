@@ -27,7 +27,7 @@ export const assertStudentIsAuthorizedToAcceptCourseInvitation = async (student,
 }
 
 export const assertStudentIsNotPartOfTheClass = async (student, courseId) => {
-  if (student.coursesIds.some((id) => id.equals(courseId))) {
+  if (student.coursesIds && student.coursesIds.some((id) => id.equals(courseId))) {
     throw new UserInputError('The student is already a part of the class');
   }
 }
