@@ -100,6 +100,19 @@ const resolvers = {
           },
         }
       }, context);
+    },
+
+    async removeStudentFromCourse(root, { studentId, courseId }, { authedUser, Course, Student, Teacher }) {
+      const { _id: teacherId } = await Teacher.findOneByUserId(authedUser.userId);
+      const course = await Course.findOneById(ObjectId(courseId));
+      await assertAuthenticatedUserIsAuthorizedToUpdateCourse(teacherId, course); 
+      const { coursesIds } = await Student.findOneById(studentId);
+      await Student.updateById(studentId, {
+        coursesIds: coursesIds
+          ? coursesIds.filter((id) => !id.equals(courseId))
+          : []
+      });
+      return true;
     }
   },
 };
