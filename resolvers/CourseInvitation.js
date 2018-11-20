@@ -1,10 +1,12 @@
 import {
-  assertAuthenticatedUserIsAuthorizedToRemoveCourseInvitation,
+  assertTeacherIsAuthorizedToRemoveCourseInvitation,
+  assertStudentIsAuthorizedToRemoveCourseInvitation,
   assertCourseDoesNotContainInvitation,
   assertDocumentExists,
 } from '../authorization';
 
-import { assertAuthenticatedUserIsAuthorizedToUpdateCourse } from '../authorization/Course'
+import { assertAuthenticatedUserIsAuthorizedToUpdateCourse } from '../authorization/Course';
+import { AuthenticationError } from 'apollo-server-core';
 
 const resolvers = {
   CourseInvitation: {
@@ -42,11 +44,18 @@ const resolvers = {
       return await CourseInvitation.findOneById(courseInvitationId);
     },
 
-    async removeCourseInvitation(root, { id: courseInvitationId }, { authedUser, CourseInvitation, Teacher, Course }) {
-      const { courseId } = await CourseInvitation.findOneById(courseInvitationId);
-      await assertDocumentExists(courseId, 'CourseInvitation');
-      const { _id: teacherId } = await Teacher.findOneByUserId(authedUser.userId);
-      await assertAuthenticatedUserIsAuthorizedToRemoveCourseInvitation(teacherId, courseId, Course);
+    async removeCourseInvitation(root, { id: courseInvitationId }, { authedUser, CourseInvitation, Teacher, Student, Course }) {
+      const courseInvitation = await CourseInvitation.findOneById(courseInvitationId);
+      await assertDocumentExists(courseInvitation, 'CourseInvitation');
+      if (authedUser.role === 'teacher') {
+        const { _id: teacherId} = await Teacher.findOneByUserId(authedUser.userId);
+        await assertTeacherIsAuthorizedToRemoveCourseInvitation(teacherId, courseInvitation.courseId, Course);
+      } else if (authedUser.role === 'student') {
+        const { _id: studentId} = await Student.findOneByUserId(authedUser.userId);
+        await assertStudentIsAuthorizedToRemoveCourseInvitation(studentId, courseInvitation);
+      } else {
+        throw new AuthenticationError('You are not authorized to remove this course invitation')
+      }
       return CourseInvitation.removeById(courseInvitationId);
     }
   },
