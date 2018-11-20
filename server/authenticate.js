@@ -11,6 +11,7 @@ const unAuthenticatedRoutes = [
   'createUser',
   'createTeacher',
   'createStudent',
+  'updateNewStudent',
 ]
 
 export function getUserIDFromAuthHeader(req) {
@@ -36,13 +37,21 @@ export default function addPassport(app, db) {
 
   app.post('/login', async ({ body, context }, res, next) => {
     const { email, password, role } = body;
+    
+    const user = await context.User.findOneByEmail(email);
+    if (user && user.role === 'student') {
+      const student = await context.Student.findOneByUserId(user._id);
+      if (student.changePasswordRequired) {
+        res.json({ changePasswordRequired: true })
+        return next();
+      }
+    }
 
     if (!email || !password || !role) {
-      res.json({ error: 'Username password or role not set on request' });
+      res.json({ error: 'Username or password not set on request' });
       return next();
     }
     
-    const user = await context.User.findOneByEmail(email);
     if (!user || !user.role === role || !(await bcrypt.compare(password, user.hash))) {
       res.json({ error: 'Invalid email or password'})
       return next();

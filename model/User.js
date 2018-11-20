@@ -43,10 +43,15 @@ export default class User {
   }
 
   async updateById(id, doc) {
+    const { password, ...rest } = doc
     const ret = await this.collection.update({ _id: id }, {
-      $set: Object.assign({}, doc, {
+      $set: Object.assign({}, rest, {
         updatedAt: Date.now(),
-      }),
+      },
+        password !== undefined
+          ? { hash: await bcrypt.hash(password, ROUNDS) }
+          : {}
+      ),
     });
     this.loader.clear(id);
     return ret;

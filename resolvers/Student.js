@@ -3,6 +3,7 @@ import { assertUserWithEmailDoesNotExist } from '../authorization/User';
 import {
   assertAuthenticatedUserIsAuthorizedToUpdateStudent,
   assertAuthenticatedUserIsAuthorizedToRemoveStudent,
+  assertChangePasswordIsRequired,
 } from '../authorization/Student';
 
 import { assertAuthenticatedUserIsAuthorizedToUpdateCourse } from '../authorization/Course';
@@ -72,6 +73,16 @@ const resolvers = {
       }
       await User.updateById(userId, userInput);
       await Student.updateById(studentId, studentInput);
+      return Student.findOneById(studentId);
+    },
+
+    async updateNewStudent(root, { input }, { Student, User }) {
+      const { email, password } = input.user;
+      const { _id: userId } = await User.findOneByEmail(email);
+      const { _id: studentId, changePasswordRequired } = await Student.findOneByUserId(userId);
+      await assertChangePasswordIsRequired(changePasswordRequired);
+      await User.updateById(userId, { password, email });
+      await Student.updateById(studentId, { changePasswordRequired: false });
       return Student.findOneById(studentId);
     },
 

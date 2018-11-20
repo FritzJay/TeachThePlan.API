@@ -6,6 +6,7 @@ type Student {
   courseInvitations(lastCreatedAt: Float, limit: Int): [CourseInvitation]
   user: User!
   parent: Parent
+  changePasswordRequired: Boolean
   createdAt: Float!
   updatedAt: Float!
 }
@@ -33,10 +34,17 @@ input UpdateStudentInput {
   user: UpdateUserInput
 }
 
+input UpdateNewStudentInput {
+  name: String
+  parentId: ObjID
+  user: UpdateUserInput
+}
+
 extend type Mutation {
   createStudent(input: CreateStudentInput!): Student
   createAccountForStudent(input: CreateAccountForStudentInput!): Student
   updateStudent(id: ObjID!, input: UpdateStudentInput!): Student
+  updateNewStudent(input: UpdateNewStudentInput!): Student
   removeStudent(id: ObjID!): Boolean
   removeStudentFromCourse(studentId: ObjID!, courseId: ObjID!): Boolean
 }

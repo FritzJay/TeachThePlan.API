@@ -22,3 +22,9 @@ const assertAuthenticatedUserIsAuthorizedToModifyStudent = async (authedUser, st
     throw new AuthenticationError('You are not authorized to modify this student');
   }
 }
+
+export const assertChangePasswordIsRequired = async (changePasswordRequired) => {
+  if (changePasswordRequired === false || changePasswordRequired === undefined) {
+    throw new AuthenticationError('You are not authorized to change passwords');
+  }
+}
