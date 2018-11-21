@@ -3,6 +3,7 @@ import { assertUserWithEmailDoesNotExist } from '../authorization/User';
 import {
   assertAuthenticatedUserIsAuthorizedToUpdateStudent,
   assertAuthenticatedUserIsAuthorizedToRemoveStudent,
+  assertAuthenticatedUserIsAuthorizedToRemovePendingStudent,
   assertChangePasswordIsRequired,
 } from '../authorization/Student';
 
@@ -88,6 +89,13 @@ const resolvers = {
 
     async removeStudent(root, { id: studentId }, { authedUser, Student, User }) {
       const userId = await assertAuthenticatedUserIsAuthorizedToRemoveStudent(authedUser, studentId, Student)
+      const userRemoved = await User.removeById(userId);
+      const studentRemoved = await Student.removeById(studentId);
+      return userRemoved && studentRemoved;
+    },
+
+    async removePendingStudent(root, { studentId, courseId }, { authedUser, Student, Teacher, Course, User }) {
+      const userId = await assertAuthenticatedUserIsAuthorizedToRemovePendingStudent(authedUser, studentId, courseId, Student, Teacher, Course)
       const userRemoved = await User.removeById(userId);
       const studentRemoved = await Student.removeById(studentId);
       return userRemoved && studentRemoved;

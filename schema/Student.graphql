@@ -46,5 +46,6 @@ extend type Mutation {
   updateStudent(id: ObjID!, input: UpdateStudentInput!): Student
   updateNewStudent(input: UpdateNewStudentInput!): Student
   removeStudent(id: ObjID!): Boolean
+  removePendingStudent(studentId: ObjID!, courseId: ObjID!): Boolean
   removeStudentFromCourse(studentId: ObjID!, courseId: ObjID!): Boolean
 }

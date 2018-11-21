@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+
 import { AuthenticationError } from "apollo-server-express";
 
 export const assertAuthenticatedUserIsAuthorizedToUpdateStudent = async (authedUser, studentId, Student)  => {
@@ -14,6 +16,19 @@ export const assertAuthenticatedUserIsAuthorizedToRemoveStudent = async (authedU
   } catch (error) {
     throw new AuthenticationError('You are not authorized to remove this student');
   }
+}
+
+export const assertAuthenticatedUserIsAuthorizedToRemovePendingStudent = async (authedUser, studentId, courseId, Student, Teacher, Course)  => {
+  const { changePasswordRequired, userId } = await Student.findOneById(studentId);
+  if (changePasswordRequired !== true) {
+    throw new AuthenticationError('You are not authorized to remove this student');
+  }
+  const { _id: teacherId } = await Teacher.findOneByUserId(authedUser.userId);
+  const course = await Course.findOneById(courseId);
+  if (!course.teacherId.equals(teacherId)) {
+    throw new AuthenticationError('You are not authorized to remove this student');
+  }
+  return userId;
 }
 
 const assertAuthenticatedUserIsAuthorizedToModifyStudent = async (authedUser, studentId, Student) => {
