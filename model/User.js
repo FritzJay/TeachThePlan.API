@@ -44,7 +44,7 @@ export default class User {
 
   async updateById(id, doc) {
     const { password, ...rest } = doc
-    const ret = await this.collection.update({ _id: id }, {
+    const ret = await this.collection.updateOne({ _id: id }, {
       $set: Object.assign({}, rest, {
         updatedAt: Date.now(),
       },

@@ -1,6 +1,11 @@
 import DataLoader from 'dataloader';
 import findByIds from 'mongo-find-by-ids';
-import * as math from 'mathjs';
+
+import {
+  createQuestions,
+  gradeQuestion,
+  createTestResults,
+} from '../src/library/testing';
 
 export default class Test {
   constructor(context) {
@@ -37,21 +42,16 @@ export default class Test {
     return this.context.TestResults.findOneByTestId(test._id);
   }
 
-  async insert({ studentId, courseId, duration, questions, randomQuestions, operator, number }) {
+  async insert(test) {
     const docToInsert = Object.assign({}, {
-      studentId,
-      courseId,
-      duration,
-      operator,
-      number,
-      randomQuestions,
+      ...test,
       start: null,
       end: null,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
     const testId = (await this.collection.insertOne(docToInsert)).insertedId;
-    const newQuestions = await createQuestions(operator, number, questions, randomQuestions);
+    const newQuestions = await createQuestions(test.operator, test.number, test.questions, test.randomQuestions);
     const questionIds = await Promise.all(
       newQuestions.map(async ({ question }) => await this.context.Question.insert({
         question,
@@ -67,43 +67,25 @@ export default class Test {
   }
 
   async grade(testId, test) {
-    const total = test.questions.length
-    const needed = Math.round(test.questions.length * PASSING_PERCENTAGE)
     const questions = await Promise.all(
-      test.questions.map(async ({ id, start, end, studentAnswer }) => {
-        const question = await this.context.Question.findOneById(id);
-        const correctAnswer = math.eval(question.question)
-        await this.context.Question.updateById(id, {
-          start,
-          end,
-          studentAnswer,
-          correctAnswer: isNaN(correctAnswer) || correctAnswer === Infinity
-            ? 0
-            : correctAnswer
-        });
-        return this.context.Question.findOneById(id);
+      test.questions.map(async (q) => {
+        const question = await this.context.Question.collection.findOne({ _id: q.id });
+        const gradedQuestion = await gradeQuestion({ ...q, question: question.question });
+        await this.context.Question.updateById(q.id, gradedQuestion);
+        return { id: q.id, ...gradedQuestion };
       })
     );
-    const correct = questions.filter((q) => q.studentAnswer === q.correctAnswer).length;
-    const incorrectId = getRandomIncorrectlyAnsweredQuestion(questions);
-    const quickestId = getQuickestAnsweredQuestion(questions);
+    const testResults = await createTestResults(questions);
     await this.updateById(testId, {
       start: test.start,
       end: test.end,
     });
-    await this.context.TestResults.insert({
-      total,
-      needed,
-      correct,
-      incorrectId,
-      quickestId,
-      testId,
-    });
+    await this.context.TestResults.insert({ testId, ...testResults });
     return await this.findOneById(testId);
   }
 
   async updateById(id, doc) {
-    const ret = await this.collection.update({ _id: id }, {
+    const ret = await this.collection.updateOne({ _id: id }, {
       $set: Object.assign({}, doc, {
         updatedAt: Date.now(),
       }),
@@ -116,96 +98,5 @@ export default class Test {
     const ret = this.collection.remove({ _id: id });
     this.loader.clear(id);
     return ret;
-  }
-}
-
-export const OPERATORS = ['+', '-', '*', '/'];
-export const NUMBERS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-export const MAX_NUMBER = 12;
-export const PASSING_PERCENTAGE = 0.9;
-
-export const createQuestions = async (operator, number, questions, randomQuestions) => {
-  let formattedQuestions = [];
-
-  while (formattedQuestions.length < questions) {
-    const secondNumber = formattedQuestions.length % MAX_NUMBER;
-    const formattedQuestion = createFormattedQuestion(operator, number, secondNumber);
-    formattedQuestions.push(formattedQuestion);
-  }
-
-  while (formattedQuestions.length < questions + randomQuestions) {
-    const randomNumberBetweenZeroAndNumber = (Math.random() * (number + 1) | 0);
-    const randomNumberBetweenZeroAndMax = (Math.random() * (MAX_NUMBER + 1) | 0);
-    formattedQuestions.push(createFormattedQuestion(operator, randomNumberBetweenZeroAndNumber, randomNumberBetweenZeroAndMax));
-  }
-
-  return formattedQuestions;
-}
-
-export const createFormattedQuestion = (operator, firstNumber, secondNumber) => {
-  const numbers = [firstNumber, secondNumber];
-
-  if (operator === '/' && !numbers.includes(0)) {
-    numbers[1] = secondNumber * firstNumber;
-  }
-
-  const shufflingWontResultInFractionsOrNegatives = !['-', '/'].includes(operator);
-  if (shufflingWontResultInFractionsOrNegatives) {
-    numbers.sort(() => Math.random() - 0.5);
-  } else {
-    numbers.sort((a, b) => b - a);
-  }
-  
-  return {
-    question: `${numbers[0]} ${operator} ${numbers[1]}`,
-  }
-}
-
-export const getRandomIncorrectlyAnsweredQuestion = (questions) => {
-  const incorrectlyAnsweredQuestions = questions.filter((q) => !isCorrect(q));
-
-  if (incorrectlyAnsweredQuestions.length > 0) {
-    const answeredQuestions = incorrectlyAnsweredQuestions.filter((q) => !isSkipped(q));
-
-    if (answeredQuestions.length > 0) {
-      return answeredQuestions[Math.floor(Math.random() * answeredQuestions.length)]._id;
-    } else {
-      return incorrectlyAnsweredQuestions[Math.floor(Math.random() * incorrectlyAnsweredQuestions.length)]._id;
-    }
-  } else {
-    return undefined;
-  }
-}
-
-export const getQuickestAnsweredQuestion = (questions) => {
-  const correctlyAnsweredQuestions = questions.filter((q) => isCorrect(q))
-
-  if (correctlyAnsweredQuestions.length !== 0) {
-    return correctlyAnsweredQuestions.reduce((a, b) => {
-      const aDuration = new Date(a.end).getTime() - new Date(a.start).getTime()
-      const bDuration = new Date(b.end).getTime() - new Date(b.start).getTime()
-
-      return aDuration < bDuration ? a : b
-    })._id;
-  }
-}
-
-const isCorrect = (question) => {
-  if (isSkipped(question)) {
-    return false
-  }
-
-  return question.correctAnswer.toString() === question.studentAnswer.toString()
-}
-
-const isSkipped = (question) => {
-  return question.studentAnswer === undefined || question.studentAnswer === null
-}
-
-export const incrementOrResetAt = (number, max) => {
-  if (number < max) {
-    return number + 1
-  } else {
-    return 0
   }
 }

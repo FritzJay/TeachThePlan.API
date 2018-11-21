@@ -9,7 +9,7 @@ import {
 
 import { assertAuthenticatedUserIsAuthorizedToUpdateCourse } from '../authorization/Course';
 
-import { createUniqueUsernameForNewStudent } from '../src/library/User';
+import { createUniqueUsernameForNewStudent } from '../src/library/user';
 
 const resolvers = {
   Student: {

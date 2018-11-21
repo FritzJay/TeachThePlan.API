@@ -56,7 +56,7 @@ export default class Course {
   }
 
   async updateById(id, doc) {
-    const ret = await this.collection.update({ _id: id }, {
+    const ret = await this.collection.updateOne({ _id: id }, {
       $set: Object.assign({}, doc, {
         updatedAt: Date.now(),
       }),
