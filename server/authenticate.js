@@ -49,8 +49,9 @@ export default function addPassport(app, db) {
       return next();
     }
 
-    const student = await context.Student.findOneByUserId(user.userId);
-    if (student && student.changePasswordRequired) {
+    const student = await context.Student.findOneByUserId(user._id);
+    console.log(student)
+    if (student && student.changePasswordRequired === true) {
       res.json({ changePasswordRequired: true })
       return next();
     }
