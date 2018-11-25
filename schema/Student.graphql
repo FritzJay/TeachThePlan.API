@@ -2,7 +2,7 @@ type Student {
   id: ObjID!
   name: String!
   courses(lastCreatedAt: Float, limit: Int): [Course]
-  tests(lastCreatedAt: Float, limit: Int): [Test]
+  tests(courseId: ObjID, lastCreatedAt: Float, limit: Int): [Test]
   courseInvitations(lastCreatedAt: Float, limit: Int): [CourseInvitation]
   user: User!
   parent: Parent

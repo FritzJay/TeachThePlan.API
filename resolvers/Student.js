@@ -21,8 +21,8 @@ const resolvers = {
       return Student.courses(student, { lastCreatedAt, limit });
     },
 
-    tests(student, { lastCreatedAt, limit }, { Student }) {
-      return Student.tests(student, { lastCreatedAt, limit });
+    tests(student, { courseId, lastCreatedAt, limit }, { Student }) {
+      return Student.tests(student, { courseId, lastCreatedAt, limit });
     },
 
     user(student, args, { Student }) {

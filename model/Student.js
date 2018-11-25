@@ -30,11 +30,19 @@ export default class Student {
     }).sort({ createdAt: 1 }).limit(limit).toArray();
   }
 
-  tests(student, { lastCreatedAt = 0, limit = 10 }) {
-    return this.context.Test.collection.find({
-      studentId: student._id,
-      createdAt: { $gt: lastCreatedAt },
-    }).sort({ createdAt: 1 }).limit(limit).toArray();
+  tests({ _id: studentId }, { courseId, lastCreatedAt = 0, limit = 10 }) {
+    if (courseId) {
+      return this.context.Test.collection.find({
+        studentId,
+        courseId,
+        createdAt: { $gt: lastCreatedAt },
+      }).sort({ createdAt: 1 }).limit(limit).toArray();
+    } else {
+      return this.context.Test.collection.find({
+        studentId,
+        createdAt: { $gt: lastCreatedAt },
+      }).sort({ createdAt: 1 }).limit(limit).toArray();
+    }
   }
 
   user(student) {
