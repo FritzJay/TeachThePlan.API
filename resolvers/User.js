@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+
 const resolvers = {
   User: {
     id(user) {
@@ -9,8 +11,9 @@ const resolvers = {
       return User.all({ lastCreatedAt, limit });
     },
 
-    user(root, { id }, { User }) {
-      return User.findOneById(id);
+    user(root, { id }, { authedUser, User }) {
+      const userId = id || authedUser.userId
+      return User.findOneById(new ObjectId(userId));
     },
   },
 };

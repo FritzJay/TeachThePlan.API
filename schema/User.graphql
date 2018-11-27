@@ -11,7 +11,7 @@ type User {
 
 extend type Query {
   users(lastCreatedAt: Float, limit: Int): [User!]
-  user(id: ObjID!): User
+  user(id: ObjID): User
 }
 
 input CreateUserInput {

@@ -69,7 +69,9 @@ const resolvers = {
       await assertStudentIsAuthorizedToAcceptCourseInvitation(student, courseInvitation);
       await Student.updateById(student._id, {
         ...student,
-        coursesIds: student.coursesIds.concat([courseInvitation.courseId])
+        coursesIds: student.coursesIds
+          ? student.coursesIds.concat([courseInvitation.courseId])
+          : [courseInvitation.courseId]
       })
       await CourseInvitation.removeById(id);
       return Course.findOneById(courseInvitation.courseId)
