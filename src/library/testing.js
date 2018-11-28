@@ -1,7 +1,6 @@
 import * as math from 'mathjs';
 
 const MAX_NUMBER = 12;
-const PASSING_PERCENTAGE = 0.9;
 
 /* CREATE */
 export const createQuestions = async (operator, number, questions, randomQuestions) => {
@@ -56,9 +55,8 @@ export const gradeQuestion = async ({ start, end, studentAnswer, question }) => 
   };
 }
 
-export const createTestResults = async (questions) => {
-  const total = questions.length
-  const needed = Math.round(questions.length * PASSING_PERCENTAGE)
+export const createTestResults = async (questions, needed) => {
+  const total = questions.length + 1
   const correct = questions.filter((q) => isCorrect(q));
   const incorrectId = getRandomIncorrectlyAnsweredQuestion(questions);
   const quickestId = getQuickestAnsweredQuestion(correct);

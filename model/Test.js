@@ -66,7 +66,7 @@ export default class Test {
     return testId;
   }
 
-  async grade(testId, test) {
+  async grade(testId, test, passing) {
     const questions = await Promise.all(
       test.questions.map(async (q) => {
         const question = await this.context.Question.collection.findOne({ _id: q.id });
@@ -75,7 +75,7 @@ export default class Test {
         return { id: q.id, ...gradedQuestion };
       })
     );
-    const testResults = await createTestResults(questions);
+    const testResults = await createTestResults(questions, passing);
     await this.updateById(testId, {
       start: test.start,
       end: test.end,

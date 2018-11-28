@@ -5,6 +5,7 @@ type TestParameters {
   operators: [String!]
   questions: Int!
   randomQuestions: Int!
+  passing: Int!
   course: Course!
   createdAt: Float!
   updatedAt: Float!
@@ -20,6 +21,7 @@ input UpdateTestParametersInput {
   numbers: [Int]
   operators: [String]
   questions: Int
+  passing: Int
   randomQuestions: Int
 }
 
