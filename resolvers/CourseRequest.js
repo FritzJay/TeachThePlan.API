@@ -35,12 +35,13 @@ const resolvers = {
   },
   Mutation: {
     async createCourseRequest(root, { input: { studentId, code } }, { authedUser, Course, CourseRequest, Student }) {
-      const { _id: courseId } = await Course.findOneByCode(code);
+      const course = await Course.findOneByCode(code);
+      await assertDocumentExists(course, 'course');
       const student = await Student.findOneByUserId(authedUser.userId);
       await assertAuthedUserIsAuthorizedToCreateACourseRequest(studentId, student);
-      await assertCourseDoesNotContainRequest(courseId, student._id, CourseRequest);
-      await assertStudentIsNotPartOfTheClass(student, courseId)
-      const courseRequestId = await CourseRequest.insert({ courseId, studentId: studentId });
+      await assertCourseDoesNotContainRequest(course._id, student._id, CourseRequest);
+      await assertStudentIsNotPartOfTheClass(student, course._id)
+      const courseRequestId = await CourseRequest.insert({ courseId: course._id, studentId: studentId });
       return await CourseRequest.findOneById(courseRequestId);
     },
 
