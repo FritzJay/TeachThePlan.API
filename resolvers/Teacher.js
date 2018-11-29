@@ -1,5 +1,7 @@
 import { assertUserWithEmailDoesNotExist } from '../authorization/User';
 import { 
+  assertAuthenticatedUserIsAuthorizedToGetTeacher,
+  assertAuthenticatedUserIsAuthorizedToGetTeachers,
   assertAuthenticatedUserIsAuthorizedToUpdateTeacher,
   assertAuthenticatedUserIsAuthorizedToRemoveTeacher,
 } from '../authorization/Teacher';
@@ -19,15 +21,19 @@ const resolvers = {
     },
   },
   Query: {
-    teachers(root, { lastCreatedAt, limit }, { Teacher }) {
-      return Teacher.all({ lastCreatedAt, limit });
+    async teachers(root, { lastCreatedAt, limit }, { authedUser, Teacher }) {
+      const teachers = await Teacher.all({ lastCreatedAt, limit });
+      await assertAuthenticatedUserIsAuthorizedToGetTeachers(authedUser, teachers);
+      return teachers;
     },
 
-    teacher(root, { id }, { authedUser, Teacher }) {
+    async teacher(root, { id }, { authedUser, Teacher }) {
       if (id === undefined) {
         return Teacher.findOneByUserId(authedUser.userId)
       }
-      return Teacher.findOneById(id);
+      const teacher = await Teacher.findOneById(id);
+      await assertAuthenticatedUserIsAuthorizedToGetTeacher(authedUser, teacher);
+      return teacher;
     },
   },
   Mutation: {

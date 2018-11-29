@@ -1,5 +1,15 @@
 import { AuthenticationError } from "apollo-server-express";
 
+export const assertAuthenticatedUserIsAuthorizedToGetTeacher = async (authedUser, teacher) => {
+  if (!teacher.userId.equals(authedUser.userId)) {
+    throw new AuthenticationError('You are not authorized to get this teacher');
+  }
+}
+
+export const assertAuthenticatedUserIsAuthorizedToGetTeachers = async (authedUser, teachers) => {
+  throw new AuthenticationError('You are not authorized to get these teachers');
+}
+
 export const assertAuthenticatedUserIsAuthorizedToUpdateTeacher = async (authedUser, teacherId, Teacher)  => {
   try {
     return await assertAuthenticatedUserIsAuthorizedToModifyTeacher(authedUser, teacherId, Teacher);
