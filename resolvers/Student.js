@@ -1,6 +1,8 @@
 import { ObjectId } from 'mongodb';
 import { assertUserWithEmailDoesNotExist } from '../authorization/User';
 import {
+  assertAuthenticatedUserIsAuthorizedToGetStudent,
+  assertAuthenticatedUserIsAuthorizedToGetStudents,
   assertAuthenticatedUserIsAuthorizedToUpdateStudent,
   assertAuthenticatedUserIsAuthorizedToRemoveStudent,
   assertAuthenticatedUserIsAuthorizedToRemovePendingStudent,
@@ -42,15 +44,19 @@ const resolvers = {
     }
   },
   Query: {
-    students(root, { lastCreatedAt, limit }, { Student }) {
-      return Student.all({ lastCreatedAt, limit });
+    async students(root, { lastCreatedAt, limit }, { authedUser, Student }) {
+      const students = await Student.all({ lastCreatedAt, limit });
+      await assertAuthenticatedUserIsAuthorizedToGetStudents(authedUser, students);
+      return students
     },
 
-    student(root, { id }, { authedUser, Student }) {
+    async student(root, { id }, { authedUser, Student, Teacher }) {
       if (id === undefined) {
         return Student.findOneByUserId(authedUser.userId)
       }
-      return Student.findOneById(id);
+      const student = await Student.findOneById(id);
+      await assertAuthenticatedUserIsAuthorizedToGetStudent(authedUser, student, Student, Teacher);
+      return student;
     },
   },
   Mutation: {

@@ -1,5 +1,27 @@
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 
+export const assertAuthenticatedUserIsAuthorizedToGetStudent = async (authedUser, student, Student, Teacher) => {
+  if (authedUser.role.toLowerCase() === 'student') {
+    if (!student.userId.equals(authedUser.userId)) {
+      throw new AuthenticationError('You are not authorized to view this student');
+    }
+    return;
+  }
+  else if (authedUser.role.toLowerCase() === 'teacher') {
+    const teacher = await Teacher.findOneByUserId(authedUser.userId);
+    const courses = await Student.courses(student, { limit: 0 });
+    if (!courses.some((course) => course.teacherId.equals(teacher._id))) {
+      throw new AuthenticationError('You are not authorized to view this student');
+    }
+    return;
+  }
+  throw new AuthenticationError('You are not authorized to view this student');
+}
+
+export const assertAuthenticatedUserIsAuthorizedToGetStudents = async (authedUser, students) => {
+  throw new AuthenticationError('You are not authorized to view these students');
+}
+
 export const assertAuthenticatedUserIsAuthorizedToUpdateStudent = async (authedUser, studentId, Student)  => {
   try {
     return await assertAuthenticatedUserIsAuthorizedToModifyStudent(authedUser, studentId, Student);
