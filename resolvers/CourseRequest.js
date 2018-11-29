@@ -1,4 +1,6 @@
 import {
+  assertAuthedUserIsAuthorizedToGetCourseRequest,
+  assertAuthedUserIsAuthorizedToGetCourseRequests,
   assertAuthedUserIsAuthorizedToCreateACourseRequest,
   assertTeacherIsAuthorizedToRemoveCourseRequest,
   assertStudentIsAuthorizedToRemoveCourseRequest,
@@ -25,12 +27,16 @@ const resolvers = {
     }
   },
   Query: {
-    courseRequests(root, { lastCreatedAt, limit }, { CourseRequest }) {
-      return CourseRequest.all({ lastCreatedAt, limit });
+    async courseRequests(root, { lastCreatedAt, limit }, { authedUser, CourseRequest, Course }) {
+      const courseRequests = await CourseRequest.all({ lastCreatedAt, limit });
+      await assertAuthedUserIsAuthorizedToGetCourseRequests(authedUser, courseRequests, Course);
+      return courseRequests;
     },
 
-    courseRequest(root, { id }, { CourseRequest }) {
-      return CourseRequest.findOneById(id);
+    async courseRequest(root, { id }, { authedUser, CourseRequest, Teacher, Student }) {
+      const courseRequest = await CourseRequest.findOneById(id);
+      await assertAuthedUserIsAuthorizedToGetCourseRequest(authedUser, courseRequest, Teacher, Student);
+      return courseRequest;
     },
   },
   Mutation: {
