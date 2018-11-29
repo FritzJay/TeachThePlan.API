@@ -4,6 +4,7 @@ type Student {
   courses(lastCreatedAt: Float, limit: Int): [Course]
   tests(courseId: ObjID, lastCreatedAt: Float, limit: Int): [Test]
   courseInvitations(lastCreatedAt: Float, limit: Int): [CourseInvitation]
+  courseRequests(lastCreatedAt: Float, limit: Int): [CourseInvitation]
   user: User!
   parent: Parent
   changePasswordRequired: Boolean

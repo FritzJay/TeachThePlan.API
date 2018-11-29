@@ -35,6 +35,10 @@ const resolvers = {
 
     courseInvitations(student, { lastCreatedAt, limit }, { Student }) {
       return Student.courseInvitations(student, { lastCreatedAt, limit })
+    },
+
+    courseRequests(student, { lastCreatedAt, limit }, { Student }) {
+      return Student.courseRequests(student, { lastCreatedAt, limit })
     }
   },
   Query: {

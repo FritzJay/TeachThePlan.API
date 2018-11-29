@@ -60,6 +60,13 @@ export default class Student {
     }).sort({ createdAt: 1 }).limit(limit).toArray();
   }
 
+  courseRequests(student, { lastCreatedAt = 0, limit = 10 }) {
+    return this.context.CourseRequest.collection.find({
+      studentId: student._id,
+      createdAt: { $gt: lastCreatedAt },
+    }).sort({ createdAt: 1 }).limit(limit).toArray();
+  }
+
   async insert(doc) {
     const docToInsert = Object.assign({}, doc, {
       createdAt: Date.now(),

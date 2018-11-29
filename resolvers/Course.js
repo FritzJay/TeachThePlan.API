@@ -26,7 +26,11 @@ const resolvers = {
 
     courseInvitations(course, { lastCreatedAt, limit }, { Course }) {
       return Course.courseInvitations(course, { lastCreatedAt, limit })
-    }
+    },
+
+    courseRequests(course, { lastCreatedAt, limit }, { Course }) {
+      return Course.courseRequests(course, { lastCreatedAt, limit })
+    },
   },
   Query: {
     courses(root, { lastCreatedAt, limit }, { Course }) {
@@ -68,7 +72,7 @@ const resolvers = {
       return Course.findOneById(courseId);
     },
 
-    async removeCourse(root, { id: courseId }, { authedUser, Course, Teacher, TestParameters, Student, CourseInvitation }) {
+    async removeCourse(root, { id: courseId }, { authedUser, Course, Teacher, TestParameters, Student, CourseInvitation, CourseRequest }) {
       const { _id: teacherId } = await Teacher.findOneByUserId(authedUser.userId);
       const course = await Course.findOneById(courseId);
       await assertAuthenticatedUserIsAuthorizedToRemoveCourse(teacherId, course);
@@ -76,7 +80,8 @@ const resolvers = {
       const courseRemoved = await Course.removeById(courseId);
       const studentAssociationsRemoved = await Student.removeCourseAssociations(courseId);
       const courseInvitationsRemoved = await CourseInvitation.removeByCourseId(courseId);
-      return testParametersRemoved && courseRemoved && studentAssociationsRemoved && courseInvitationsRemoved;
+      const courseRequestsRemoved = await CourseRequest.removeByCourseId(courseId);
+      return testParametersRemoved && courseRemoved && studentAssociationsRemoved && courseInvitationsRemoved && courseRequestsRemoved;
     },
   }
 };

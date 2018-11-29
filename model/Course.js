@@ -50,6 +50,13 @@ export default class Course {
     }).sort({ createdAt: 1 }).limit(limit).toArray();
   }
 
+  courseRequests(course, { lastCreatedAt = 0, limit = 10 }) {
+    return this.context.CourseRequest.collection.find({
+      courseId: course._id,
+      createdAt: { $gt: lastCreatedAt },
+    }).sort({ createdAt: 1 }).limit(limit).toArray();
+  }
+
   async insert(doc) {
     const docToInsert = Object.assign({}, doc, {
       createdAt: Date.now(),
