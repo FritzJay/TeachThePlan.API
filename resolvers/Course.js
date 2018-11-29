@@ -1,10 +1,14 @@
 import { generate } from 'shortid';
 
 import {
+  assertAuthenticatedUserIsAuthorizedToGetCourse,
+  assertAuthenticatedUserIsAuthorizedToGetCourses,
   assertAuthenticatedUserIsAuthorizedToUpdateCourse,
   assertAuthenticatedUserIsAuthorizedToRemoveCourse,
-  assertClassWithNameDoesNotExist
+  assertClassWithNameDoesNotExist,
 } from '../authorization/Course';
+
+import { assertDocumentExists } from '../authorization';
 
 const resolvers = {
   Course: {
@@ -33,18 +37,24 @@ const resolvers = {
     },
   },
   Query: {
-    courses(root, { lastCreatedAt, limit }, { Course }) {
-      return Course.all({ lastCreatedAt, limit });
+    async courses(root, { lastCreatedAt, limit }, { Course }) {
+      const courses = await Course.all({ lastCreatedAt, limit });
+      // No one is allowed to view all courses at the moment
+      await assertAuthenticatedUserIsAuthorizedToGetCourses(courses);
+      return courses;
     },
 
-    course(root, { id }, { Course }) {
-      return Course.findOneById(id);
+    async course(root, { id }, { authedUser, Course, Student, Teacher }) {
+      const course = await Course.findOneById(id);
+      await assertAuthenticatedUserIsAuthorizedToGetCourse(authedUser, course, Student, Teacher);
+      return course;
     },
   },
   Mutation: {
     async createCourse(root, { input }, { authedUser, Course, Teacher, TestParameters }) {
-      const { _id: teacherId } = await Teacher.findOneByUserId(authedUser.userId);
-      await assertClassWithNameDoesNotExist(teacherId, input.name, Course);
+      const teacher = await Teacher.findOneByUserId(authedUser.userId);
+      await assertDocumentExists(teacher, 'teacher');
+      await assertClassWithNameDoesNotExist(teacher._id, input.name, Course);
       const testParametersId = await TestParameters.insert({
         duration: 75,
         numbers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
@@ -55,27 +65,29 @@ const resolvers = {
       const courseId = await Course.insert({
         ...input,
         code: generate(),
-        teacherId,
+        teacherId: teacher._id,
         testParametersId,
       });
       return Course.findOneById(courseId);
     },
 
     async updateCourse(root, { id: courseId, input }, { authedUser, Course, Teacher }) {
-      const { _id: teacherId } = await Teacher.findOneByUserId(authedUser.userId);
+      const teacher = await Teacher.findOneByUserId(authedUser.userId);
+      await assertDocumentExists(teacher, 'teacher');
       const course = await Course.findOneById(courseId);
-      await assertAuthenticatedUserIsAuthorizedToUpdateCourse(teacherId, course);
+      await assertAuthenticatedUserIsAuthorizedToUpdateCourse(teacher._id, course);
       if (input.name !== undefined && input.name.toLowerCase() !== course.name.toLowerCase()) {
-        await assertClassWithNameDoesNotExist(teacherId, input.name, Course);
+        await assertClassWithNameDoesNotExist(teacher._id, input.name, Course);
       }
       await Course.updateById(courseId, input);
       return Course.findOneById(courseId);
     },
 
     async removeCourse(root, { id: courseId }, { authedUser, Course, Teacher, TestParameters, Student, CourseInvitation, CourseRequest }) {
-      const { _id: teacherId } = await Teacher.findOneByUserId(authedUser.userId);
+      const teacher = await Teacher.findOneByUserId(authedUser.userId);
+      await assertDocumentExists(teacher, 'teacher');
       const course = await Course.findOneById(courseId);
-      await assertAuthenticatedUserIsAuthorizedToRemoveCourse(teacherId, course);
+      await assertAuthenticatedUserIsAuthorizedToRemoveCourse(teacher._id, course);
       const testParametersRemoved = await TestParameters.removeById(course.testParametersId);
       const courseRemoved = await Course.removeById(courseId);
       const studentAssociationsRemoved = await Student.removeCourseAssociations(courseId);
