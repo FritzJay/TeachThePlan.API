@@ -1,0 +1,4 @@
+type CourseRequest {
+  student: Student!
+  course: Course!
+}

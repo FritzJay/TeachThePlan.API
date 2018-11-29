@@ -13,6 +13,7 @@ import testResolvers from './Test';
 import testParametersResolvers from './TestParameters';
 import testResultsResolvers from './TestResults';
 import courseInvitationResolvers from './CourseInvitation';
+import courseRequestResolvers from './CourseRequest';
 
 const resolvers = {};
 
@@ -54,3 +55,5 @@ merge(resolvers, courseResolvers);
 merge(resolvers, testResultsResolvers);
 
 merge(resolvers, courseInvitationResolvers);
+
+merge(resolvers, courseRequestResolvers);

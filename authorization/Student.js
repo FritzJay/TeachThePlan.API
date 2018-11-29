@@ -1,6 +1,4 @@
-import { ObjectId } from 'mongodb';
-
-import { AuthenticationError } from "apollo-server-express";
+import { AuthenticationError, UserInputError } from "apollo-server-express";
 
 export const assertAuthenticatedUserIsAuthorizedToUpdateStudent = async (authedUser, studentId, Student)  => {
   try {
@@ -41,5 +39,11 @@ const assertAuthenticatedUserIsAuthorizedToModifyStudent = async (authedUser, st
 export const assertChangePasswordIsRequired = async (changePasswordRequired) => {
   if (changePasswordRequired === false || changePasswordRequired === undefined) {
     throw new AuthenticationError('You are not authorized to change passwords');
+  }
+}
+
+export const assertStudentIsNotPartOfTheClass = async (student, courseId) => {
+  if (student.coursesIds && student.coursesIds.some((id) => id.equals(courseId))) {
+    throw new UserInputError('The student is already a part of the class');
   }
 }

@@ -38,3 +38,5 @@ typeDefs.push(requireGraphQL('./Course.graphql'));
 typeDefs.push(requireGraphQL('./TestResults.graphql'));
 
 typeDefs.push(requireGraphQL('./CourseInvitation.graphql'));
+
+typeDefs.push(requireGraphQL('./CourseRequest.graphql'));

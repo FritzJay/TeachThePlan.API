@@ -43,7 +43,7 @@ async function startServer() {
   
   app.listen(PORT, () => console.log(
     `API Server is now running on http://localhost:${PORT}`
-    ));
+  ));
 }
     
 startServer()

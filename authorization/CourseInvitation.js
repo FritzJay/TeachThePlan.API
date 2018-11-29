@@ -1,5 +1,7 @@
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 
+import { assertStudentIsNotPartOfTheClass } from '../authorization/Student';
+
 export const assertAuthenticatedUserIsAuthorizedToUpdateCourseInvitation = async (teacherId, course)  => {
   if (!course.teacherId.equals(teacherId)) {
     throw new AuthenticationError('You are not authorized to update this course');
@@ -24,12 +26,6 @@ export const assertStudentIsAuthorizedToAcceptCourseInvitation = async (student,
     throw new AuthenticationError('You are not authorized to accept this course invitation');
   }
   await assertStudentIsNotPartOfTheClass(student, courseInvitation._id)
-}
-
-export const assertStudentIsNotPartOfTheClass = async (student, courseId) => {
-  if (student.coursesIds && student.coursesIds.some((id) => id.equals(courseId))) {
-    throw new UserInputError('The student is already a part of the class');
-  }
 }
 
 export const assertCourseDoesNotContainInvitation = async (courseId, studentId, CourseInvitation) => {

@@ -1,0 +1,23 @@
+type CourseRequest {
+  id: ObjID!
+  student: Student
+  course: Course
+  createdAt: Float!
+  updatedAt: Float!
+}
+
+extend type Query {
+  courseRequests(lastCreatedAt: Float, limit: Int): [CourseRequest!]
+  courseRequest(id: ObjID!): CourseRequest
+}
+
+input CreateCourseRequestInput {
+  code: String!
+  studentId: ObjID!
+}
+
+extend type Mutation {
+  createCourseRequest(input: CreateCourseRequestInput!): CourseRequest
+  removeCourseRequest(id: ObjID!): Boolean
+  acceptCourseRequest(id: ObjID!): Course
+}

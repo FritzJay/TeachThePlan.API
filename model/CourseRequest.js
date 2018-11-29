@@ -1,25 +1,20 @@
 import DataLoader from 'dataloader';
 import findByIds from 'mongo-find-by-ids';
+import { ObjectId } from 'mongodb';
 
-export default class Course {
+export default class CourseRequest {
   constructor(context) {
     this.context = context;
-    this.collection = context.db.collection('course');
+    this.collection = context.db.collection('courseRequest');
     this.loader = new DataLoader(ids => findByIds(this.collection, ids));
   }
 
   findOneById(id) {
     return this.loader.load(id);
   }
-
-  findOneByCode(code) {
-    return this.collection.findOne({ code });
-  }
-
-  findManyByNameAndTeacherId(name, id) {
-    return this.collection.find({ name, teacherId: id })
-      .collation({ locale: "en_US", strength: 1 })
-      .toArray();
+  
+  findOneByCourseIdAndStudentId(courseId, studentId) {
+    return this.collection.findOne({ courseId, studentId });
   }
 
   all({ lastCreatedAt = 0, limit = 10 }) {
@@ -28,26 +23,12 @@ export default class Course {
     }).sort({ createdAt: 1 }).limit(limit).toArray();
   }
 
-  students(course, { lastCreatedAt = 0, limit = 10 }) {
-    return this.context.Student.collection.find({
-      coursesIds: course._id,
-      createdAt: { $gt: lastCreatedAt },
-    }).sort({ createdAt: 1 }).limit(limit).toArray();
+  student(courseRequest) {
+    return this.context.Student.findOneById(courseRequest.studentId);
   }
 
-  teacher(course) {
-    return this.context.Teacher.findOneById(course.teacherId);
-  }
-
-  testParameters(course) {
-    return this.context.TestParameters.findOneById(course.testParametersId);
-  }
-
-  courseInvitations(course, { lastCreatedAt = 0, limit = 10 }) {
-    return this.context.CourseInvitation.collection.find({
-      courseId: course._id,
-      createdAt: { $gt: lastCreatedAt },
-    }).sort({ createdAt: 1 }).limit(limit).toArray();
+  course(courseRequest) {
+    return this.context.Course.findOneById(courseRequest.courseId);
   }
 
   async insert(doc) {
@@ -73,5 +54,10 @@ export default class Course {
     const { deletedCount } = await this.collection.deleteOne({ _id: id });
     this.loader.clear(id);
     return deletedCount === 1;
+  }
+
+  async removeByCourseId(id) {
+    const { result } = await this.collection.deleteMany({ courseId: ObjectId(id) })
+    return result.ok === 1
   }
 }

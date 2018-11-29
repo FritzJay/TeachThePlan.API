@@ -2,6 +2,7 @@ import { UserInputError } from "apollo-server-express";
 
 export * from './Course';
 export * from './CourseInvitation';
+export * from './CourseRequest';
 export * from './Student';
 export * from './Teacher';
 export * from './Test';
