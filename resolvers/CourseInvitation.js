@@ -1,4 +1,6 @@
 import {
+  assertAuthenticatedUserIsAuthorizedToGetCourseInvitation,
+  assertAuthenticatedUserIsAuthorizedToGetCourseInvitations,
   assertTeacherIsAuthorizedToRemoveCourseInvitation,
   assertStudentIsAuthorizedToRemoveCourseInvitation,
   assertStudentIsAuthorizedToAcceptCourseInvitation,
@@ -25,12 +27,16 @@ const resolvers = {
     }
   },
   Query: {
-    courseInvitations(root, { lastCreatedAt, limit }, { CourseInvitation }) {
-      return CourseInvitation.all({ lastCreatedAt, limit });
+    async courseInvitations(root, { lastCreatedAt, limit }, { authedUser, CourseInvitation }) {
+      const courseInvitations = await CourseInvitation.all({ lastCreatedAt, limit });
+      await assertAuthenticatedUserIsAuthorizedToGetCourseInvitations(authedUser, courseInvitations);
+      return courseInvitations;
     },
 
-    courseInvitation(root, { id }, { CourseInvitation }) {
-      return CourseInvitation.findOneById(id);
+    async courseInvitation(root, { id }, { authedUser, CourseInvitation, Student, Teacher }) {
+      const courseInvitation = await CourseInvitation.findOneById(id);
+      await assertAuthenticatedUserIsAuthorizedToGetCourseInvitation(authedUser, courseInvitation, Student, Teacher);
+      return courseInvitation;
     },
   },
   Mutation: {

@@ -8,6 +8,29 @@ export const assertAuthenticatedUserIsAuthorizedToUpdateCourseInvitation = async
   }
 }
 
+export const assertAuthenticatedUserIsAuthorizedToGetCourseInvitation = async (authedUser, courseInvitation, Student, Teacher) => {
+  if (authedUser.role.toLowerCase() === 'student') {
+    const student = await Student.findOneByUserId(authedUser.userId);
+    if (!courseInvitation.studentId.equals(student._id)) {
+      throw new AuthenticationError('You are not authorized to get this course invitation');
+    }
+    return;
+  }
+  else if (authedUser.role.toLowerCase() === 'teacher') {
+    const teacher = await Teacher.findOneByUserId(authedUser.userId);
+    const classes = await Teacher.courses(teacher, { limit: 0 });
+    if (!classes.some(({ _id }) => courseInvitation.courseId.equals(_id))) {
+      throw new AuthenticationError('You are not authorized to get this course invitation');
+    }
+    return;
+  }
+  throw new AuthenticationError('You are not authorized to get this course invitation');
+}
+
+export const assertAuthenticatedUserIsAuthorizedToGetCourseInvitations = async (authedUser, courseInvitations) => {
+  throw new AuthenticationError('You are not authorized to get these course invitations');
+}
+
 export const assertTeacherIsAuthorizedToRemoveCourseInvitation = async (teacherId, courseId, Course)  => {
   const course = await Course.findOneById(courseId)
   if (!course.teacherId.equals(teacherId)) {
