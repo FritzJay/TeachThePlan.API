@@ -17,8 +17,8 @@ const resolvers = {
       return User.findOneById(new ObjectId(userId));
     },
 
-    uniqueUserName(root, { firstName, lastName, courseName }, { User }) {
-      return createUniqueUsernameForNewStudent(firstName, lastName, courseName, User);
+    async uniqueUserName(root, { firstName, lastName, courseName }, { User }) {
+      return await createUniqueUsernameForNewStudent(firstName, lastName, courseName, User);
     }
   },
 };
