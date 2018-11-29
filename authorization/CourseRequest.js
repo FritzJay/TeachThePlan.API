@@ -7,8 +7,8 @@ export const assertAuthedUserIsAuthorizedToCreateACourseRequest = async (student
 }
 
 export const assertTeacherIsAuthorizedToRemoveCourseRequest = async (teacherId, courseId, Course) => {
-  const { teacherId: expectedId } = Course.findOneById(courseId);
-  if (!expectedId.equals(teacherId)) {
+  const course = await Course.findOneById(courseId);
+  if (!course.teacherId.equals(teacherId)) {
     throw new AuthenticationError('You are not authorized to remove a course request for this course');
   }
 }

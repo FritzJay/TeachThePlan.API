@@ -34,8 +34,7 @@ const resolvers = {
     },
   },
   Mutation: {
-    async createCourseRequest(root, { input }, { authedUser, Course, CourseRequest, Student }) {
-      const { studentId, code } = input
+    async createCourseRequest(root, { input: { studentId, code } }, { authedUser, Course, CourseRequest, Student }) {
       const { _id: courseId } = await Course.findOneByCode(code);
       const student = await Student.findOneByUserId(authedUser.userId);
       await assertAuthedUserIsAuthorizedToCreateACourseRequest(studentId, student);
