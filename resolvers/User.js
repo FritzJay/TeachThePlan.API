@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+import { createUniqueUsernameForNewStudent } from '../src/library/user';
 
 const resolvers = {
   User: {
@@ -15,6 +16,10 @@ const resolvers = {
       const userId = id || authedUser.userId
       return User.findOneById(new ObjectId(userId));
     },
+
+    uniqueUserName(root, { firstName, lastName, courseName }, { User }) {
+      return createUniqueUsernameForNewStudent(firstName, lastName, courseName, User);
+    }
   },
 };
 
