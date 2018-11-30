@@ -32,6 +32,11 @@ const resolvers = {
       return await createUniqueUsernameForNewStudent(firstName, lastName, courseName, User);
     }
   },
+  Mutation: {
+    async removeUser(root, params, { authedUser, User }) {
+      console.log('REMOVING')
+    }
+  }
 };
 
 export default resolvers;

@@ -40,11 +40,13 @@ const resolvers = {
     },
   },
   Mutation: {
-    async createTest(root, { input }, { authedUser, Test, Student, Course }) {
+    async createTest(root, { input }, { authedUser, Test, Student, Course, TestParameters }) {
       const { studentId, courseId, number, operator } = input;
       await assertAuthenticatedUserIsAuthorizedToCreateATestForStudent(authedUser, studentId, Student);
       const course = await assertAuthenticatedUserIsAuthorizedToCreateATestInCourse(studentId, courseId, Course);
-      const testParameters = await Course.testParameters(course);
+      const testParameters = course
+        ? await Course.testParameters(course)
+        : TestParameters.defaultTestParameters(studentId);
       assertTestParametersContainsTestNumber(testParameters, number);
       assertTestParametersContainOperator(testParameters, operator)
       const { duration, questions, randomQuestions } = testParameters

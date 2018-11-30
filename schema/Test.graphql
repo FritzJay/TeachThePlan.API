@@ -23,7 +23,7 @@ input CreateTestInput {
   number: Int!
   operator: String!
   studentId: ObjID!
-  courseId: ObjID!
+  courseId: ObjID
 }
 
 input GradeTestInput {

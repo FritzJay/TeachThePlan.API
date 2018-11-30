@@ -12,6 +12,20 @@ export default class TestParameters {
     return this.loader.load(id);
   }
 
+  defaultTestParameters(studentId) {
+    return {
+      duration: 75,
+      numbers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      operators: ['+', '-', '*', '/'],
+      questions: 20,
+      randomQuestions: 5,
+      passing: 18,
+      createdAt: new Date().getTime(),
+      updatedAt: new Date().getTime(),
+      studentId,
+    } 
+  }
+
   all({ lastCreatedAt = 0, limit = 10 }) {
     return this.collection.find({
       createdAt: { $gt: lastCreatedAt },

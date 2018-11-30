@@ -9,12 +9,14 @@ export const assertAuthenticatedUserIsAuthorizedToCreateATestForStudent = async 
 }
 
 export const assertAuthenticatedUserIsAuthorizedToCreateATestInCourse = async (studentId, courseId, Course) => {
-  const course = await Course.findOneById(courseId);
-  const students = await Course.students(course, { limit: 0 });
-  if (!students.some((student) => student._id.equals(studentId))) {
-    throw new AuthenticationError('You are not authorized to create a test in this class');
+  if (courseId !== undefined) {
+    const course = await Course.findOneById(courseId);
+    const students = await Course.students(course, { limit: 0 });
+    if (!students.some((student) => student._id.equals(studentId))) {
+      throw new AuthenticationError('You are not authorized to create a test in this class');
+    }
+    return course;
   }
-  return course;
 }
 
 export const assertAuthenticatedUserIsAuthorizedToGradeTestsForStudent = async (authedUser, studentId, Student) => {

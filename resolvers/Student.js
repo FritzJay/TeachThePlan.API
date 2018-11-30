@@ -6,6 +6,7 @@ import {
   assertAuthenticatedUserIsAuthorizedToUpdateStudent,
   assertAuthenticatedUserIsAuthorizedToRemoveStudent,
   assertAuthenticatedUserIsAuthorizedToRemovePendingStudent,
+  assertAuthenticatedUserIsAuthorizedToGetTestForStudent,
   assertChangePasswordIsRequired,
 } from '../authorization/Student';
 
@@ -25,6 +26,12 @@ const resolvers = {
 
     tests(student, { courseId, lastCreatedAt, limit }, { Student }) {
       return Student.tests(student, { courseId, lastCreatedAt, limit });
+    },
+
+    async test(student, { testId }, { authedUser, Test, Student }) {
+      const test = await Test.findOneById(testId);
+      await assertAuthenticatedUserIsAuthorizedToGetTestForStudent(authedUser, test, student);
+      return test;
     },
 
     user(student, args, { Student }) {

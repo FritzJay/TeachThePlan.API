@@ -69,3 +69,9 @@ export const assertStudentIsNotPartOfTheClass = async (student, courseId) => {
     throw new UserInputError('The student is already a part of the class');
   }
 }
+
+export const assertAuthenticatedUserIsAuthorizedToGetTestForStudent = (authedUser, test, student) => {
+  if (!test.studentId.equals(student._id)) {
+    throw new AuthenticationError('You are not authorized to get this test for this student')
+  }
+}

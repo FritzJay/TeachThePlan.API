@@ -3,6 +3,7 @@ type Student {
   name: String!
   courses(lastCreatedAt: Float, limit: Int): [Course]
   tests(courseId: ObjID, lastCreatedAt: Float, limit: Int): [Test]
+  test(testId: ObjID): Test
   courseInvitations(lastCreatedAt: Float, limit: Int): [CourseInvitation]
   courseRequests(lastCreatedAt: Float, limit: Int): [CourseInvitation]
   user: User!
@@ -14,7 +15,7 @@ type Student {
 
 extend type Query {
   students(lastCreatedAt: Float, limit: Int): [Student!]
-  student(id: ObjID): Student
+  student(id: ObjID, testId: ObjID): Student
 }
 
 input CreateStudentInput {
