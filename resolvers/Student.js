@@ -29,6 +29,9 @@ const resolvers = {
     },
 
     async test(student, { testId }, { authedUser, Test, Student }) {
+      if (testId === undefined || testId === null) {
+        return null;
+      }
       const test = await Test.findOneById(testId);
       await assertAuthenticatedUserIsAuthorizedToGetTestForStudent(authedUser, test, student);
       return test;

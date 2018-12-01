@@ -56,7 +56,7 @@ export const gradeQuestion = async ({ start, end, studentAnswer, question }) => 
 }
 
 export const createTestResults = async (questions, needed) => {
-  const total = questions.length + 1
+  const total = questions.length
   const correct = questions.filter((q) => isCorrect(q));
   const incorrectId = getRandomIncorrectlyAnsweredQuestion(questions);
   const quickestId = getQuickestAnsweredQuestion(correct);
