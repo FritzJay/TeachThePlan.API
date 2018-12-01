@@ -55,13 +55,7 @@ const resolvers = {
       const teacher = await Teacher.findOneByUserId(authedUser.userId);
       await assertDocumentExists(teacher, 'teacher');
       await assertClassWithNameDoesNotExist(teacher._id, input.name, Course);
-      const testParametersId = await TestParameters.insert({
-        duration: 75,
-        numbers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        operators: ['+', '-', '*', '/'],
-        questions: 20,
-        randomQuestions: 5
-      });
+      const testParametersId = await TestParameters.insert(TestParameters.defaultTestParameters());
       const courseId = await Course.insert({
         ...input,
         code: generate(),
