@@ -6,7 +6,7 @@ type Course {
   students(lastCreatedAt: Float, limit: Int): [Student]
   tests(lastCreatedAt: Float, limit: Int): [Test]
   courseInvitations(lastCreatedAt: Float, limit: Int): [CourseInvitation]
-  courseRequests(lastCreatedAt: Float, limit: Int): [CourseInvitation]
+  courseRequests(lastCreatedAt: Float, limit: Int): [CourseRequest]
   teacher: Teacher
   testParameters: TestParameters
   createdAt: Float!

@@ -26,7 +26,7 @@ export const assertAuthenticatedUserIsAuthorizedToGetUsers = async (authedUser) 
   throw new AuthenticationError('You are not authorized to get these users');
 }
 
-export const assertAuthorizedUserIsATeacher = async (authedUser) => {
+export const assertAuthenticatedUserIsATeacher = async (authedUser) => {
   if (authedUser.role.toLowerCase() !== 'teacher') {
     throw new AuthenticationError('You are not authorized to generate a unique username');
   }
