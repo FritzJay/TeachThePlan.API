@@ -12,7 +12,7 @@ import {
 
 import { assertAuthenticatedUserIsAuthorizedToUpdateCourse } from '../authorization/Course';
 
-import { createUniqueUsernameForNewStudent } from '../src/library/user';
+import { createUniqueUsernameForNewStudent } from '../src/library/User';
 
 const resolvers = {
   Student: {
