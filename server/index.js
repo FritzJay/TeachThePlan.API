@@ -18,7 +18,7 @@ const corsOptions = {
   origin: TTP_URL,
   optionsSuccessStatus: 200,
 }
-const app = express().use(cors(corsOptions));
+const app = express().use('*', cors(corsOptions));
 
 async function startServer() {
   const client = await new MongoClient(MONGO_URL, { useNewUrlParser: true }).connect()
