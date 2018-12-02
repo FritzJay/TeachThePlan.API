@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import bodyParser from 'body-parser';
 import addModelsToContext from '../model';
 
-const SECRET = process.env.SECRET;
+const { SECRET = '~secret~' } = process.env;
 
 const unAuthenticatedRoutes = [
   'IntrospectionQuery',
