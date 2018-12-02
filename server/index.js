@@ -12,9 +12,10 @@ const {
   PORT = 3000,
   MONGO_PORT = parseInt(PORT, 10) + 2,
   MONGO_URL = `mongodb://localhost:${MONGO_PORT}/database`,
+  TTP_URL = 'http://localhost:3001',
 } = process.env;
 
-const app = express().use('*', cors());
+const app = express().use(TTP_URL, cors());
 
 async function startServer() {
   const client = await new MongoClient(MONGO_URL, { useNewUrlParser: true }).connect()

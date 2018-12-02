@@ -5,7 +5,8 @@ import bcrypt from 'bcrypt';
 import bodyParser from 'body-parser';
 import addModelsToContext from '../model';
 
-const KEY = '~key~';
+const SECRET = process.env.SECRET;
+
 const unAuthenticatedRoutes = [
   'IntrospectionQuery',
   'createUser',
@@ -21,7 +22,7 @@ export function getUserIDFromAuthHeader(req) {
 
   const token = ExtractJwt.fromAuthHeaderWithScheme('jwt')(req)
   try {
-    return jwt.decode(token, KEY)
+    return jwt.decode(token, SECRET)
   } catch (error) {
     throw new AuthenticationError('Authentication is required')
   }
@@ -63,7 +64,7 @@ export default function addPassport(app, db) {
       role: user.role.toString(),
     };
 
-    const token = jwt.encode(payload, KEY);
+    const token = jwt.encode(payload, SECRET);
     res.json({ token });
   });
 }
