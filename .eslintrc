@@ -1,7 +1,7 @@
 {
   "env": {
     "node": true,
-    "mocha": true,
+    "mocha": true
   },
   "extends": "react-app",
   "parser": "babel-eslint"
