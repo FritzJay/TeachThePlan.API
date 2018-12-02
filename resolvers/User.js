@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { createUniqueUsernameForNewStudent } from '../src/library/user';
+import { createUniqueUsernameForNewStudent } from '../src/library/User';
 import {
   assertAuthenticatedUserIsATeacher,
   assertAuthenticatedUserIsAuthorizedToGetUser,
