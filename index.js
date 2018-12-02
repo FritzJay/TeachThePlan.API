@@ -1,8 +1,7 @@
-import nodemon from 'nodemon';
 import fs from 'fs';
 import path from 'path';
-import mongoPrebuilt from 'mongodb-prebuilt';
 import denodeify from 'denodeify';
+import nodemon from 'nodemon';
 
 const dbpath = `${__dirname}/db`;
 
@@ -74,8 +73,10 @@ const MONGO_CODES = {
         },
 };
 
-if (!MONGO_URL) {
+if (!MONGO_URL && process.env.NODE_ENV !== 'production') {
   console.log(`Creating development MongoDB on mongodb://localhost:${MONGO_PORT}`);
+
+  const mongoPrebuilt = require('mongodb-prebuilt');
 
   if (!fs.existsSync(dbpath)){
     fs.mkdirSync(dbpath);
@@ -99,11 +100,15 @@ if (!MONGO_URL) {
   });
 }
 
-nodemon({
-  script: path.join('server', 'index.js'),
-  ext: 'js graphql',
-  exec: 'babel-node',
-}).on('restart', () => console.log('Restarting server due to file change\n'));
+if (process.env.NODE_ENV !== 'production') {
+  console.log('Initializing nodemon');
+
+  nodemon({
+    script: path.join('server', 'index.js'),
+    ext: 'js graphql',
+    exec: 'babel-node',
+  }).on('restart', () => console.log('Restarting server due to file change\n'));
+}
 
 
 // Ensure stopping our parent process will properly kill nodemon's process
@@ -118,5 +123,7 @@ process.once("SIGINT", function () {
 });
 // And the exit event shuts down the child.
 process.once("exit", function () {
-  nodemon.emit("SIGINT");
+  if (process.env.NODE_ENV !== 'production') {
+    nodemon.emit("SIGINT");
+  }
 });

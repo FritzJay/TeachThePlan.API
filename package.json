@@ -26,8 +26,7 @@
     "eslint-plugin-react": "7.11.1",
     "mocha": "^5.2.0",
     "mongodb-prebuilt": "^6.3.6",
-    "node-fetch": "^2.3.0",
-    "nodemon": "1.18.7"
+    "node-fetch": "^2.3.0"
   },
   "dependencies": {
     "apollo-server-express": "^2.2.5",
@@ -54,5 +53,6 @@
     "passport-jwt": "^4.0.0",
     "shortid": "^2.2.14",
     "subscriptions-transport-ws": "0.9.15"
+    "nodemon": "1.18.7"
   }
 }
