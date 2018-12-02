@@ -8,6 +8,10 @@
   "private": true,
   "author": "",
   "license": "MIT",
+  "engines": {
+    "node": "10.14.0",
+    "npm": "6.4.1"
+  },
   "devDependencies": {
     "babel-cli": "6.26.0",
     "babel-core": "6.26.3",
