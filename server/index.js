@@ -10,8 +10,7 @@ import authenticate, { getUserIDFromAuthHeader } from './authenticate';
 
 const {
   PORT = 3000,
-  MONGO_PORT = parseInt(PORT, 10) + 2,
-  MONGO_URL = `mongodb://localhost:${MONGO_PORT}/database`,
+  MONGO_URL = 'mongodb://localhost:27017/database',
   TTP_URL = 'http://localhost:3001',
 } = process.env;
 

@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "~name~ GraphQL Server",
   "scripts": {
-    "start": "SET MONGO_URL=mongodb://localhost:27017 && babel-node index.js"
+    "start": "SET MONGO_URL=mongodb://localhost:27017 && babel-node index.js",
+    "start-prod": "babel-node server/index.js"
   },
   "private": true,
   "author": "",
@@ -13,13 +14,6 @@
     "npm": "6.4.1"
   },
   "devDependencies": {
-    "babel-cli": "6.26.0",
-    "babel-core": "6.26.3",
-    "babel-eslint": "10.0.1",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "6.24.1",
-    "babel-preset-stage-2": "6.24.1",
-    "babel-register": "6.26.0",
     "chai": "^4.2.0",
     "eslint": "5.9.0",
     "eslint-config-react-app": "^3.0.5",
@@ -30,9 +24,17 @@
     "eslint-plugin-react": "7.11.1",
     "mocha": "^5.2.0",
     "mongodb-prebuilt": "^6.3.6",
-    "node-fetch": "^2.3.0"
+    "node-fetch": "^2.3.0",
+    "nodemon": "1.18.7"
   },
   "dependencies": {
+    "babel-cli": "6.26.0",
+    "babel-core": "6.26.3",
+    "babel-eslint": "10.0.1",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "6.24.1",
+    "babel-preset-stage-2": "6.24.1",
+    "babel-register": "6.26.0",
     "apollo-server-express": "^2.2.5",
     "bcrypt": "^3.0.2",
     "body-parser": "1.18.3",
@@ -56,7 +58,6 @@
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "shortid": "^2.2.14",
-    "subscriptions-transport-ws": "0.9.15",
-    "nodemon": "1.18.7"
+    "subscriptions-transport-ws": "0.9.15"
   }
 }
