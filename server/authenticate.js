@@ -37,14 +37,14 @@ export default function addPassport(app, db) {
   });
 
   app.post('/login', async ({ body, context }, res, next) => {
-    const { email, password, role } = body;
+    const { email, username, password, role } = body;
    
-    if (!email || !password || !role) {
+    if ((!email && !username) || !password || !role) {
       res.json({ error: 'Username password or role not set on request' });
       return next();
     }
     
-    const user = await context.User.findOneByEmail(email);
+    const user = await context.User.findOneByEmailOrUsername(email, username);
     if (!user || user.role !== role || !(await bcrypt.compare(password, user.hash))) {
       res.json({ error: 'Invalid email or password'})
       return next();
@@ -56,7 +56,7 @@ export default function addPassport(app, db) {
       res.json({ changePasswordRequired: true })
       return next();
       */
-     await context.Student.updateById(student._id, { changePasswordRequired: false })
+      await context.Student.updateById(student._id, { changePasswordRequired: false })
     }
 
     const payload = {

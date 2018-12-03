@@ -33,8 +33,21 @@ export const assertAuthenticatedUserIsATeacher = async (authedUser) => {
 }
 
 export const assertUserWithEmailDoesNotExist = async (email, User) => {
+  if (email === undefined) {
+    return
+  }
   const user = await User.findOneByEmail(email);
   if (user !== null) {
     throw new UserInputError(`A user with the email "${email}" already exists`);
+  }
+}
+
+export const assertUserWithUsernameDoesNotExist = async (username, User) => {
+  if (username === undefined) {
+    return
+  }
+  const user = await User.findOneByUsername(username);
+  if (user !== null) {
+    throw new UserInputError(`A user with the username "${username}" already exists`);
   }
 }

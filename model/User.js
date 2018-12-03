@@ -25,6 +25,23 @@ export default class User {
       : null
   }
 
+  async findOneByUsername(username) {
+    const user = await this.collection.find({ username })
+    .collation({ locale: "en_US", strength: 1 })
+    .limit(1)
+    .toArray();
+  return user && user.length > 0
+    ? user[0]
+    : null
+  }
+
+  findOneByEmailOrUsername(email, username) {
+    if (username !== undefined && username !== null) {
+      return this.findOneByUsername(username);
+    }
+    return this.findOneByEmail(email);
+  }
+
   all({ lastCreatedAt = 0, limit = 10 }) {
     return this.collection.find({
       createdAt: { $gt: lastCreatedAt },

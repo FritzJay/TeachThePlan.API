@@ -13,7 +13,8 @@ extend type Query {
 
 input CreateCourseInvitationInput {
   courseId: ObjID!
-  email: String!
+  email: String
+  username: String
 }
 
 extend type Mutation {

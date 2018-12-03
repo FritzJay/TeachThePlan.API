@@ -1,5 +1,10 @@
 import { ObjectId } from 'mongodb';
-import { assertUserWithEmailDoesNotExist } from '../authorization/User';
+import { UserInputError } from 'apollo-server-core';
+
+import {
+  assertUserWithEmailDoesNotExist,
+  assertUserWithUsernameDoesNotExist,
+} from '../authorization/User';
 import {
   assertAuthenticatedUserIsAuthorizedToGetStudent,
   assertAuthenticatedUserIsAuthorizedToGetStudents,
@@ -72,7 +77,14 @@ const resolvers = {
   Mutation: {
     async createStudent(root, { input }, { Student, User }) {
       const { user: userInput, ...studentInput } = input;
-      await assertUserWithEmailDoesNotExist(userInput.email, User);
+      if (!userInput.email && !userInput.username) {
+        throw new UserInputError('Username or Email is required');
+      }
+      if (userInput.username !== undefined && userInput.username !== null) {
+        await assertUserWithUsernameDoesNotExist(userInput.username, User);
+      } else {
+        await assertUserWithEmailDoesNotExist(userInput.email, User);
+      }
       const userId = await User.insert({
         ...userInput,
         role: 'student',
@@ -92,14 +104,17 @@ const resolvers = {
       if (userInput.email !== user.email) {
         await assertUserWithEmailDoesNotExist(userInput.email, User);
       }
+      if (userInput.username !== user.username) {
+        await assertUserWithUsernameDoesNotExist(userInput.username, User);
+      }
       await User.updateById(userId, userInput);
       await Student.updateById(studentId, studentInput);
       return Student.findOneById(studentId);
     },
 
     async updateNewStudent(root, { input }, { Student, User }) {
-      const { email, password } = input.user;
-      const { _id: userId } = await User.findOneByEmail(email);
+      const { email, username, password } = input.user;
+      const { _id: userId } = await User.findOneByEmailOrUsername(email, username);
       const { _id: studentId, changePasswordRequired } = await Student.findOneByUserId(userId);
       await assertChangePasswordIsRequired(changePasswordRequired);
       await User.updateById(userId, { password, email });
@@ -124,18 +139,19 @@ const resolvers = {
     async createAccountForStudent(root, { input }, context) {
       const { authedUser, Teacher, Course, User } = context
       const { name, courseId, user } = input;
-      const { email, ...rest } = user
-      const { _id: teacherId } = await Teacher.findOneByUserId(authedUser.userId);
+      const teacher = await Teacher.findOneByUserId(authedUser.userId);
+      const { email: teacherEmail } = await Teacher.user(teacher);
       const course = await Course.findOneById(ObjectId(courseId));
-      await assertAuthenticatedUserIsAuthorizedToUpdateCourse(teacherId, course);
+      await assertAuthenticatedUserIsAuthorizedToUpdateCourse(teacher._id, course);
       const username = await createUniqueUsernameForNewStudent(user.firstName, user.lastName, course.name, User);
       return resolvers.Mutation.createStudent(root, {
         input: {
           name,
           coursesIds: [ObjectId(courseId)],
           user: {
-            email: username,
-            ...rest,
+            email: teacherEmail,
+            username,
+            ...user,
           },
           changePasswordRequired: true,
         }

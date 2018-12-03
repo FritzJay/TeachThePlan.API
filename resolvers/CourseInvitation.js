@@ -10,7 +10,7 @@ import {
 } from '../authorization';
 
 import { assertAuthenticatedUserIsAuthorizedToUpdateCourse } from '../authorization/Course';
-import { AuthenticationError } from 'apollo-server-core';
+import { AuthenticationError, UserInputError } from 'apollo-server-core';
 
 const resolvers = {
   CourseInvitation: {
@@ -41,11 +41,14 @@ const resolvers = {
   },
   Mutation: {
     async createCourseInvitation(root, { input }, { authedUser, Course, CourseInvitation, Student, Teacher, User }) {
-      const { courseId, email } = input
+      const { courseId, email, username } = input
+      if (!email && !username) {
+        throw new UserInputError('Email or Username is required');
+      }
       const { _id: teacherId } = await Teacher.findOneByUserId(authedUser.userId);
       const course = await Course.findOneById(courseId);
       await assertAuthenticatedUserIsAuthorizedToUpdateCourse(teacherId, course);
-      const { _id: userId } = await User.findOneByEmail(email)
+      const { _id: userId } = await User.findOneByEmailOrUsername(email, username);
       const student = await Student.findOneByUserId(userId);
       await assertCourseDoesNotContainInvitation(courseId, student._id, CourseInvitation);
       await assertStudentIsNotPartOfTheClass(student, courseId)

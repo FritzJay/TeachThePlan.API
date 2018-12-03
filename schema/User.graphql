@@ -1,6 +1,7 @@
 type User {
   id: ObjID!
-  email: String!
+  email: String
+  username: String
   firstName: String
   lastName: String
   title: String
@@ -16,7 +17,8 @@ extend type Query {
 }
 
 input CreateUserInput {
-  email: String!
+  email: String
+  username: String
   password: String!
   firstName: String
   lastName: String
@@ -25,7 +27,8 @@ input CreateUserInput {
 }
 
 input UpdateUserInput {
-  email: String!
+  email: String
+  username: String
   password: String
   firstName: String
   lastName: String

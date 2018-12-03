@@ -5,6 +5,7 @@ import {
   assertAuthenticatedUserIsAuthorizedToUpdateTeacher,
   assertAuthenticatedUserIsAuthorizedToRemoveTeacher,
 } from '../authorization/Teacher';
+import { UserInputError } from 'apollo-server-core';
 
 const resolvers = {
   Teacher: {
@@ -39,6 +40,9 @@ const resolvers = {
   Mutation: {
     async createTeacher(root, { input }, { Teacher, User }) {
       const { user: userInput, ...teacherInput } = input;
+      if (!userInput.email) {
+        throw new UserInputError('Email is required');
+      }
       await assertUserWithEmailDoesNotExist(userInput.email, User);
       const userId = await User.insert({
         ...userInput,
