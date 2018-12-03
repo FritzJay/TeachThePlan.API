@@ -35,9 +35,10 @@ export default class User {
     : null
   }
 
-  findOneByEmailOrUsername(email, username) {
-    if (username !== undefined && username !== null) {
-      return this.findOneByUsername(username);
+  async findOneByEmailOrUsername(email, username) {
+    const user = await this.findOneByUsername(username);
+    if (user && username) {
+      return user;
     }
     return this.findOneByEmail(email);
   }
