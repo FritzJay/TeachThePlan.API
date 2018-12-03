@@ -45,7 +45,7 @@ export default function addPassport(app, db) {
     }
     
     const user = await context.User.findOneByEmail(email);
-    if (!user || !user.role === role || !(await bcrypt.compare(password, user.hash))) {
+    if (!user || user.role !== role || !(await bcrypt.compare(password, user.hash))) {
       res.json({ error: 'Invalid email or password'})
       return next();
     }
