@@ -27,20 +27,22 @@ export default class User {
 
   async findOneByUsername(username) {
     const user = await this.collection.find({ username })
-    .collation({ locale: "en_US", strength: 1 })
-    .limit(1)
-    .toArray();
-  return user && user.length > 0
-    ? user[0]
-    : null
+      .collation({ locale: "en_US", strength: 1 })
+      .limit(1)
+      .toArray();
+    return user && user.length > 0
+      ? user[0]
+      : null
   }
 
   async findOneByEmailOrUsername(email, username) {
-    const user = await this.findOneByUsername(username);
-    if (user && username) {
-      return user;
+    if (username !== undefined && username !== null) {
+      const user = await this.findOneByUsername(username);
+      if (user !== null) {
+        return user;
+      }
     }
-    return this.findOneByEmail(email);
+    return await this.findOneByEmail(email);
   }
 
   all({ lastCreatedAt = 0, limit = 10 }) {
