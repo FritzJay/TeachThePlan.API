@@ -10,9 +10,26 @@ import authenticate, { getUserIDFromAuthHeader } from './authenticate';
 
 const {
   PORT = 3000,
-  MONGO_URL = 'mongodb://localhost:27017/database',
+  MONGO_URL = 'mongodb://localhost:27017',
+  DEV_DATABASE = 'database',
+  STAGING_DATABASE = 'staging',
+  PRODUCTION_DATABASE = 'production',
   TTP_URL = 'http://localhost:3001',
+  NODE_ENV = 'development',
 } = process.env;
+
+let DATABASE;
+switch(NODE_ENV) {
+  case 'staging':
+    DATABASE = STAGING_DATABASE
+    break
+  case 'production':
+    DATABASE = PRODUCTION_DATABASE
+    break
+  default:
+    DATABASE = DEV_DATABASE
+    break
+}
 
 const corsOptions = {
   origin: TTP_URL,
@@ -21,8 +38,8 @@ const corsOptions = {
 const app = express().use('*', cors(corsOptions));
 
 async function startServer() {
-  const client = await new MongoClient(MONGO_URL, { useNewUrlParser: true }).connect()
-  const db = await client.db('database')
+  const client = await new MongoClient(`${MONGO_URL}`, { useNewUrlParser: true }).connect()
+  const db = await client.db(DATABASE)
   
   authenticate(app, db);
 
