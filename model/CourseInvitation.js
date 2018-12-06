@@ -60,4 +60,9 @@ export default class CourseInvitation {
     const { result } = await this.collection.deleteMany({ courseId: ObjectId(id) })
     return result.ok === 1
   }
+
+  async removeByStudentId(id) {
+    const { result } = await this.collection.deleteMany({ studentId: ObjectId(id) })
+    return result.ok === 1
+  }
 }

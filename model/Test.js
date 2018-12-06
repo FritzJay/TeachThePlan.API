@@ -95,8 +95,18 @@ export default class Test {
   }
 
   async removeById(id) {
-    const ret = this.collection.remove({ _id: id });
+    const { deletedCount } = await this.collection.remove({ _id: id });
     this.loader.clear(id);
-    return ret;
+    return deletedCount > 0;
+  }
+
+  async removeByStudentId(studentId) {
+    const { result } = await this.collection.deleteMany({ studentId });
+    return result.ok === 1;
+  }
+
+  async removeByCourseId(id) {
+    const { deletedCount } = await this.collection.deleteMany({ courseId: id });
+    return deletedCount >= 1;
   }
 }

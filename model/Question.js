@@ -46,4 +46,9 @@ export default class Question {
     this.loader.clear(id);
     return ret;
   }
+
+  async removeByTestId(id) {
+    const { result } = await this.collection.deleteMany({ testId: id })
+    return result.ok === 1
+  }
 }

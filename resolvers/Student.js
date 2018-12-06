@@ -122,9 +122,17 @@ const resolvers = {
       return Student.findOneById(studentId);
     },
 
-    async removeStudent(root, { id: studentId }, { authedUser, Student, User }) {
-      const userId = await assertAuthenticatedUserIsAuthorizedToRemoveStudent(authedUser, studentId, Student)
-      const userRemoved = await User.removeById(userId);
+    async removeStudent(root, { id: studentId }, { authedUser, Student, User, Test, Question, CourseInvitation, CourseRequest }) {
+      await assertAuthenticatedUserIsAuthorizedToRemoveStudent(authedUser, studentId, Student)
+      const student = await Student.findOneById(studentId)
+      const tests = await Student.tests(student, { limit: 0 });
+      await Promise.all(tests.map(async ({ _id }) => {
+        await Question.removeByTestId(_id);
+        await Test.removeById(_id);
+      }));
+      await CourseInvitation.removeByStudentId(studentId);
+      await CourseRequest.removeByStudentId(studentId);
+      const userRemoved = await User.removeById(student.userId);
       const studentRemoved = await Student.removeById(studentId);
       return userRemoved && studentRemoved;
     },

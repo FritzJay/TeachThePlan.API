@@ -16,6 +16,10 @@ export default class Course {
     return this.collection.findOne({ code });
   }
 
+  findManyByTeacherId(id) {
+    return this.collection.find({ teacherId: id }).toArray();
+  }
+
   findManyByNameAndTeacherId(name, id) {
     return this.collection.find({ name, teacherId: id })
       .collation({ locale: "en_US", strength: 1 })

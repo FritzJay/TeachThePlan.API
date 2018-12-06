@@ -34,7 +34,7 @@ const resolvers = {
   },
   Mutation: {
     async removeUser(root, params, { authedUser, User }) {
-      console.log('REMOVING')
+      return User.removeById(authedUser.userId);
     }
   }
 };

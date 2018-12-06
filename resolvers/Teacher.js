@@ -6,6 +6,7 @@ import {
   assertAuthenticatedUserIsAuthorizedToRemoveTeacher,
 } from '../authorization/Teacher';
 import { UserInputError } from 'apollo-server-core';
+import { ObjectId } from 'mongodb';
 
 const resolvers = {
   Teacher: {
@@ -68,10 +69,19 @@ const resolvers = {
       return Teacher.findOneById(teacherId);
     },
 
-    async removeTeacher(root, { id: teacherId }, { authedUser, Teacher, User }) {
-      const userId = await assertAuthenticatedUserIsAuthorizedToRemoveTeacher(authedUser, teacherId, Teacher)
-      const userRemoved = await User.removeById(userId);
+    async removeTeacher(root, { id: teacherId }, { authedUser, Teacher, User, Course, TestParameters, Student, Test, CourseInvitation, CourseRequest }) {
+      await assertAuthenticatedUserIsAuthorizedToRemoveTeacher(authedUser, teacherId, Teacher)
+      const userRemoved = await User.removeById(new ObjectId(authedUser.userId));
       const teacherRemoved = await Teacher.removeById(teacherId);
+      const courses = await Course.findManyByTeacherId(teacherId)
+      await Promise.all(courses.map(async ({ _id, testParametersId }) => {
+        await TestParameters.removeById(testParametersId);
+        await Student.removeCourseAssociations(_id);
+        await Test.removeByCourseId(_id);
+        await CourseInvitation.removeByCourseId(_id);
+        await CourseRequest.removeByCourseId(_id);
+        await Course.removeById(_id);
+      }));
       return userRemoved && teacherRemoved;
     },
   },
