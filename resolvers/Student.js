@@ -123,6 +123,10 @@ const resolvers = {
     },
 
     async removeStudent(root, { id: studentId }, { authedUser, Student, User, Test, Question, CourseInvitation, CourseRequest }) {
+      if (studentId === undefined) {
+        const student = await Student.findOneByUserId(authedUser.userId);
+        studentId = student._id
+      }
       await assertAuthenticatedUserIsAuthorizedToRemoveStudent(authedUser, studentId, Student)
       const student = await Student.findOneById(studentId)
       const tests = await Student.tests(student, { limit: 0 });
@@ -132,8 +136,8 @@ const resolvers = {
       }));
       await CourseInvitation.removeByStudentId(studentId);
       await CourseRequest.removeByStudentId(studentId);
-      const userRemoved = await User.removeById(student.userId);
       const studentRemoved = await Student.removeById(studentId);
+      const userRemoved = await User.removeById(student.userId);
       return userRemoved && studentRemoved;
     },
 

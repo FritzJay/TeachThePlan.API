@@ -69,19 +69,27 @@ const resolvers = {
       return Teacher.findOneById(teacherId);
     },
 
-    async removeTeacher(root, { id: teacherId }, { authedUser, Teacher, User, Course, TestParameters, Student, Test, CourseInvitation, CourseRequest }) {
+    async removeTeacher(root, { id: teacherId }, { authedUser, Teacher, User, Course, TestParameters, Student, Test, Question, CourseInvitation, CourseRequest }) {
+      if (teacherId === undefined) {
+        const teacher = await Teacher.findOneByUserId(authedUser.userId);
+        teacherId = teacher._id
+      }
       await assertAuthenticatedUserIsAuthorizedToRemoveTeacher(authedUser, teacherId, Teacher)
-      const userRemoved = await User.removeById(new ObjectId(authedUser.userId));
-      const teacherRemoved = await Teacher.removeById(teacherId);
       const courses = await Course.findManyByTeacherId(teacherId)
-      await Promise.all(courses.map(async ({ _id, testParametersId }) => {
-        await TestParameters.removeById(testParametersId);
-        await Student.removeCourseAssociations(_id);
-        await Test.removeByCourseId(_id);
-        await CourseInvitation.removeByCourseId(_id);
-        await CourseRequest.removeByCourseId(_id);
-        await Course.removeById(_id);
+      await Promise.all(courses.map(async (course) => {
+        await TestParameters.removeById(course.testParametersId);
+        await Student.removeCourseAssociations(course._id);
+        await CourseInvitation.removeByCourseId(course._id);
+        await CourseRequest.removeByCourseId(course._id);
+        const tests = await Course.tests(course, { limit: 0 });
+        await Promise.all(tests.map(async ({ _id }) => {
+          await Question.removeByTestId(_id);
+          await Test.removeById(_id);
+        }));
+        await Course.removeById(course._id);
       }));
+      const teacherRemoved = await Teacher.removeById(teacherId);
+      const userRemoved = await User.removeById(new ObjectId(authedUser.userId));
       return userRemoved && teacherRemoved;
     },
   },

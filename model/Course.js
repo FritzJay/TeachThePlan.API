@@ -47,6 +47,10 @@ export default class Course {
     return this.context.TestParameters.findOneById(course.testParametersId);
   }
 
+  tests(course) {
+    return this.context.Test.findManyByCourseId(course._id);
+  }
+
   courseInvitations(course, { lastCreatedAt = 0, limit = 10 }) {
     return this.context.CourseInvitation.collection.find({
       courseId: course._id,

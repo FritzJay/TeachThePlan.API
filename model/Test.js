@@ -17,6 +17,10 @@ export default class Test {
   findOneById(id) {
     return this.loader.load(id);
   }
+  
+  findManyByCourseId(id) {
+    return this.collection.find({ courseId: id }).toArray();
+  }
 
   all({ lastCreatedAt = 0, limit = 10 }) {
     return this.collection.find({

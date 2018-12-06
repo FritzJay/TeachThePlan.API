@@ -25,5 +25,5 @@ input UpdateTeacherInput {
 extend type Mutation {
   createTeacher(input: CreateTeacherInput!): Teacher
   updateTeacher(id: ObjID!, input: UpdateTeacherInput!): Teacher
-  removeTeacher(id: ObjID!): Boolean
+  removeTeacher(id: ObjID): Boolean
 }

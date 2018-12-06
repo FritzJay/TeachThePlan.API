@@ -47,7 +47,7 @@ extend type Mutation {
   createAccountForStudent(input: CreateAccountForStudentInput!): Student
   updateStudent(id: ObjID!, input: UpdateStudentInput!): Student
   updateNewStudent(input: UpdateNewStudentInput!): Student
-  removeStudent(id: ObjID!): Boolean
+  removeStudent(id: ObjID): Boolean
   removePendingStudent(studentId: ObjID!, courseId: ObjID!): Boolean
   removeStudentFromCourse(studentId: ObjID!, courseId: ObjID!): Boolean
 }
