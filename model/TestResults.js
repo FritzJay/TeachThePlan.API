@@ -58,8 +58,8 @@ export default class TestResults {
   }
 
   async removeById(id) {
-    const ret = this.collection.remove({ _id: id });
+    const { deletedCount } = await this.collection.deleteOne({ _id: id });
     this.loader.clear(id);
-    return ret;
+    return deletedCount === 1;
   }
 }

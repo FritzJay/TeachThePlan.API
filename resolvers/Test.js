@@ -1,8 +1,11 @@
+import { ObjectId } from 'mongodb';
+
 import {
   assertAuthenticatedUserIsAuthorizedToCreateATestForStudent,
   assertAuthenticatedUserIsAuthorizedToCreateATestInCourse,
   assertAuthenticatedUserIsAuthorizedToGradeTestsForStudent,
   assertAuthenticatedUserIsAuthorizedToGradeTestsInCourse,
+  assertAuthenticatedUserIsAuthorizedToRemoveTest,
   assertTestParametersContainsTestNumber,
   assertTestParametersContainOperator,
   assertTestResultsDoNotExist,
@@ -70,8 +73,12 @@ const resolvers = {
       return await Test.grade(id, input, passing);
     },
 
-    removeTest(root, { id }, { Test }) {
-      return Test.removeById(id);
+    async removeTest(root, { id }, { authedUser, Test, Question, Student }) {
+      const test = await Test.findOneById(id);
+      await assertAuthenticatedUserIsAuthorizedToRemoveTest(authedUser.userId, test.studentId, Student);
+      const questions = await Test.questions(test);
+      await Promise.all(questions.map(async ({ _id }) => Question.removeById(_id)));
+      return Test.removeById(test._id);
     },
   },
 };

@@ -54,3 +54,10 @@ export const assertTestResultsDoNotExist = async (testId, TestResults) => {
     throw new AuthenticationError('This test has already been graded')
   }
 }
+
+export const assertAuthenticatedUserIsAuthorizedToRemoveTest = async (userId, studentId, Student) => {
+  const student = await Student.findOneByUserId(userId);
+  if (!student._id.equals(studentId)) {
+    throw new AuthenticationError('You are not authorized to remove this test');
+  }
+}

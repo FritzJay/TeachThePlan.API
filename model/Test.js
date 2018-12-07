@@ -99,9 +99,9 @@ export default class Test {
   }
 
   async removeById(id) {
-    const { deletedCount } = await this.collection.remove({ _id: id });
+    const { deletedCount } = await this.collection.deleteOne({ _id: id });
     this.loader.clear(id);
-    return deletedCount > 0;
+    return deletedCount === 1;
   }
 
   async removeByStudentId(studentId) {
@@ -110,7 +110,7 @@ export default class Test {
   }
 
   async removeByCourseId(id) {
-    const { deletedCount } = await this.collection.deleteMany({ courseId: id });
-    return deletedCount >= 1;
+    const { result } = await this.collection.deleteMany({ courseId: id });
+    return result.ok === 1;
   }
 }

@@ -2,7 +2,6 @@ import {
   AuthenticationError,
   UserInputError,
 } from "apollo-server-express";
-import { ObjectId } from 'mongodb';
 
 export const assertAuthenticatedUserIsAuthorizedToUpdateCourse = async (teacherId, course)  => {
   if (!course.teacherId.equals(teacherId)) {
