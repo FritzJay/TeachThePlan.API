@@ -9,7 +9,7 @@ export const assertAuthenticatedUserIsAuthorizedToCreateATestForStudent = async 
 }
 
 export const assertAuthenticatedUserIsAuthorizedToCreateATestInCourse = async (studentId, courseId, Course) => {
-  if (courseId !== undefined) {
+  if (courseId) {
     const course = await Course.findOneById(courseId);
     const students = await Course.students(course, { limit: 0 });
     if (!students.some((student) => student._id.equals(studentId))) {
@@ -28,6 +28,9 @@ export const assertAuthenticatedUserIsAuthorizedToGradeTestsForStudent = async (
 }
 
 export const assertAuthenticatedUserIsAuthorizedToGradeTestsInCourse = async (studentId, courseId, Course) => {
+  if (!courseId) {
+    return
+  }
   const course = await Course.findOneById(courseId);
   const students = await Course.students(course, { limit: 0 });
   if (!students.some((student) => student._id.equals(studentId))) {
