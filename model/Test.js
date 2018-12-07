@@ -39,7 +39,10 @@ export default class Test {
   }
 
   course(test) {
-    return this.context.Course.findOneById(test.courseId);
+    if (test.courseId) {
+      return this.context.Course.findOneById(test.courseId);
+    }
+    return null
   }
 
   testResults(test) {

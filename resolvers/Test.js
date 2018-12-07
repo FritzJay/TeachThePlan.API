@@ -62,14 +62,18 @@ const resolvers = {
       return Test.findOneById(id);
     },
 
-    async gradeTest(root, { id, input }, { authedUser, Test, Student, Course, TestResults }) {
+    async gradeTest(root, { id, input }, { authedUser, Test, Student, Course, TestResults, TestParameters }) {
       const test = await Test.findOneById(id);
       const { studentId, courseId } = test
       await assertTestResultsDoNotExist(id, TestResults);
       await assertAuthenticatedUserIsAuthorizedToGradeTestsForStudent(authedUser, studentId, Student);
       await assertAuthenticatedUserIsAuthorizedToGradeTestsInCourse(studentId, courseId, Course);
-      const course = await Course.findOneById(courseId);
-      const { passing } = await Course.testParameters(course)
+      if (courseId) {
+        const course = await Course.findOneById(courseId);
+        const { passing } = await Course.testParameters(course)
+        return await Test.grade(id, input, passing);
+      }
+      const { passing } = await TestParameters.defaultTestParameters();
       return await Test.grade(id, input, passing);
     },
 

@@ -7,7 +7,7 @@ type Test {
   start: Float
   end: Float
   student: Student!
-  course: Course!
+  course: Course
   questions(lastCreatedAt: Float, limit: Int, lastCreatedAt: Float, limit: Int): [Question!]
   testResults: TestResults
   createdAt: Float!
