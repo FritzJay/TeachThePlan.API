@@ -1,3 +1,4 @@
+import { UserInputError } from 'apollo-server-core';
 import {
   assertAuthenticatedUserIsAuthorizedToUpdateTestParameters,
 } from '../authorization/TestParameters';
@@ -23,7 +24,12 @@ const resolvers = {
   },
   Mutation: {
     async updateTestParameters(root, { id, input }, { authedUser, TestParameters, Teacher }) {
-      await assertAuthenticatedUserIsAuthorizedToUpdateTestParameters(authedUser, id, Teacher)
+      await assertAuthenticatedUserIsAuthorizedToUpdateTestParameters(authedUser, id, Teacher);
+      Object.keys(input).forEach((key) => {
+        if (input[key] === null) {
+          throw new UserInputError(`${key} cannot be null`);
+        }
+      });
       await TestParameters.updateById(id, input);
       return TestParameters.findOneById(id);
     },
